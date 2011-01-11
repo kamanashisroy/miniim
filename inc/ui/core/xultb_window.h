@@ -46,10 +46,8 @@ struct xultb_window {
 	void (*show_title)(struct graphics g);
 
 	// what is this for ??
-#if 0
-	void push_balloon(xultb_str_t message, xultb_img_t img, int hash, long timeout);
-	void pushBalloon(xultb_str_t message, xultb_img_t img);
-#endif
+	void (*push_balloon)(xultb_str_t message, xultb_img_t img, int hash, long timeout);
+	void (*push_balloon)(xultb_str_t message, xultb_img_t img);
 
 	xul_window_t*(*get_current)();
-}
+};

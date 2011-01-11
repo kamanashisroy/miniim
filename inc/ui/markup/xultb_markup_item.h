@@ -18,8 +18,7 @@
  *
  */
 
-//public final class MarkupItem implements ListItem {
-struct markup_item {
+struct xultb_markup_item {
 
 	struct list_item list_item;
 	struct element root; // Document root

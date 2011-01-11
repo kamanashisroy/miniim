@@ -18,10 +18,4 @@
  *
  */
 
-package net.ayaslive.miniim.ui.markup;
-
-import javax.microedition.lcdui.Image;
-
-public interface MediaLoader {
-	public Image getImage(String src);
-}
+create_window();

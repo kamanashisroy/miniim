@@ -18,12 +18,4 @@
  *
  */
 
-
-package net.ayaslive.miniim.ui.markup;
-
-import org.kxml2.kdom.Element;
-
-public interface EventListener {
-	public final static int CLICK = 100;
-	void handleEvent(Element elem, int type);
-}
+create_window();

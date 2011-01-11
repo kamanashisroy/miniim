@@ -18,20 +18,12 @@
  *
  */
 
-struct xultb_webcontroler
-{
-	int initialize(void*data);
-	int finalize(void*data);
-	public boolean pushWrapper(ResourceIdentifier id, boolean back);
-	public void handleContent(String url, Object obj);
-	public Image getImage(String src);
-	public ContentConnection open(String url);
-	private void readSettings();
-	private void saveSettings();
-	static void show();
-	public ContentConnection open(String url, Hashtable postData);
-	public void trace(int type, String classDesc, int hashCode, int threadHashCode, String str, String exceptionClassDesc, String trace);
-	public void changed();
-	public void run();
+
+enum markup_event_type {
+	MARKUP_CLICK = 100,
+};
+
+struct xultb_event_listener {
+	void (*handle_event)(struct element elem, enum markup_event_type type);
 };
 
