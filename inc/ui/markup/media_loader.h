@@ -19,6 +19,6 @@
  */
 
 struct media_loader {
-	void*data get_image();
+	struct xultb_img*get_image();
 };
 

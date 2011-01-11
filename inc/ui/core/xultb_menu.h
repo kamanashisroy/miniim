@@ -18,7 +18,7 @@
  *
  */
 
-struct action_listener {
-	void (*perform_action)(const char*action);
-};
+struct xultb_menu {
 
+	// TODO fill me
+};

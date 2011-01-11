@@ -18,6 +18,5 @@
  *
  */
 
-//public class MarkupList extends List implements Enumeration {
 struct markup_list {
 };

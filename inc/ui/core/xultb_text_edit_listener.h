@@ -19,20 +19,10 @@
  */
 
 /**
- * TextEditListener.java
- *
- * Created on April 1, 2007, 1:30 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
-package net.ayaslive.miniim.ui.core;
-
-/**
  *
  * @author Kamanashis Roy kamanashisroy@gmail.com
  */
-public interface TextEditListener {
-    public void textEdited(String newText);    
-}
+struct xultb_text_edit_listener {
+    void (*text_edited)(xultb_str_t*new_text);    
+};
+

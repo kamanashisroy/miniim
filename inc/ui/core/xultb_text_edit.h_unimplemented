@@ -18,13 +18,6 @@
  *
  */
 
-package net.ayaslive.miniim.ui.core;
-
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.TextBox;
-
 /**
  * TextEdit.java
  *
@@ -33,7 +26,7 @@ import javax.microedition.lcdui.TextBox;
  * This is expected that there can be only one instance of this class(Singleton).
  * @author Kamanashis Roy kamanashisroy@gmail.com
  */
-public class TextEdit implements CommandListener{
+public class TextEdit {
   /** Note that there can be only one listener at a time */
   private TextEditListener listener = null;
   /** previous screen */

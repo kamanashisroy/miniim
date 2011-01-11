@@ -23,7 +23,7 @@ enum markup_event_type {
 	MARKUP_CLICK = 100,
 };
 
-struct event_listener {
+struct xultb_event_listener {
 	void (*handle_event)(struct element elem, enum markup_event_type type);
 };
 

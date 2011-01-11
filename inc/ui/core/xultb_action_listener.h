@@ -18,19 +18,7 @@
  *
  */
 
+struct xultb_action_listener {
+	void (*perform_action)(xmltb_str_t*action);
+};
 
-package net.ayaslive.miniim.ui.core.list;
-
-import javax.microedition.lcdui.Font;
-import javax.microedition.lcdui.Graphics;
-
-public interface ListItem {
-	final static Font ITEM_FONT = Font.getFont(Font.FACE_MONOSPACE, Font.STYLE_PLAIN,
-			Font.SIZE_SMALL);
-	
-	final static int FONT_HEIGHT = ITEM_FONT.getHeight();
-	final static int PADDING = 3;
-	final static int DPADDING = PADDING*2;
-	int paint(Graphics g, int x, int y, int width, boolean selected);
-	void free();
-}
