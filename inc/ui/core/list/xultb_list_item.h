@@ -22,15 +22,30 @@
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_img.h"
 
+enum xultb_list_item_type {
+	XULTB_LIST_ITEM_LABEL,
+	XULTB_LIST_ITEM_SELECTION,
+	XULTB_LIST_ITEM_TEXT_INPUT,
+	XULTB_LIST_ITEM_TEXT_CHECKBOX,
+};
+
 #define LIST_ITEM_SIGNATURE 0x93
 struct xultb_list_item {
 	int sgn1;
-	struct font ITEM_FONT;
+	struct xultb_font*ITEM_FONT;
 	int FONT_HEIGHT;
-	int PADDING;
-	int DPADDING;
-	int (*paint)(struct graphics g, int x, int y, int width, int selected);
+	xultb_str_t label;
+	xultb_str_t text;
+	xultb_bool_t checked;
+	xultb_bool_t is_editable;
+	xultb_bool_t is_radio;
+	xultb_bool_t wrapped;
+	xultb_bool_t truncate_text_to_fit_width;
+	xultb_bool_t focused;
+	xultb_img_t*img;
+	int (*paint)(struct xultb_list_item*item, struct xultb_graphics*g, int x, int y, int width, int selected);
 	int sgn2;
+	enum xultb_list_item_type type;
 	void *__more__;
 	int sgn3;
 };
@@ -38,14 +53,13 @@ struct xultb_list_item {
 #define CHECK_LIST_ITEM(x) assert(x->sgn1 == LIST_ITEM_SIGNATURE && x->sgn2 == LIST_ITEM_SIGNATURE && x->sgn3 == LIST_ITEM_SIGNATURE)
 
 
-struct list_item*create_label(xultb_str_t label, xultb_img_t*img);
-struct list_item*create_label(xultb_str_t label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width);
-struct list_item*create_selection_box(xultb_str_t label, xultb_str_t text, xultb_bool_t editable);
-struct list_item*create_text_input(xultb_str_t label, xultb_str_t text, xultb_bool_t wrapped, xultb_bool_t editable);
-struct list_item*create_text_input(xultb_str_t label, xultb_str_t text);
-struct list_item*create_checkbox(xultb_str_t label, xultb_bool_t checked, xultb_bool_t editable);
-struct list_item*create_radio_button(xultb_str_t label, xultb_bool_t checked, xultb_bool_t editable);
-struct list_item*create_checkbox(xultb_str_t label, xultb_bool_t checked, xultb_bool_t editable, xultb_bool_t isRadio);
+struct list_item*create_label(xultb_str_t*label, xultb_img_t*img);
+struct list_item*create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width);
+struct list_item*create_selection_box(xultb_str_t*label, xultb_str_t*text, xultb_bool_t editable);
+struct list_item*create_text_input_full(xultb_str_t*label, xultb_str_t*text, xultb_bool_t wrapped, xultb_bool_t editable);
+struct list_item*create_text_input(xultb_str_t*label, xultb_str_t*text);
+struct list_item*create_checkbox(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable);
+struct list_item*create_radio_button(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable);
 
 
 

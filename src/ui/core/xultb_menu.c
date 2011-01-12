@@ -18,7 +18,16 @@
  *
  */
 
-struct xultb_menu {
+#include "core/xultb_exttypes.h"
+#include "core/xultb_decorator.h"
+#include "ui/core/xultb_graphics.h"
+#include "ui/core/xultb_menu.h"
 
-	// TODO fill me
-};
+int xultb_menu_get_base_height() {
+	XULTB_CORE_UNIMPLEMENTED();
+	return 0;
+}
+void xultb_menu_show(struct xultb_graphics*g, int width, int height) {
+	XULTB_CORE_UNIMPLEMENTED();
+	return;
+}

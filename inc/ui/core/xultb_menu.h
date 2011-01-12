@@ -18,7 +18,5 @@
  *
  */
 
-struct xultb_menu {
-
-	// TODO fill me
-};
+int xultb_menu_get_base_height();
+void xultb_menu_show(struct xultb_graphics*g, int width, int height);

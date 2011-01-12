@@ -18,10 +18,12 @@
  *
  */
 
+struct graphics;
+
 struct xultb_window {
 	int PADDING;
-	char *title;
-	struct font*TITLE_FONT;
+	xultb_str_t title;
+	xultb_font_t*TITLE_FONT;
 	
 	/** The width of the list */
 	int width;
@@ -33,21 +35,26 @@ struct xultb_window {
 	int menuY;
 	int panelTop;
 	
-	void (*show)();
-	void (*show)(xmltb_str_t*right_option, xultb_str_t**left_option, int left_option_count);
-	xmltb_bool_t* (*is_showing)();
-	void (*key_pressed)(int keyCode, int gameAction);
+	void (*init)(struct xultb_window*win, int w, int h);
+	void (*show)(struct xultb_window*win);
+	void (*show_full)(struct xultb_window*win, xmltb_str_t*right_option, xultb_str_t**left_option, int left_option_count);
+	xmltb_bool_t* (*is_showing)(struct xultb_window*win);
+#if 0
 	void (*repaint)();
-	void (*repaint)(int x, int y, int width, int height);
+	void (*repaint_full)(int x, int y, int width, int height);
 	xmltb_bool_t* (*handle_menu)(int key_code, int game_action);
 	void (*setTitle)(xultb_bool_t* title);
 	xmltb_str_t* (*get_title)();
-	void (*paint)(struct graphics g);
-	void (*show_title)(struct graphics g);
+#endif
 
+	void (*paint)(struct xultb_window*win, struct xultb_graphics*g);
+
+#if 0
 	// what is this for ??
 	void (*push_balloon)(xultb_str_t message, xultb_img_t img, int hash, long timeout);
 	void (*push_balloon)(xultb_str_t message, xultb_img_t img);
-
+#endif
 	xul_window_t*(*get_current)();
 };
+
+struct xultb_window*create_xultb_window(xultb_str_t*title);
