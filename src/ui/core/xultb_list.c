@@ -41,15 +41,15 @@ struct xultb_list {
 	void (*set_action_listener)(struct xultb_action_listener lis);
 	
 	struct obj_factory*(*get_items)();
-	struct xmltb_list_item* get_list_item(void*data);
+	struct xmltb_list_item* (*get_list_item)(void*data);
 	xmltb_str_t*(*getHint)();
 	
-	struct xmltb_list_item get_selected();
+	struct xmltb_list_item (*get_selected)();
 	
 	void (*set_selected_index)(int index);
-	int get_selected_index();
+	int (*get_selected_index)();
 	
-	void paint(struct graphics*g);
+	void (*paint)(struct graphics*g);
 }
 
 create_list(xultb_str_t*title, xultb_str_t*default_command);

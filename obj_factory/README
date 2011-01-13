@@ -1,0 +1,15 @@
+
+This allow you to keep object buffer for your C structure
+that we call object here.
+
+What it can do,
+
+-- You can do GC on this buffer.
+-- You can find an object in this buffer list.
+-- You can find a list of objects from the buffer list.
+
+What it cannot do, or what we may do in future.
+
+-- There is no locking enabled yet.
+-- You cannot sort the list.
+-- There is no error-list to help try catch features.
