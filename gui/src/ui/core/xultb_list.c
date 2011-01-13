@@ -36,7 +36,7 @@ enum {
 };
 
 static int xultb_list_show_item(struct xultb_graphics*g, void*data, int y, xultb_bool_t selected) {
-	xultb_list_item*li = NULL;
+	struct xultb_list_item*li = NULL;
 #if 0
 	if(obj instanceof ListItem) {
 	  li = (ListItem)obj;
@@ -48,7 +48,7 @@ static int xultb_list_show_item(struct xultb_graphics*g, void*data, int y, xultb
 #endif
 	if(li == NULL)
 	  return 0;
-	int ret = li.paint(g, leftMargin + HMARGIN, y + VMARGIN, width - HMARGIN - HMARGIN - 1 - leftMargin - rightMargin, selected) + VMARGIN + VMARGIN;
+	int ret = li->paint(g, leftMargin + HMARGIN, y + VMARGIN, width - HMARGIN - HMARGIN - 1 - leftMargin - rightMargin, selected) + VMARGIN + VMARGIN;
 	li.free();
 	return ret;
 }

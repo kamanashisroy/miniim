@@ -1,12 +1,9 @@
-/*
- * xultb_graphics.h
- *
- *  Created on: Jan 12, 2011
- *      Author: root
- */
-
 #ifndef XULTB_GRAPHICS_H_
 #define XULTB_GRAPHICS_H_
+
+#include "core/xultb_decorator.h"
+#include "core/xultb_exttypes.h"
+#include "ui/core/xultb_font.h"
 
 enum xultb_graphics_anchor {
 	XULTB_GRAPHICS_TOP = 0,

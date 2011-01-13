@@ -1,3 +1,6 @@
+#ifndef XULTB_LIST_ITEM_H
+#define XULTB_LIST_ITEM_H
+
 /*
  * This file part of MiniIM.
  *
@@ -18,7 +21,7 @@
  *
  */
 
-#include "config"
+//#include "config"
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_img.h"
 
@@ -63,3 +66,5 @@ struct list_item*xultb_list_item_create_radio_button(xultb_str_t*label, xultb_bo
 
 
 
+
+#endif // XULTB_LIST_ITEM_H

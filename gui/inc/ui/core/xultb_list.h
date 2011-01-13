@@ -1,3 +1,6 @@
+#ifndef XULTB_LIST_H
+#define XULTB_LIST_H
+
 /*
  * This file part of MiniIM.
  *
@@ -18,7 +21,13 @@
  *
  */
 
-#include "config.h"
+//#include "config.h"
+#include "core/xultb_decorator.h"
+#include "core/xultb_exttypes.h"
+#include "ui/core/xultb_graphics.h"
+#include "ui/core/list/xultb_list_item.h"
+#include "obj_factory_utils.h"
+
 /** \todo support object item showing, truncated text showing .. */
 struct xultb_list {
 	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
@@ -42,15 +51,17 @@ struct xultb_list {
 	void (*set_action_listener)(struct xultb_action_listener lis);
 	
 	struct obj_factory*(*get_items)();
-	struct xmltb_list_item* (*get_list_item)(void*data);
-	xmltb_str_t*(*get_hint)();
+	struct xultb_list_item* (*get_list_item)(void*data);
+	xultb_str_t*(*get_hint)();
 	
-	struct xmltb_list_item (*get_selected)();
+	struct xultb_list_item (*get_selected)();
 	
 	void (*set_selected_index)(int index);
 	int (*get_selected_index)();
 	
-	void (*paint)(struct graphics*g);
+	void (*paint)(struct xultb_graphics*g);
 };
 
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command);
+
+#endif // XULTB_LIST_H

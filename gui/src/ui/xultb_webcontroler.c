@@ -18,20 +18,3 @@
  *
  */
 
-struct xultb_webcontroler
-{
-	int (*initialize)(void*data);
-	int (*finalize)(void*data);
-	xultb_bool_t (*pushWrapper)(ResourceIdentifier id, boolean back);
-	void (*handleContent)(String url, Object obj);
-	struct xultb_image (*getImage)(String src);
-	struct xultb_stream *(*open)(String url);
-	void (*readSettings)();
-	void (*saveSettings)();
-	void (*show)();
-	struct xultb_stream *(*open)(String url, Hashtable postData);
-	void (*trace)(int type, String classDesc, int hashCode, int threadHashCode, String str, String exceptionClassDesc, String trace);
-	void (*changed)();
-	void (*run)();
-};
-

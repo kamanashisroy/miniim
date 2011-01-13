@@ -18,7 +18,4 @@
  *
  */
 
-struct xultb_action_listener {
-	void (*perform_action)(xmltb_str_t*action);
-};
 

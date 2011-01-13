@@ -20,6 +20,11 @@
 
 struct graphics;
 
+#include "core/xultb_decorator.h"
+#include "core/xultb_exttypes.h"
+#include "ui/core/xultb_font.h"
+#include "ui/core/xultb_graphics.h"
+
 struct xultb_window {
 	int PADDING;
 	xultb_str_t title;
@@ -37,14 +42,14 @@ struct xultb_window {
 	
 	void (*init)(struct xultb_window*win, int w, int h);
 	void (*show)(struct xultb_window*win);
-	void (*show_full)(struct xultb_window*win, xmltb_str_t*right_option, xultb_str_t**left_option, int left_option_count);
-	xmltb_bool_t* (*is_showing)(struct xultb_window*win);
+	void (*show_full)(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);
+	xultb_bool_t (*is_showing)(struct xultb_window*win);
 #if 0
 	void (*repaint)();
 	void (*repaint_full)(int x, int y, int width, int height);
-	xmltb_bool_t* (*handle_menu)(int key_code, int game_action);
+	xultb_bool_t (*handle_menu)(int key_code, int game_action);
 	void (*setTitle)(xultb_bool_t* title);
-	xmltb_str_t* (*get_title)();
+	xultb_str_t* (*get_title)();
 #endif
 
 	void (*paint)(struct xultb_window*win, struct xultb_graphics*g);
@@ -54,7 +59,7 @@ struct xultb_window {
 	void (*push_balloon)(xultb_str_t message, xultb_img_t img, int hash, long timeout);
 	void (*push_balloon)(xultb_str_t message, xultb_img_t img);
 #endif
-	xul_window_t*(*get_current)();
+	struct xultb_window*(*get_current)();
 };
 
 struct xultb_window*create_xultb_window(xultb_str_t*title);

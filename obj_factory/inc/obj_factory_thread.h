@@ -1,5 +1,5 @@
 
-#define OBJ_BUFFER_HAS_LOCK
+//#define OBJ_BUFFER_HAS_LOCK
 #ifdef OBJ_BUFFER_HAS_LOCK
 #include <pthread.h>
 #define obj_factory_mutex_t pthread_mutex_t

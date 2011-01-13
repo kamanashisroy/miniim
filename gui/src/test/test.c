@@ -2,8 +2,9 @@
 #include "ui/core/xultb_window.h"
 
 
-void main(void) {
+int main(void) {
 
 	test_window();
+	return 0;
 }
 
