@@ -6,7 +6,7 @@ SOURCES=$(wildcard $(addsuffix /*.c,$(DIRS)))
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
 TARGET=lib/xultb_core.a
 
-TEST_CFLAGS=-DTEST_OBJ_FACTORY_UTILS
+TEST_CFLAGS=-DTEST_OBJ_FACTORY_UTILS -lpthread
 TEST_BIN=test.bin
 
 all:$(OBJECTS)

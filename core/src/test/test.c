@@ -34,7 +34,7 @@ int main(void) {
 	
 
 	// TODO write test code
-	obj_logger_set(test_log);
+	xultb_obj_logger_set(test_log);
 	obj_utils_test();
 	return 0;
 }

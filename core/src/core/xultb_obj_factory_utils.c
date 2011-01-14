@@ -4,6 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include "core/xultb_obj_factory_utils.h"
+#include "core/xultb_obj_factory_find.h"
 
 #define OBJ_HAS_WEAK
 #define OBJ_HAS_TOKEN
@@ -19,7 +20,7 @@
 
 #ifdef OBJ_BUFFER_HAS_LOCK
 #define OBJ_BUFFER_LOCK(x) do { \
-	while(obj_factory_mutex_trylock(&x->lock)) { \
+	while(xultb_mutex_trylock(&x->lock)) { \
 		usleep(1); \
 	} \
 }while(0)
@@ -40,20 +41,20 @@ struct object {
 #ifdef OBJ_HAS_TOKEN
 	int token;
 #endif
-	struct obj_factory*obuff;
+	struct xultb_obj_factory*obuff;
 };
 
 #ifdef OBJ_DEBUG
 static int test_use_count = 0;
 #endif
 
-struct obj_factory {
+struct xultb_obj_factory {
 	int pool_size;
 	size_t memory_chunk_size;
 	size_t obj_size;
 	size_t bitstring_size;
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_t lock;
+	xultb_mutex_t lock;
 #endif
 #ifdef OBJ_HAS_WEAK
 	struct object*weak_obj;
@@ -76,17 +77,17 @@ struct obj_list_item {
 static void (*do_log)(enum obj_log_type ltype, char*format, ...) = NULL;
 static const struct obj_pool null_pool = {NULL,NULL,NULL};
 
-struct obj_factory*obj_factory_create(int inc, size_t obj_size, int token_offset, int(*initialize)(void*data), int(*finalize)(void*data), int (*deep_copy)(void*data)) {
-	struct obj_factory*obuff = NULL;
+struct xultb_obj_factory*xultb_obj_factory_create(int inc, size_t obj_size, int token_offset, int(*initialize)(void*data), int(*finalize)(void*data), int (*deep_copy)(void*data)) {
+	struct xultb_obj_factory*obuff = NULL;
 
-	obuff = malloc(sizeof(struct obj_factory));
+	obuff = malloc(sizeof(struct xultb_obj_factory));
 	if(!obuff) {
 		if(do_log)do_log(OBJ_LOG_ERROR ,"Out of memory\n");
 		return NULL;
 	}
-	memset(obuff, 0, sizeof(struct obj_factory));
+	memset(obuff, 0, sizeof(struct xultb_obj_factory));
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_init(&obuff->lock);
+	xultb_mutex_init(&obuff->lock);
 #endif
 	obuff->pool_size = inc;
 	obuff->obj_size = obj_size + sizeof(struct object);
@@ -100,7 +101,7 @@ struct obj_factory*obj_factory_create(int inc, size_t obj_size, int token_offset
 	return obuff;
 }
 
-void*obj_alloc(struct obj_factory*obuff) {
+void*xultb_obj_alloc(struct xultb_obj_factory*obuff) {
 	char*ret = NULL;
 	int i, pool_count = 0, k;
 	struct object*obj;
@@ -231,13 +232,13 @@ void*obj_alloc(struct obj_factory*obuff) {
 	} while(0);
 
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 	return ret;
 }
 
 #ifdef OBJ_HAS_TOKEN
-void*obj_get(struct obj_factory*obuff, int token) {
+void*xultb_obj_get(struct xultb_obj_factory*obuff, int token) {
 	int k, index;
 	int pool_index;
 	char*j;
@@ -261,12 +262,12 @@ void*obj_get(struct obj_factory*obuff, int token) {
 		}
 	} while(0);
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 	return data;
 }
 
-int obj_get_token(const void*data) {
+int xultb_obj_get_token(const void*data) {
 	const struct object*obj = (data - sizeof(struct object));
 #ifdef CHECK_OBJ_SIGNATURE
 	assert(obj->signature == CHECK_OBJ_SIGNATURE);
@@ -275,7 +276,7 @@ int obj_get_token(const void*data) {
 }
 #endif
 
-void obj_ref(void*data) {
+void xultb_obj_ref(void*data) {
 	struct object*obj = (data - sizeof(struct object));
 #ifdef CHECK_OBJ_SIGNATURE
 	assert(obj->signature == CHECK_OBJ_SIGNATURE);
@@ -294,13 +295,13 @@ void obj_ref(void*data) {
 		test_use_count++;
 #endif
 #ifdef OBJ_BUFFER_HAS_LOCK
-		obj_factory_mutex_unlock(&obj->obuff->lock);
+		xultb_mutex_unlock(&obj->obuff->lock);
 #endif
 	}
 	obj->refcount++;
 }
 
-void obj_unref(void**data) {
+void xultb_obj_unref(void**data) {
 	struct object*obj = (*data - sizeof(struct object));
 #ifdef CHECK_OBJ_SIGNATURE
 	assert(obj->signature == CHECK_OBJ_SIGNATURE);
@@ -321,14 +322,14 @@ void obj_unref(void**data) {
 		test_use_count--;
 #endif
 #ifdef OBJ_BUFFER_HAS_LOCK
-		obj_factory_mutex_unlock(&obj->obuff->lock);
+		xultb_mutex_unlock(&obj->obuff->lock);
 #endif
 	}
 	*data = NULL;
 	return;
 }
 
-int obj_hijack(void**src, void*dest) {
+int xultb_obj_hijack(void**src, void*dest) {
 	struct object*obj = (*src - sizeof(struct object));
 	int ret = -1;
 #ifdef OBJ_BUFFER_HAS_LOCK
@@ -364,12 +365,12 @@ int obj_hijack(void**src, void*dest) {
 		ret = 0;
 	} while(0);
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obj->obuff->lock);
+	xultb_mutex_unlock(&obj->obuff->lock);
 #endif
 	return ret;
 }
 
-void*obj_find(struct obj_factory*obuff, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
+void*xultb_obj_find(struct xultb_obj_factory*obuff, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
 	int i, k;
 	char*bitstring,*end,*data;
 	char bsv;
@@ -411,18 +412,18 @@ void*obj_find(struct obj_factory*obuff, int (*compare_func)(const void*data, con
 	}
 	exit_point:
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 	return data;
 }
 
-struct obj_factory*obj_find_list(struct obj_factory*obuff, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
+struct xultb_obj_factory*xultb_obj_find_list(struct xultb_obj_factory*obuff, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
 	int i, k;
 	char*bitstring,*end,*data;
 	char bsv;
 	int bit_index;
 	struct obj_list_item*item = NULL;
-	struct obj_factory*list = NULL;
+	struct xultb_obj_factory*list = NULL;
 
 #ifdef OBJ_BUFFER_HAS_LOCK
 	OBJ_BUFFER_LOCK(obuff);
@@ -449,10 +450,10 @@ struct obj_factory*obj_find_list(struct obj_factory*obuff, int (*compare_func)(c
 				if(((k<<3) + bit_index) < obuff->pool_size) {
 					data = (obuff->pools[i].head + ((k<<3) + bit_index)*obuff->obj_size)+sizeof(struct object);
 					if(compare_func(data, compare_data)) {
-						if(!list && !(list = obj_factory_create(LIST_OBJ_POOL_SIZE, sizeof(struct obj_list_item), 0, NULL, NULL, NULL))) {
+						if(!list && !(list = xultb_obj_factory_create(LIST_OBJ_POOL_SIZE, sizeof(struct obj_list_item), 0, NULL, NULL, NULL))) {
 							goto exit_point;
 						}
-						item = obj_alloc(list);
+						item = xultb_obj_alloc(list);
 						if(item)
 							item->data = data;
 					}
@@ -464,12 +465,12 @@ struct obj_factory*obj_find_list(struct obj_factory*obuff, int (*compare_func)(c
 	}
 	exit_point:
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 	return list;
 }
 
-int obj_count(struct obj_factory*obuff) {
+int xultb_obj_count(struct xultb_obj_factory*obuff) {
 	int i, use_count = 0;
 	char*j;
 #ifdef OBJ_BUFFER_HAS_LOCK
@@ -486,15 +487,15 @@ int obj_count(struct obj_factory*obuff) {
 		}
 	}
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 	return use_count;
 }
 
 
 
-void*obj_list_get(struct obj_factory*list, int token) {
-	struct obj_list_item* item = obj_get(list, token);
+void*xultb_obj_list_get(struct xultb_obj_factory*list, int token) {
+	struct obj_list_item* item = xultb_obj_get(list, token);
 	if(item)
 		return item->data;
 	return NULL;
@@ -510,7 +511,7 @@ void*obj_realloc(void*data) {
 }
 #endif
 
-void obj_factory_gc(struct obj_factory*obuff) {
+void xultb_obj_factory_gc(struct xultb_obj_factory*obuff) {
 	int i, k, diff;
 	char*bitstring,*end;
 	char bsv;
@@ -578,11 +579,11 @@ void obj_factory_gc(struct obj_factory*obuff) {
 		}
 	}
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 }
 
-void obj_factory_do(struct obj_factory*obuff, void (*obj_do)(void*data, void*func_data), void*func_data) {
+void xultb_obj_factory_do(struct xultb_obj_factory*obuff, void (*obj_do)(void*data, void*func_data), void*func_data) {
 	int i;
 	char*j;
 #ifdef OBJ_BUFFER_HAS_LOCK
@@ -599,13 +600,13 @@ void obj_factory_do(struct obj_factory*obuff, void (*obj_do)(void*data, void*fun
 		}
 	}
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 }
 
 
 
-void obj_factory_verb(struct obj_factory*obuff, void (*verb_obj)(const void*data, const void*func_data), const void*func_data) {
+void xultb_obj_factory_verb(struct xultb_obj_factory*obuff, void (*verb_obj)(const void*data, const void*func_data), const void*func_data) {
 	int i, use_count = 0, pool_count = 0;
 	char*j;
 #ifdef OBJ_BUFFER_HAS_LOCK
@@ -641,14 +642,14 @@ void obj_factory_verb(struct obj_factory*obuff, void (*verb_obj)(const void*data
 #endif
 	);
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
 }
 
-void obj_factory_destroy(struct obj_factory**data) {
+void xultb_obj_factory_destroy(struct xultb_obj_factory**data) {
 	int i;
 	char*bitstring,*end;
-	struct obj_factory*obuff = *data;
+	struct xultb_obj_factory*obuff = *data;
 #ifdef OBJ_BUFFER_HAS_LOCK
 	OBJ_BUFFER_LOCK(obuff);
 #endif
@@ -664,17 +665,17 @@ void obj_factory_destroy(struct obj_factory**data) {
 	}
 
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_unlock(&obuff->lock);
+	xultb_mutex_unlock(&obuff->lock);
 #endif
-	obj_factory_gc(obuff);
+	xultb_obj_factory_gc(obuff);
 #ifdef OBJ_BUFFER_HAS_LOCK
-	obj_factory_mutex_destroy(&obuff->lock);
+	xultb_mutex_destroy(&obuff->lock);
 #endif
 	free(obuff);
 	*data = NULL;
 }
 
-void obj_logger_set(void (*log_func)(enum obj_log_type ltype, char*format, ...)) {
+void xultb_obj_logger_set(void (*log_func)(enum obj_log_type ltype, char*format, ...)) {
 	do_log = log_func;
 }
 
@@ -706,10 +707,10 @@ static void pencil_do(void*data, void*func_data) {
 }
 
 static int obj_utils_test_helper(int inc) {
-	struct obj_factory* bpencil = obj_factory_create(inc,sizeof(struct pencil), 0, NULL, NULL, NULL);
+	struct xultb_obj_factory* bpencil = xultb_obj_factory_create(inc,sizeof(struct pencil), 0, NULL, NULL, NULL);
 	struct pencil* pen;
 	struct pencil hijacked;
-	struct obj_factory*list = NULL;
+	struct xultb_obj_factory*list = NULL;
 	int color = 3;
 	int index = 0;
 	int depth_list[17] = {1, 2, 2, 3, 4, 5, 0, 7, 8, 9, 3, 4, 5, 6, 7, 8, 9};
@@ -717,65 +718,65 @@ static int obj_utils_test_helper(int inc) {
 
 	// create 10 pencils
 	for(index = 0; index < 10; index++) {
-		pen = obj_alloc(bpencil);
+		pen = xultb_obj_alloc(bpencil);
 		pen->color = (index%2)?3:1;
 		pen->depth = index;
 	}
 	// remove 3
-	pen = obj_get(bpencil, 0);
-	OBJ_UNREF(pen);
-	pen = obj_get(bpencil, 1);
-	OBJ_HIJACK(pen,&hijacked); // hijack one
-	pen = obj_get(bpencil, 6);
-	OBJ_UNREF(pen);
+	pen = xultb_obj_get(bpencil, 0);
+	XULTB_OBJ_UNREF(pen);
+	pen = xultb_obj_get(bpencil, 1);
+	XULTB_OBJ_HIJACK(pen,&hijacked); // hijack one
+	pen = xultb_obj_get(bpencil, 6);
+	XULTB_OBJ_UNREF(pen);
 	if(inc%2) {
-		obj_factory_gc(bpencil);
+		xultb_obj_factory_gc(bpencil);
 	}
 	// create more 10
 	for(index = 0; index < 10; index++) {
-		pen = obj_alloc(bpencil);
+		pen = xultb_obj_alloc(bpencil);
 		pen->color = (index%2)?3:1;
 		pen->depth = index;
 	}
-	obj_factory_verb(bpencil, pencil_verb, NULL);
+	xultb_obj_factory_verb(bpencil, pencil_verb, NULL);
 
-	if(!obj_find(bpencil, pencil_compare, &color)) {
+	if(!xultb_obj_find(bpencil, pencil_compare, &color)) {
 		ret = -1;
 	}
 
-	if((list = obj_find_list(bpencil, pencil_compare_all, NULL))) {
-		if(obj_count(list) != 17) {
+	if((list = xultb_obj_find_list(bpencil, pencil_compare_all, NULL))) {
+		if(xultb_obj_count(list) != 17) {
 			if(do_log)do_log(OBJ_LOG_ERROR, "TEST failed while finding all");
 			ret = 1;
 		}
-		for(index = 0; (pen = obj_list_get(list,index)); index++) {
+		for(index = 0; (pen = xultb_obj_list_get(list,index)); index++) {
 			if(pen->depth != depth_list[index]) {
 				if(do_log)do_log(OBJ_LOG_ERROR, "TEST failed while matching depth\n");
 				ret = -1;
 			}
 			if(do_log)do_log(OBJ_LOG_DEBUG, "There is a pencil in the list (color:%d,depth:%d)\n", pen->color, pen->depth);
 		}
-		obj_factory_destroy(&list);
+		xultb_obj_factory_destroy(&list);
 	}
-	if((list = obj_find_list(bpencil, pencil_compare, &color))) {
-		if(obj_count(list) != 9) {
+	if((list = xultb_obj_find_list(bpencil, pencil_compare, &color))) {
+		if(xultb_obj_count(list) != 9) {
 			if(do_log)do_log(OBJ_LOG_ERROR, "TEST failed while finding pencil color");
 			ret = 1;
 		}
-		for(index = 0; (pen = obj_list_get(list,index)); index++) {
+		for(index = 0; (pen = xultb_obj_list_get(list,index)); index++) {
 			if(pen->color != 3) {
 				if(do_log)do_log(OBJ_LOG_ERROR, "TEST failed while checking pencil color\n");
 				ret = -1;
 			}
 			if(do_log)do_log(OBJ_LOG_DEBUG, "There is a pencil in the list (color:%d,depth:%d)\n", pen->color, pen->depth);
 		}
-		obj_factory_destroy(&list);
+		xultb_obj_factory_destroy(&list);
 	}
 
-	obj_factory_do(bpencil, pencil_do, "[doing pencil command]");
+	xultb_obj_factory_do(bpencil, pencil_do, "[doing pencil command]");
 
-	obj_factory_gc(bpencil);
-	obj_factory_destroy(&bpencil);
+	xultb_obj_factory_gc(bpencil);
+	xultb_obj_factory_destroy(&bpencil);
 
 	return ret;
 }
