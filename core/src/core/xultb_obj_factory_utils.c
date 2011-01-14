@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
-#include "obj_factory_utils.h"
+#include "core/xultb_obj_factory_utils.h"
 
 #define OBJ_HAS_WEAK
 #define OBJ_HAS_TOKEN

@@ -1,7 +1,7 @@
 #ifndef OBJ_FACTORY_UTILS_H
 #define OBJ_FACTORY_UTILS_H
 
-#include "obj_factory_thread.h"
+#include "core/xultb_obj_factory_thread.h"
 enum obj_log_type {
 	OBJ_LOG_DEBUG,
 	OBJ_LOG_ERROR,

@@ -9,13 +9,13 @@ LIBS=-L../core/lib
 SOURCES=$(wildcard $(addsuffix /*.c,$(DIRS)))
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
 TARGET=lib/xultb_gui.a
-#INC=$(wildcard *.h)
+CFLAGS=-Wall -ggdb3
 
 all:$(OBJECTS)
-	$(CC) $(OBJECTS) -o $(TARGET)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $(TARGET)
 
 .c.o:
-	$(CC) -c $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
 
 test:
 	$(CC) $(INCLUDES) $(LIBS) $(SOURCES) -o test

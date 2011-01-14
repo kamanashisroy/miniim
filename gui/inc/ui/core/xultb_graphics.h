@@ -21,12 +21,12 @@ struct xultb_graphics {
 	void(*drawImage)(Image img, int x, int y, int anchor);
 #endif
 	void(*draw_line)(struct xultb_graphics*g, int x1, int y1, int x2, int y2);
+	void(*draw_rect)(struct xultb_graphics*g, int x, int y, int width, int height);
 #if 0
-	void(*drawRect)(int x, int y, int width, int height);
 	void(*drawRegion)(struct xultb_img*src, int x_src, int y_src, int width, int height, int transform, int x_dest, int y_dest, int anchor);
 	void(*drawRGB)(int *rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha);
-	void(*drawRoundRect)(int x, int y, int width, int height, int arcWidth, int arcHeight);
 #endif
+	void(*draw_round_rect)(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight);
 	void(*draw_string)(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor);
 #if 0
 	void(*drawSubstring)(String str, int offset, int len, int x, int y, int anchor);
@@ -35,7 +35,9 @@ struct xultb_graphics {
 	void(*fill_rect)(struct xultb_graphics*g, int x, int y, int width, int height);
 #if 0
 	void(*fillRoundRect)(int x, int y, int width, int height, int arcWidth, int arcHeight);
-	void(*fillTriangle)(int x1, int y1, int x2, int y2, int x3, int y3);
+#endif
+	void(*fill_triangle)(struct xultb_graphics*g, int x1, int y1, int x2, int y2, int x3, int y3);
+#if 0
 	int(*getBlueComponent)();
 	int(*getClipHeight)();
 	int(*getClipWidth)();

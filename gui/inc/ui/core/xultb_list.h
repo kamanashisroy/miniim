@@ -22,18 +22,13 @@
  */
 
 //#include "config.h"
-#include "core/xultb_decorator.h"
-#include "core/xultb_exttypes.h"
-#include "ui/core/xultb_graphics.h"
-#include "ui/core/list/xultb_list_item.h"
-#include "obj_factory_utils.h"
+#include "ui/guicore.h"
 
 /** \todo support object item showing, truncated text showing .. */
 struct xultb_list {
 	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
-	int HMARGIN;
-	int VMARGIN;
-	
+	struct xultb_window win;
+
 	xultb_bool_t continuous_scrolling;
 	
 	int vpos; /* Index of the showing Item */
@@ -48,18 +43,18 @@ struct xultb_list {
 	xultb_str_t title;
 	xultb_str_t default_command;
 	
-	void (*set_action_listener)(struct xultb_action_listener lis);
+	void (*set_action_listener)(struct xultb_action_listener*lis);
 	
-	struct obj_factory*(*get_items)();
+	struct obj_factory*(*get_items)(struct xultb_list*list);
 	struct xultb_list_item* (*get_list_item)(void*data);
-	xultb_str_t*(*get_hint)();
+	xultb_str_t*(*get_hint)(struct xultb_list*list);
 	
-	struct xultb_list_item (*get_selected)();
+	struct xultb_list_item (*get_selected)(struct xultb_list*list);
 	
-	void (*set_selected_index)(int index);
-	int (*get_selected_index)();
+	void (*set_selected_index)(struct xultb_list*list, int index);
+	int (*get_selected_index)(struct xultb_list*list);
 	
-	void (*paint)(struct xultb_graphics*g);
+	void (*paint)(struct xultb_list*list, struct xultb_graphics*g);
 };
 
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command);
