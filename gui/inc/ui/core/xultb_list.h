@@ -29,6 +29,7 @@ struct xultb_list {
 	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
 	struct xultb_window win;
 
+	xultb_font_t*item_font;
 	xultb_bool_t continuous_scrolling;
 	
 	int vpos; /* Index of the showing Item */
@@ -45,11 +46,12 @@ struct xultb_list {
 	
 	void (*set_action_listener)(struct xultb_action_listener*lis);
 	
-	struct obj_factory*(*get_items)(struct xultb_list*list);
+	struct xultb_obj_factory*(*get_items)(struct xultb_list*list);
 	struct xultb_list_item* (*get_list_item)(void*data);
+	int (*get_count)(struct xultb_list*list);
 	xultb_str_t*(*get_hint)(struct xultb_list*list);
 	
-	struct xultb_list_item (*get_selected)(struct xultb_list*list);
+	struct xultb_list_item*(*get_selected)(struct xultb_list*list);
 	
 	void (*set_selected_index)(struct xultb_list*list, int index);
 	int (*get_selected_index)(struct xultb_list*list);
@@ -58,5 +60,6 @@ struct xultb_list {
 };
 
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command);
+int xultb_list_system_init();
 
 #endif // XULTB_LIST_H

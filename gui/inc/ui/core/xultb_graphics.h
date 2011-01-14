@@ -18,8 +18,8 @@ struct xultb_graphics {
 	void(*drawArc)(int x, int y, int width, int height, int startAngle, int arcAngle);
 	void(*drawChar)(char character, int x, int y, int anchor);
 	void(*drawChars)(xultb_str_t*data, int offset, int length, int x, int y, int anchor);
-	void(*drawImage)(Image img, int x, int y, int anchor);
 #endif
+	void(*draw_image)(struct xultb_graphics*g, struct xultb_img*img, int x, int y, int anchor);
 	void(*draw_line)(struct xultb_graphics*g, int x1, int y1, int x2, int y2);
 	void(*draw_rect)(struct xultb_graphics*g, int x, int y, int width, int height);
 #if 0
@@ -33,9 +33,7 @@ struct xultb_graphics {
 	void(*fillArc)(int x, int y, int width, int height, int startAngle, int arcAngle);
 #endif
 	void(*fill_rect)(struct xultb_graphics*g, int x, int y, int width, int height);
-#if 0
-	void(*fillRoundRect)(int x, int y, int width, int height, int arcWidth, int arcHeight);
-#endif
+	void(*fill_round_rect)(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight);
 	void(*fill_triangle)(struct xultb_graphics*g, int x1, int y1, int x2, int y2, int x3, int y3);
 #if 0
 	int(*getBlueComponent)();

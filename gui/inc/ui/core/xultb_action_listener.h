@@ -1,3 +1,6 @@
+#ifndef XULTB_ACTION_LISTENER_H
+#define XULTB_ACTION_LISTENER_H
+
 /*
  * This file part of MiniIM.
  *
@@ -19,6 +22,8 @@
  */
 
 struct xultb_action_listener {
-	void (*perform_action)(xmltb_str_t*action);
+	void (*perform_action)(xultb_str_t*action);
 };
 
+
+#endif // XULTB_ACTION_LISTENER_H

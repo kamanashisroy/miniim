@@ -21,15 +21,15 @@
  *
  */
 
-//#include "config"
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_img.h"
+#include "ui/core/xultb_graphics.h"
 
 enum xultb_list_item_type {
 	XULTB_LIST_ITEM_LABEL,
 	XULTB_LIST_ITEM_SELECTION,
 	XULTB_LIST_ITEM_TEXT_INPUT,
-	XULTB_LIST_ITEM_TEXT_CHECKBOX,
+	XULTB_LIST_ITEM_CHECKBOX,
 };
 
 #define LIST_ITEM_SIGNATURE 0x93
@@ -56,15 +56,15 @@ struct xultb_list_item {
 #define CHECK_LIST_ITEM(x) assert(x->sgn1 == LIST_ITEM_SIGNATURE && x->sgn2 == LIST_ITEM_SIGNATURE && x->sgn3 == LIST_ITEM_SIGNATURE)
 
 
-struct list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img_t*img);
-struct list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width);
-struct list_item*xultb_list_item_create_selection_box(xultb_str_t*label, xultb_str_t*text, xultb_bool_t editable);
-struct list_item*xultb_list_item_create_text_input_full(xultb_str_t*label, xultb_str_t*text, xultb_bool_t wrapped, xultb_bool_t editable);
-struct list_item*xultb_list_item_create_text_input(xultb_str_t*label, xultb_str_t*text);
-struct list_item*xultb_list_item_create_checkbox(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable);
-struct list_item*xultb_list_item_create_radio_button(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable);
+struct xultb_list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img_t*img);
+struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width);
+struct xultb_list_item*xultb_list_item_create_selection_box(xultb_str_t*label, xultb_str_t*text, xultb_bool_t editable);
+struct xultb_list_item*xultb_list_item_create_text_input_full(xultb_str_t*label, xultb_str_t*text, xultb_bool_t wrapped, xultb_bool_t editable);
+struct xultb_list_item*xultb_list_item_create_text_input(xultb_str_t*label, xultb_str_t*text);
+struct xultb_list_item*xultb_list_item_create_checkbox(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable);
+struct xultb_list_item*xultb_list_item_create_radio_button(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable);
 
-
+int xultb_list_item_system_init();
 
 
 #endif // XULTB_LIST_ITEM_H

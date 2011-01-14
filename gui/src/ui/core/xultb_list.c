@@ -21,11 +21,11 @@
 #include "config.h"
 #include "ui/core/xultb_list.h"
 
-static struct xmltb_list_item*xultb_list_get_selected() {
+static struct xultb_list_item*xultb_list_get_selected(struct xultb_list*list) {
 	return NULL;
 }
 
-static void xultb_list_set_selected_index(int index) {
+static void xultb_list_set_selected_index(struct xultb_list*list, int index) {
 	return;
 }
 
@@ -49,13 +49,13 @@ static int xultb_list_show_item(struct xultb_list*list, struct xultb_graphics*g,
 	if(li == NULL)
 	  return 0;
 	int ret = li->paint(li, g, list->leftMargin + XULTB_LIST_HMARGIN, y + XULTB_LIST_VMARGIN, list->win.width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN - 1 - list->leftMargin - list->rightMargin, selected) + XULTB_LIST_VMARGIN + XULTB_LIST_VMARGIN;
-	li->free();
+	XULTB_OBJ_UNREF(li);
 	return ret;
 }
 
 static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*g) {
 	int i = -1;
-	struct xultb_obj_factory*items = list->get_items();
+	struct xultb_obj_factory*items = list->get_items(list);
 	void*obj;
 	int posY = list->win.panelTop + list->topMargin;
 
@@ -68,11 +68,11 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 	g->set_color(g, 0xFFFFFF);
 	g->fill_rect(g, list->leftMargin, list->win.panelTop, list->win.width, list->win.menuY - list->win.panelTop);
 
-	g->set_font(g, list->ITEM_FONT);
+	g->set_font(g, list->item_font);
 
-	for (i = list->vpos - 1; obj = obj_get(items,i);i++) {
+	for (i = list->vpos - 1; (obj = xultb_obj_get(items,i));i++) {
 		/* see if selected index is more than the item count */
-		if (list->selected_index > i && !obj_get(items,i)) {
+		if (list->selected_index > i && !xultb_obj_get(items,i)) {
 			list->selected_index = i;
 		}
 		posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
@@ -113,14 +113,14 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 
 	list->win.paint(&list->win, g);
 	xultb_str_t* hint = list->get_hint(list);
-	if (hint != NULL && !Menu.isActive() && list->selected_index != -1 && list->get_count(list)
+	if (hint != NULL && !xultb_menu_is_active() && list->selected_index != -1 && list->get_count(list)
 			!= 0) {
 		// #ifndef net.ayaslive.miniim.ui.core.list.draw_menu_at_last
 		// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.bg%);
 		g->set_color(g, 0xFFFFFF);
-		g->set_font(g, Menu.BASE_FONT);
+		g->set_font(g, xultb_menu_get_base_font());
 		// #endif
-		g->draw_string(g, hint, list->win.halfWidth, height - Menu.PADDING, 1/*Graphics.HCENTER|Graphics.BOTTOM*/);
+		g->draw_string(g, hint, list->win.halfWidth, list->win.height - XULTB_MENU_PADDING, 1/*Graphics.HCENTER|Graphics.BOTTOM*/);
 		/* TODO show "<>"(90 degree rotated) icon to indicate that we can traverse through the list  */
 	}
 }
@@ -133,11 +133,11 @@ static void xultb_list_set_action_listener(struct xultb_action_listener*lis) {
 	return;
 }
 
-static struct obj_factory* xultb_list_get_items(struct xultb_list*list) {
+static struct xultb_obj_factory* xultb_list_get_items(struct xultb_list*list) {
 	return NULL;
 }
 
-static struct xmltb_list_item* xultb_list_get_list_item(void*data) {
+static struct xultb_list_item* xultb_list_get_list_item(void*data) {
 	return NULL;
 }
 
@@ -146,6 +146,7 @@ static int xultb_list_initialize(void*data) {
 	//list->get_selected_index = xultb_list_get_selected_index;
 	list->get_selected = xultb_list_get_selected;
 	list->get_items = xultb_list_get_items;
+	list->get_list_item = xultb_list_get_list_item;
 	list->get_hint = xultb_list_get_hint;
 	list->set_action_listener = xultb_list_set_action_listener;
 	list->set_selected_index = xultb_list_set_selected_index;
@@ -161,15 +162,16 @@ static int xultb_list_deepcopy(void*data) {
 	return 0;
 }
 
-static xultb_obj_factory*xultb_list_factory;
+static struct xultb_obj_factory*xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
-	struct xultb_list*list = xultb_obj_factory_alloc(xultb_list_factory);
+	struct xultb_list*list = xultb_obj_alloc(xultb_list_factory);
 	list->title = *title;
 	list->default_command = *default_command;
 	return list;
 }
 
-static int xultb_list_system_init() {
-	xultb_list_factory = obj_factory_create(3,10,xultb_list_initialize, xultb_list_finalize, xultb_list_deepcopy);
+int xultb_list_system_init() {
+	xultb_list_factory = xultb_obj_factory_create(3,sizeof(struct xultb_list),0,xultb_list_initialize, xultb_list_finalize, xultb_list_deepcopy);
+	return 0;
 }
 

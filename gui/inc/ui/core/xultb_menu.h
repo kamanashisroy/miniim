@@ -1,3 +1,6 @@
+#ifndef XULTB_MENU_H
+#define XULTB_MENU_H
+
 /*
  * This file part of MiniIM.
  *
@@ -18,5 +21,17 @@
  *
  */
 
+#include "core/xultb_decorator.h"
+#include "core/xultb_exttypes.h"
+#include "ui/core/xultb_graphics.h"
+
+enum {
+	XULTB_MENU_PADDING,
+};
+
 int xultb_menu_get_base_height();
 void xultb_menu_show(struct xultb_graphics*g, int width, int height);
+xultb_bool_t xultb_menu_is_active();
+struct xultb_font*xultb_menu_get_base_font();
+
+#endif // XULTB_MENU_H

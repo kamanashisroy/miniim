@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include "core/xultb_decorator.h"
 #include "core/xultb_exttypes.h"
-#include "core/xultb_obj_factory_utils.h"
+#include "core/xultb_obj_factory.h"
 
 static void test_log(enum obj_log_type ltype, char*format,...) {
 	va_list vars;

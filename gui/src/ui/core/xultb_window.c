@@ -18,20 +18,18 @@
  *
  */
 
-#include "core/xultb_exttypes.h"
-#include "core/xultb_decorator.h"
-#include "ui/core/xultb_graphics.h"
+#include "config.h"
+#include "core/xultb_obj_factory.h"
 #include "ui/core/xultb_window.h"
-#include "ui/core/xultb_menu.h"
 
-
+static struct xultb_obj_factory*window_factory;
 struct xultb_window*create_xultb_window(xultb_str_t*title) {
-	struct xultb_window*win = obj_factory_alloc(window_factory);
+	struct xultb_window*win = xultb_obj_alloc(window_factory);
 	if(title)win->title = *title;
 	return win;
 }
 
-static xultb_window_init(struct xultb_window*win, int w, int h) {
+static void xultb_window_init(struct xultb_window*win, int w, int h) {
 #if 0
 	if(SharedCanvas.singleInstance == null) {
 	  SharedCanvas.singleInstance = new SharedCanvas(w, h);
@@ -47,14 +45,14 @@ static xultb_window_init(struct xultb_window*win, int w, int h) {
 	/** Menu start position by pixel along Y-axis */
 	win->height = h;
 	win->menuY = h - xultb_menu_get_base_height();
-	win->panelTop = win->TITLE_FONT->get_height()+ win->PADDING*2;
+	win->panelTop = win->TITLE_FONT->get_height(win->TITLE_FONT)+ win->PADDING*2;
 }
 
 static void xultb_window_show(struct xultb_window*win) {
 	XULTB_CORE_UNIMPLEMENTED();
 }
 
-static void xultb_window_show_full(struct xultb_window*win, xmltb_str_t*right_option, xultb_str_t**left_option, int left_option_count) {
+static void xultb_window_show_full(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count) {
 	xultb_menu_set_menu(right_option, left_option, left_option_count);
 	XULTB_CORE_UNIMPLEMENTED();
 }
@@ -68,18 +66,18 @@ static void xultb_window_show_title(struct xultb_window*win, struct xultb_graphi
 	/* Cleanup Background */
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleBg%);
 	g->set_color(g, 0x006699);
-	g->fill_rect(g, 0, 0, width, panelTop);
+	g->fill_rect(g, 0, 0, win->width, win->panelTop);
 	// #ifdef net.ayaslive.miniim.ui.core.window.titleShadow
 	// draw shadow
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleShadow%);
 	g->set_color(g, 0x009900);
-	g->draw_line(g, 0, panelTop, width, panelTop);
+	g->draw_line(g, 0, win->panelTop, win->width, win->panelTop);
 	// #endif
 	/* Write the title */
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleFg%);
-	g.set_color(g, 0xFFFFFF);
-	g.set_font(g, win->TITLE_FONT);
-	g.draw_string(g, win->title, win->halfWidth, win->PADDING, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
+	g->set_color(g, 0xFFFFFF);
+	g->set_font(g, win->TITLE_FONT);
+	g->draw_string(g, &win->title, win->halfWidth, win->PADDING, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
 }
 
 static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g) {
@@ -96,4 +94,5 @@ static int xultb_window_initialize(void*data) {
 	win->show_full = xultb_window_show_full;
 	win->is_showing = xultb_window_is_showing;
 	win->paint = xultb_window_paint;
+	return 0;
 }

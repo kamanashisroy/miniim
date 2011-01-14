@@ -15,6 +15,7 @@
 #include "ui/core/xultb_graphics.h"
 #include "ui/core/xultb_window.h"
 #include "ui/core/xultb_action_listener.h"
+#include "ui/core/xultb_menu.h"
 #include "ui/core/list/xultb_list_item.h"
 
 
