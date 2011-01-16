@@ -22,7 +22,7 @@
  */
 
 //#include "config.h"
-#include "ui/guicore.h"
+#include "ui/xultb_guicore.h"
 
 /** \todo support object item showing, truncated text showing .. */
 struct xultb_list {

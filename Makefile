@@ -1,8 +1,16 @@
 
-SOURCES=$(wildcard *.c)
-INCLUDE_FILES=$(wildcard inc/*.h)
 
 all:
+	make -C core
+	make -C gui
 	
-git:
-	git add $(INCLUDE_FILES)
+
+test:
+	make -C core test
+	make -C gui test
+
+clean:
+	make -C core clean
+	make -C gui clean
+
+.PHONY: clean test

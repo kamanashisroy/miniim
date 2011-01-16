@@ -4,7 +4,7 @@ DIRS+=src/core
 INCLUDES=-Iinc
 SOURCES=$(wildcard $(addsuffix /*.c,$(DIRS)))
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
-TARGET=lib/xultb_core.a
+TARGET=lib/libxultb_core.a
 CFLAGS=-Wall -ggdb3
 
 TEST_CFLAGS=-DTEST_OBJ_FACTORY_UTILS -lpthread

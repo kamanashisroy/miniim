@@ -18,7 +18,13 @@
  *
  */
 
+#include "config.h"
 #include "ui/core/xultb_menu.h"
+
+struct xultb_font*xultb_menu_get_base_font() {
+	XULTB_CORE_UNIMPLEMENTED();
+	return NULL;
+}
 
 int xultb_menu_get_base_height() {
 	XULTB_CORE_UNIMPLEMENTED();

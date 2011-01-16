@@ -21,9 +21,10 @@
 #include "config.h"
 #include "core/xultb_obj_factory.h"
 #include "ui/core/xultb_window.h"
+#include "ui/core/xultb_menu.h"
 
 static struct xultb_obj_factory*window_factory;
-struct xultb_window*create_xultb_window(xultb_str_t*title) {
+struct xultb_window*xultb_window_create(xultb_str_t*title) {
 	struct xultb_window*win = xultb_obj_alloc(window_factory);
 	if(title)win->title = *title;
 	return win;
@@ -53,7 +54,7 @@ static void xultb_window_show(struct xultb_window*win) {
 }
 
 static void xultb_window_show_full(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count) {
-	xultb_menu_set_menu(right_option, left_option, left_option_count);
+	//xultb_menu_set(right_option, left_option, left_option_count);
 	XULTB_CORE_UNIMPLEMENTED();
 }
 
@@ -94,5 +95,10 @@ static int xultb_window_initialize(void*data) {
 	win->show_full = xultb_window_show_full;
 	win->is_showing = xultb_window_is_showing;
 	win->paint = xultb_window_paint;
+	return 0;
+}
+
+int xultb_window_system_init() {
+	window_factory = xultb_obj_factory_create(1,sizeof(struct xultb_window),0,xultb_window_initialize, NULL, NULL);
 	return 0;
 }

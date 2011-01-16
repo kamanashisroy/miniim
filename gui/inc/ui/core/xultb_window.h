@@ -62,4 +62,5 @@ struct xultb_window {
 	struct xultb_window*(*get_current)();
 };
 
-struct xultb_window*create_xultb_window(xultb_str_t*title);
+struct xultb_window*xultb_window_create(xultb_str_t*title);
+int xultb_window_system_init();

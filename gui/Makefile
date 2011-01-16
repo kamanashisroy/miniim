@@ -1,14 +1,14 @@
 
-DIRS=src/test src/ui src/ui/core src/ui/core/list
+DIRS=src/ui src/ui/core src/ui/core/list
 
 INCLUDES=-Iinc
 INCLUDES+=-I../core/inc
 INCLUDES+=-I../obj_factory/inc
-LIBS=-L../core/lib -lxultb_core.a
+LIBS=-L../core/lib -lxultb_core
 
 SOURCES=$(wildcard $(addsuffix /*.c,$(DIRS)))
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
-TARGET=lib/xultb_gui.a
+TARGET=lib/libxultb_gui.a
 CFLAGS=-Wall -ggdb3
 
 TEST_CFLAGS=-DTEST_XULTB_GUI
@@ -24,7 +24,7 @@ ctags:
 	ctags $(SOURCES) $(INCLUDES)
 
 test:
-	$(CC) $(INCLUDES) $(LIBS) $(SOURCES) -o test
+	$(CC) $(INCLUDES) $(LIBS) $(SOURCES) src/test/test.c -o test
 	./test
 
 clean:

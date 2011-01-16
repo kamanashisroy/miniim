@@ -5,6 +5,7 @@
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_font.h"
 
+struct xultb_img;
 enum xultb_graphics_anchor {
 	XULTB_GRAPHICS_TOP = 0,
 	XULTB_GRAPHICS_HCENTER,
