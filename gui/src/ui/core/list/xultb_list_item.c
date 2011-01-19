@@ -190,7 +190,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 				// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.listitemfactory.fgHover%);
 				g->set_color(g, 0xFFFFFF);
 			}
-			g->draw_string(g, xultb_substring(&item->label, start, pos, &tmp_str), x + imgspacing + XULTB_LIST_ITEM_PADDING,
+			g->draw_string(g, xultb_substring((&item->label), start, pos, (&tmp_str)), x + imgspacing + XULTB_LIST_ITEM_PADDING,
 					y + ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 			ret += item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
 			start = pos;
@@ -220,7 +220,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 				start = pos = 0;
 				while ((pos = xultb_wrap_next(&item->text, item->ITEM_FONT, start, width
 						- XULTB_LIST_ITEM_DPADDING)) != -1 && lineCount < 3) {
-					g->draw_string(g, xultb_substring(&item->text, start, pos, &tmp_str), x + XULTB_LIST_ITEM_PADDING, y
+					g->draw_string(g, xultb_substring((&item->text), start, pos, (&tmp_str)), x + XULTB_LIST_ITEM_PADDING, y
 							+ ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 					ret += item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
 					start = pos;
@@ -240,7 +240,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 			pos = xultb_wrap_next(&item->text, item->ITEM_FONT, 0, width - labelWidth
 					- XULTB_LIST_ITEM_DPADDING - imgWidth - XULTB_LIST_ITEM_DPADDING);
 			if (pos != -1) {
-				g->draw_string(g, xultb_substring(&item->text,0, pos, &tmp_str), x + labelWidth + XULTB_LIST_ITEM_PADDING,
+				g->draw_string(g, xultb_substring((&item->text),0, pos, (&tmp_str)), x + labelWidth + XULTB_LIST_ITEM_PADDING,
 						y + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 				if (pos < item->text.len) {
 					/* show an image at last to indicate that there are more data .. */
