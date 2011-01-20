@@ -11,7 +11,7 @@ static void test_log(enum obj_log_type ltype, char*format,...) {
 	va_list vars;
 	va_start(vars,format);
 	if(ltype == OBJ_LOG_DEBUG) {
-#if 1
+#if 0
 		printf("--   ");
 #else
 		return;
@@ -32,10 +32,13 @@ int main(void) {
 
 	printf("String working [%s]\n", str.str);
 	
-
 	// TODO write test code
 	xultb_obj_logger_set(test_log);
-	obj_utils_test();
+	if(obj_utils_test()) {
+		printf("Error while testing object factory\n");
+		return -1;
+	}
+	printf("Object factory test is successful\n");
 	return 0;
 }
 

@@ -4,7 +4,8 @@ DIRS+=src/core
 INCLUDES=-Iinc
 SOURCES=$(wildcard $(addsuffix /*.c,$(DIRS)))
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
-TARGET=lib/libxultb_core.a
+TARGET=lib/libxultb_core.o
+TARGET_AR=lib/libxultb_core.a
 TARGET_SO=lib/libxultb_core.so
 CFLAGS=-Wall -ggdb3
 
@@ -12,8 +13,10 @@ TEST_CFLAGS=-DTEST_OBJ_FACTORY_UTILS -lpthread
 TEST_BIN=test.bin
 
 all:$(OBJECTS)
-	ar crv $(TARGET) $(OBJECTS)
+	ar crv $(TARGET_AR) $(OBJECTS)
 	$(CC) --shared $(OBJECTS) -o $(TARGET_SO)
+	$(CC) $(CFLAGS) -c $(INCLUDES) --combine $(SOURCES) -o $(TARGET)
+	nm $(TARGET) | wc
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
@@ -29,6 +32,7 @@ clean:
 	rm -f $(TEST_BIN)
 	rm -f $(OBJECTS)
 	rm -f $(TARGET)
+	rm -f $(TARGET_AR)
 	rm -f $(TARGET_SO)
 
 .PHONY: test clean ctags
