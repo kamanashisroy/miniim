@@ -53,7 +53,7 @@ struct xultb_graphics {
 	int(*getTranslateY)();
 	void(*setClip)(int x, int y, int width, int height);
 #endif
-	void(*set_color)(struct xultb_graphics*g, int RGB);
+	void(*set_color)(struct xultb_graphics*g, int rgb);
 #if 0
 	void(*setColor_full)(int red, int green, int blue);
 #endif

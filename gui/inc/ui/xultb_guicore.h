@@ -21,5 +21,7 @@
 #include "ui/core/list/xultb_list_item.h"
 
 int xultb_guicore_system_init();
+int xultb_guicore_platform_init();
+int xultb_guicore_platform_show(struct xultb_window*win);
 
 #endif /* GUICORE_H_ */

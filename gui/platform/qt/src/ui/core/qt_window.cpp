@@ -25,12 +25,20 @@ extern "C" {
 
 #include "ui/core/xultb_window.h"
 
-
-struct xultb_window*create_window() {
-
-	QMainWindow qwindow = QMainWindow::New(0,0);
-
+static QMainWindow qwindow;
+int xultb_guicore_platform_init() {
+	char*argv[][10] = "X";
+	QApplication app(1, argv);
+	QGraphicsScene canvas;
+	canvas.setSceneRect(0, 0, 800, 600);
+	qwindow = QMainWindow::New(canvas);
+	qwindow.showMaximized();
 }
+
+int xultb_guicore_platform_show(struct xultb_window*win) {
+	return 0;
+}
+
 
 #ifdef __cplusplus
 }

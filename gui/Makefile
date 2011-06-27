@@ -38,6 +38,7 @@ test:
 
 clean:
 	rm -f $(TEST_BIN)
+	rm -f $(TEST_BIN).o
 	rm -f $(OBJECTS)
 	rm -f $(TARGET)
 	rm -f $(TARGET_A)
