@@ -49,13 +49,13 @@ static int xultb_list_show_item(struct xultb_list*list, struct xultb_graphics*g,
 	if(li == NULL)
 	  return 0;
 	int ret = li->paint(li, g, list->leftMargin + XULTB_LIST_HMARGIN, y + XULTB_LIST_VMARGIN, list->win.width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN - 1 - list->leftMargin - list->rightMargin, selected) + XULTB_LIST_VMARGIN + XULTB_LIST_VMARGIN;
-	XULTB_OBJ_UNREF(li);
+	OPPUNREF(li);
 	return ret;
 }
 
 static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*g) {
 	int i = -1;
-	struct xultb_obj_factory*items = list->get_items(list);
+	struct opp_factory*items = list->get_items(list);
 	void*obj;
 	int posY = list->win.panelTop + list->topMargin;
 
@@ -70,9 +70,9 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 
 	g->set_font(g, list->item_font);
 
-	for (i = list->vpos - 1; (obj = xultb_obj_get(items,i));i++) {
+	for (i = list->vpos - 1; (obj = opp_indexed_list_get(items,i));i++) {
 		/* see if selected index is more than the item count */
-		if (list->selected_index > i && !xultb_obj_get(items,i)) {
+		if (list->selected_index > i && !opp_indexed_list_get(items,i)) {
 			list->selected_index = i;
 		}
 		posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
@@ -133,7 +133,7 @@ static void xultb_list_set_action_listener(struct xultb_action_listener*lis) {
 	return;
 }
 
-static struct xultb_obj_factory* xultb_list_get_items(struct xultb_list*list) {
+static struct opp_factory* xultb_list_get_items(struct xultb_list*list) {
 	return NULL;
 }
 
@@ -141,37 +141,38 @@ static struct xultb_list_item* xultb_list_get_list_item(void*data) {
 	return NULL;
 }
 
-static int xultb_list_initialize(void*data) {
+OPP_CB(xultb_list) {
 	struct xultb_list*list = data;
-	//list->get_selected_index = xultb_list_get_selected_index;
-	list->get_selected = xultb_list_get_selected;
-	list->get_items = xultb_list_get_items;
-	list->get_list_item = xultb_list_get_list_item;
-	list->get_hint = xultb_list_get_hint;
-	list->set_action_listener = xultb_list_set_action_listener;
-	list->set_selected_index = xultb_list_set_selected_index;
-	list->paint = xultb_list_paint;
+	switch(callback) {
+	case OPPN_ACTION_INITIALIZE:
+		//list->get_selected_index = xultb_list_get_selected_index;
+		list->get_selected = xultb_list_get_selected;
+		list->get_items = xultb_list_get_items;
+		list->get_list_item = xultb_list_get_list_item;
+		list->get_hint = xultb_list_get_hint;
+		list->set_action_listener = xultb_list_set_action_listener;
+		list->set_selected_index = xultb_list_set_selected_index;
+		list->paint = xultb_list_paint;
+		return 0;
+	case OPPN_ACTION_FINALIZE:
+		break;
+	}
 	return 0;
 }
 
-static int xultb_list_finalize(void*data) {
-	return 0;
-}
-
-static int xultb_list_deepcopy(void*data) {
-	return 0;
-}
-
-static struct xultb_obj_factory*xultb_list_factory;
+static struct opp_factory xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
-	struct xultb_list*list = xultb_obj_alloc(xultb_list_factory);
+	struct xultb_list*list = OPP_ALLOC2(&xultb_list_factory, NULL);
 	list->title = *title;
 	list->default_command = *default_command;
 	return list;
 }
 
 int xultb_list_system_init() {
-	xultb_list_factory = xultb_obj_factory_create(3,sizeof(struct xultb_list),0,xultb_list_initialize, xultb_list_finalize, xultb_list_deepcopy);
+	SYNC_ASSERT(OPP_FACTORY_CREATE(
+			&xultb_list_factory
+			, 1,sizeof(struct xultb_list)
+			, OPP_CB_FUNC(xultb_list)) == 0);
 	return 0;
 }
 

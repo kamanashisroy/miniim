@@ -25,13 +25,13 @@
 #include "ui/core/list/xultb_list_item.h"
 
 
-static struct xultb_obj_factory*item_factory;
+static struct opp_factory item_factory;
 struct xultb_list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img_t*img) {
 	return xultb_list_item_create_label_full(label, img, XULTB_TRUE, XULTB_FALSE);
 }
 
 struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width) {
-	struct xultb_list_item*item = xultb_obj_alloc(item_factory);
+	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->img = img;
 	item->is_editable = change_bg_on_focus;
@@ -41,7 +41,7 @@ struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xult
 }
 
 struct xultb_list_item*xultb_list_item_create_selection_box(xultb_str_t*label, xultb_str_t*text, xultb_bool_t editable) {
-	struct xultb_list_item*item = xultb_obj_alloc(item_factory);
+	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->text = *text;
 	item->is_editable = editable;
@@ -50,7 +50,7 @@ struct xultb_list_item*xultb_list_item_create_selection_box(xultb_str_t*label, x
 }
 
 struct xultb_list_item*xultb_list_item_create_text_input_full(xultb_str_t*label, xultb_str_t*text, xultb_bool_t wrapped, xultb_bool_t editable) {
-	struct xultb_list_item*item = xultb_obj_alloc(item_factory);
+	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->text = (text == NULL)?xultb_str_create(""):*text;
 	item->wrapped = wrapped;
@@ -64,7 +64,7 @@ struct xultb_list_item*xultb_list_item_create_text_input(xultb_str_t*label, xult
 }
 
 static struct xultb_list_item*xultb_list_item_create_checkbox_full(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable, xultb_bool_t is_radio) {
-	struct xultb_list_item*item = xultb_obj_alloc(item_factory);
+	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->checked = checked;
 	item->is_editable = editable;
@@ -283,19 +283,21 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 	return ret;
 }
 
-static int xultb_list_item_initialize(void*data) {
+OPP_CB(xultb_list_item) {
 	struct xultb_list_item*item = data;
-	item->paint = xultb_list_item_paint;
+	switch(callback) {
+	case OPPN_ACTION_INITIALIZE:
+		item->paint = xultb_list_item_paint;
+		return 0;
+	case OPPN_ACTION_FINALIZE:
+		break;
+	}
 	return 0;
 }
 
-#if 0
-static int xultb_list_item_finalize(void*data) {
-	// TODO fill me
-}
-#endif
-
 int xultb_list_item_system_init() {
-	item_factory = xultb_obj_factory_create(3,sizeof(struct xultb_list_item),0,xultb_list_item_initialize, NULL, NULL);
+	SYNC_ASSERT(OPP_FACTORY_CREATE(&item_factory, 8
+			,sizeof(struct xultb_list_item)
+			,OPP_CB_FUNC(xultb_list_item)) == 0);
 	return 0;
 }

@@ -15,7 +15,7 @@ struct qt_graphics {
 	QPainter*painter;
 };
 
-static struct xultb_obj_factory*graphics_factory;
+static struct opp_factory*graphics_factory;
 
 #if 0
 void(*draw_image)(struct xultb_graphics*g, struct xultb_img*img, int x, int y, int anchor);

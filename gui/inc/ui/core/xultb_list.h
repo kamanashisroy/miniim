@@ -46,7 +46,7 @@ struct xultb_list {
 	
 	void (*set_action_listener)(struct xultb_action_listener*lis);
 	
-	struct xultb_obj_factory*(*get_items)(struct xultb_list*list);
+	struct opp_factory*(*get_items)(struct xultb_list*list);
 	struct xultb_list_item* (*get_list_item)(void*data);
 	int (*get_count)(struct xultb_list*list);
 	xultb_str_t*(*get_hint)(struct xultb_list*list);

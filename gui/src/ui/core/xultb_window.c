@@ -23,9 +23,9 @@
 #include "ui/core/xultb_window.h"
 #include "ui/core/xultb_menu.h"
 
-static struct xultb_obj_factory*window_factory;
+static struct opp_factory window_factory;
 struct xultb_window*xultb_window_create(xultb_str_t*title) {
-	struct xultb_window*win = xultb_obj_alloc(window_factory);
+	struct xultb_window*win = OPP_ALLOC2(&window_factory, NULL);
 	if(title)win->title = *title;
 	return win;
 }
@@ -86,19 +86,30 @@ static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g)
 	xultb_menu_show(g, win->width, win->height);
 }
 
-static int xultb_window_initialize(void*data) {
+OPP_CB(xultb_window) {
 	struct xultb_window*win = data;
-	win->PADDING = 2;
-	win->title = xultb_str_create("XulTube");
-	win->init = xultb_window_init;
-	win->show = xultb_window_show;
-	win->show_full = xultb_window_show_full;
-	win->is_showing = xultb_window_is_showing;
-	win->paint = xultb_window_paint;
+	switch(callback) {
+	case OPPN_ACTION_INITIALIZE:
+		win->PADDING = 2;
+		win->title = xultb_str_create("XulTube");
+		win->init = xultb_window_init;
+		win->show = xultb_window_show;
+		win->show_full = xultb_window_show_full;
+		win->is_showing = xultb_window_is_showing;
+		win->paint = xultb_window_paint;
+		return 0;
+	case OPPN_ACTION_FINALIZE:
+		break;
+	}
 	return 0;
 }
 
 int xultb_window_system_init() {
-	window_factory = xultb_obj_factory_create(1,sizeof(struct xultb_window),0,xultb_window_initialize, NULL, NULL);
+	SYNC_ASSERT(
+			OPP_FACTORY_CREATE(&window_factory
+			,1
+			,sizeof(struct xultb_window)
+			, OPP_CB_FUNC(xultb_window)
+		) == 0);
 	return 0;
 }
