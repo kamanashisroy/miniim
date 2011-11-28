@@ -18,6 +18,16 @@
 #define OPP_VOLATILE_VAR
 #endif
 
+#ifndef C_CAPSULE_START
+#ifdef __cplusplus
+#define C_CAPSULE_START extern "C" {
+#define C_CAPSULE_END }
+#else
+#define C_CAPSULE_START
+#define C_CAPSULE_END
+#endif
+#endif
+
 typedef SYNC_UWORD32_T opp_hash_t;
 #define OPP_OBJECT_EXT_TINY() opp_hash_t hash;OPP_VOLATILE_VAR SYNC_UWORD16_T flag,token;
 #define OPP_RBTREE
@@ -26,9 +36,7 @@ typedef SYNC_UWORD32_T opp_hash_t;
 #include "opp/opp_rbtree_internal.h"
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+C_CAPSULE_START
 
 enum {
 	OPPN_ALL = 1<<15,
@@ -160,9 +168,7 @@ int opp_dump(const void*data, void (*log)(void *log_data, const char*fmt, ...), 
 
 #define EXTOBJ_TEST_FLAG(o,f) ((o)->_ext.flag & f)
 
-#ifdef __cplusplus
-}
-#endif
+C_CAPSULE_END
 
 
 #endif // OPP_FACTORY_UTILS_H

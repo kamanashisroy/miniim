@@ -25,6 +25,8 @@ struct graphics;
 #include "ui/core/xultb_font.h"
 #include "ui/core/xultb_graphics.h"
 
+C_CAPSULE_START
+
 struct xultb_window {
 	int PADDING;
 	xultb_str_t title;
@@ -64,3 +66,5 @@ struct xultb_window {
 
 struct xultb_window*xultb_window_create(xultb_str_t*title);
 int xultb_window_system_init();
+
+C_CAPSULE_END

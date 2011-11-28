@@ -18,6 +18,10 @@
  *
  */
 
+#include "core/config.h"
+
+C_CAPSULE_START
+
 struct xultb_webcontroler
 {
 	int initialize(void*data);
@@ -35,3 +39,4 @@ struct xultb_webcontroler
 	public void run();
 };
 
+C_CAPSULE_END

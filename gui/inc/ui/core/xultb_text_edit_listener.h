@@ -18,6 +18,10 @@
  *
  */
 
+#include "core/config.h"
+
+C_CAPSULE_START
+
 /**
  *
  * @author Kamanashis Roy kamanashisroy@gmail.com
@@ -26,3 +30,4 @@ struct xultb_text_edit_listener {
     void (*text_edited)(xultb_str_t*new_text);    
 };
 
+C_CAPSULE_END

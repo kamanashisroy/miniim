@@ -11,9 +11,7 @@
 #include "core/config.h"
 #include "opp/opp_factory.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+C_CAPSULE_START
 
 char*opp_str2_reuse(char*string);
 void opp_str2_reuse2(char**dest, char*string);
@@ -25,8 +23,6 @@ void opp_str2system_verb(void (*log)(void *log_data, const char*fmt, ...), void*
 void opp_str2system_init();
 void opp_str2system_deinit();
 
-#ifdef __cplusplus
-}
-#endif
+C_CAPSULE_END
 
 #endif /* OPP_STR2_H_ */

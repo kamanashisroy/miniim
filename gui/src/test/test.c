@@ -10,6 +10,7 @@ int main(void) {
 
 	xultb_guicore_system_init();
 	xultb_list_create(&title, &dc);
+	sleep(5);
 	return 0;
 }
 

@@ -25,9 +25,7 @@
 
 #include "core/config.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+C_CAPSULE_START
 
 /* Maximum RB height. */
 #ifndef RB_MAX_HEIGHT
@@ -64,9 +62,6 @@ void opp_lookup_table_verb (const opp_lookup_table_t *tree
 int opp_lookup_table_traverse(struct rb_table *tree, int (*obj_do)(void*data, void*func_data), void*func_data, unsigned int if_flag
 		, unsigned int if_not_flag);
 
-#ifdef __cplusplus
-}
-#endif
-
+C_CAPSULE_END
 
 #endif /* rb.h */

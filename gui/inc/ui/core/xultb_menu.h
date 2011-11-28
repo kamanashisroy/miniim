@@ -25,6 +25,8 @@
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_graphics.h"
 
+C_CAPSULE_START
+
 enum {
 	XULTB_MENU_PADDING,
 };
@@ -33,5 +35,7 @@ int xultb_menu_get_base_height();
 void xultb_menu_show(struct xultb_graphics*g, int width, int height);
 xultb_bool_t xultb_menu_is_active();
 struct xultb_font*xultb_menu_get_base_font();
+
+C_CAPSULE_END
 
 #endif // XULTB_MENU_H

@@ -20,10 +20,14 @@
  * along with MiniIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include "core/config.h"
+
+C_CAPSULE_START
 
 struct xultb_action_listener {
 	void (*perform_action)(xultb_str_t*action);
 };
 
+C_CAPSULE_END
 
 #endif // XULTB_ACTION_LISTENER_H

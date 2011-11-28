@@ -1,10 +1,12 @@
 #ifndef XULTB_GRAPHICS_H_
 #define XULTB_GRAPHICS_H_
 
+#include "core/config.h"
 #include "core/xultb_decorator.h"
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_font.h"
 
+C_CAPSULE_START
 struct xultb_img;
 enum xultb_graphics_anchor {
 	XULTB_GRAPHICS_TOP = 0,
@@ -64,5 +66,9 @@ struct xultb_graphics {
 	void(*translate)(int x, int y);
 #endif
 };
+
+int xultb_list_item_system_init();
+
+C_CAPSULE_END
 
 #endif /* XULTB_GRAPHICS_H_ */

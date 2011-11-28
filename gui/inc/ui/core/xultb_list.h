@@ -22,7 +22,10 @@
  */
 
 //#include "config.h"
+#include "core/config.h"
 #include "ui/xultb_guicore.h"
+
+C_CAPSULE_START
 
 /** \todo support object item showing, truncated text showing .. */
 struct xultb_list {
@@ -61,5 +64,7 @@ struct xultb_list {
 
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command);
 int xultb_list_system_init();
+
+C_CAPSULE_END
 
 #endif // XULTB_LIST_H

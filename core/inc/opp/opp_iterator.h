@@ -10,6 +10,8 @@
 
 #include "opp/opp_factory.h"
 
+C_CAPSULE_START
+
 struct opp_iterator {
 	struct opp_factory*fac;
 	unsigned int if_flag;
@@ -41,5 +43,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, int (*compare_func)(
 		, const void*compare_data, unsigned int if_flag, unsigned int if_not_flag, opp_hash_t hash, int shouldref);
 
 void*opp_search(struct opp_factory*obuff, opp_hash_t hash, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data);
+
+C_CAPSULE_END
 
 #endif /* OPP_INTERNAL_H */

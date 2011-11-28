@@ -25,6 +25,8 @@
 #include "ui/core/xultb_img.h"
 #include "ui/core/xultb_graphics.h"
 
+C_CAPSULE_START
+
 enum xultb_list_item_type {
 	XULTB_LIST_ITEM_LABEL,
 	XULTB_LIST_ITEM_SELECTION,
@@ -66,5 +68,6 @@ struct xultb_list_item*xultb_list_item_create_radio_button(xultb_str_t*label, xu
 
 int xultb_list_item_system_init();
 
+C_CAPSULE_END
 
 #endif // XULTB_LIST_ITEM_H
