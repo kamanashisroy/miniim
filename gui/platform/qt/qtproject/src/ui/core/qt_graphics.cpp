@@ -59,31 +59,31 @@ static void xultb_draw_round_rect(struct xultb_graphics*g, int x, int y, int wid
 
 static void xultb_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor) {
     struct qt_graphics*qtg = (struct qt_graphics*)(g+1);
-    QString text = new QString(str->str, str->len);
-	qtg->painter->drawText(x, y, text);
+    QString*text = new QString(str->str);
+    qtg->painter->drawText(x, y, *text);
 	delete text;
 }
 
 static void xultb_fill_rect(struct xultb_graphics*g, int x, int y, int width, int height) {
     struct qt_graphics*qtg = (struct qt_graphics*)(g+1);
-    qtg->painter->fillRect(x, y, width, height, NULL);
+    qtg->painter->fillRect(x, y, width, height, *qtg->pen);
 }
 
 static void xultb_fill_triangle(struct xultb_graphics*g, int x1, int y1, int x2, int y2, int x3, int y3) {
     struct qt_graphics*qtg = (struct qt_graphics*)(g+1);
     // TODO fill me
-	qtg->painter->fillPath(qtg->path, NULL);
+    //qtg->painter->fillPath(qtg->path, NULL);
 }
 
 static void xultb_fill_round_rect(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight) {
     struct qt_graphics*qtg = (struct qt_graphics*)(g+1);
-    qtg->painter->fillRect(x, y, width, height, NULL);
+    qtg->painter->fillRect(x, y, width, height, *qtg->pen);
 }
 
 static void xultb_set_color(struct xultb_graphics*g, int rgb) {
     struct qt_graphics*qtg = (struct qt_graphics*)(g+1);
     qtg->pen->setRgb(rgb);
-	qtg->painter->setPen(qtg->pen);
+    qtg->painter->setPen(*qtg->pen);
 }
 
 static void xultb_set_font(struct xultb_graphics*g, xultb_font_t*font) {
