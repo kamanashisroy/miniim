@@ -26,13 +26,15 @@
 #include "ui/core/xultb_window.h"
 
 static QMainWindow*qwindow;
+static QCoreApplication*app;
+//static QGraphicsWidget*canvas;
 int xultb_guicore_platform_init() {
-    char*argv[][10] = {"X"};
+    char argv[][10] = {"X"};
     int argc = 1;
-    QApplication app(argc, argv);
-	QGraphicsScene canvas;
-	canvas.setSceneRect(0, 0, 800, 600);
-    qwindow = QMainWindow(canvas);
+    app = new QCoreApplication(argc, (char**)argv);
+    //canvas = new QGraphicsWidget();
+    //canvas->setSceneRect(0, 0, 800, 600);
+    qwindow = new QMainWindow();
     qwindow->showMaximized();
 }
 

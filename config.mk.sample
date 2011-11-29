@@ -1,2 +1,4 @@
-# Copy this file to .config.mk
+
+QT_HOME=/home/kamanashisroy/opt/QtSDK/Desktop/Qt/474/gcc/
 XULTUBE_HOME=/active/projects/xultube
+ECHO=echo -e
