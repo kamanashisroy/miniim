@@ -67,7 +67,7 @@ struct xultb_graphics {
 #endif
 };
 
-int xultb_list_item_system_init();
+int xultb_graphics_system_init();
 
 C_CAPSULE_END
 

@@ -126,7 +126,7 @@ struct xultb_graphics*xultb_graphics_create() {
 	return g;
 }
 
-int xultb_list_item_system_init() {
+int xultb_graphics_system_init() {
 	SYNC_ASSERT(OPP_FACTORY_CREATE(&graphics_factory, 1
 			,sizeof(struct xultb_graphics)+sizeof(struct qt_graphics)
 			,OPP_CB_FUNC(xultb_graphics)) == 0);

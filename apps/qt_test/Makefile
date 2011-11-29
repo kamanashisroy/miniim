@@ -19,7 +19,7 @@ PQTMAKE=$(MAKE) -C ../../platform/qt
 PQTMAKE+=--quiet
 
 all: qtsharedlib $(TARGET)
-	echo -e "export LD_LIBRARY_PATH=$(ROOTPATH)/core:$(ROOTPATH)/client:$(ROOTPATH)/codec:$(PROJECTPATH)/platform/qt/build:$(QT_HOME)/lib"
+	echo -e "export LD_LIBRARY_PATH=$(QT_HOME)/lib"
 	@echo "You may want to execute the line above in the shell and then try $(TARGET)"
 
 obj_dir:

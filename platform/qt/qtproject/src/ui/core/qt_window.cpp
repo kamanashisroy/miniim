@@ -19,19 +19,19 @@
  */
 #include <QtGui>
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "ui/core/xultb_window.h"
 
 static QMainWindow*qwindow;
-static QCoreApplication*app;
+static QApplication*app;
 //static QGraphicsWidget*canvas;
 int xultb_guicore_platform_init() {
     char argv[][10] = {"X"};
     int argc = 1;
-    app = new QCoreApplication(argc, (char**)argv);
+    app = new QApplication(argc, (char**)argv);
     //canvas = new QGraphicsWidget();
     //canvas->setSceneRect(0, 0, 800, 600);
     qwindow = new QMainWindow();
@@ -43,6 +43,6 @@ int xultb_guicore_platform_show(struct xultb_window*win) {
 }
 
 
-//#ifdef __cplusplus
-//}
-//#endif
+#ifdef __cplusplus
+}
+#endif
