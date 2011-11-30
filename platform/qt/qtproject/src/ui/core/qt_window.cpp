@@ -29,9 +29,9 @@ static QMainWindow*qwindow;
 static QApplication*app;
 //static QGraphicsWidget*canvas;
 int xultb_guicore_platform_init() {
-    char argv[][10] = {"X"};
-    int argc = 1;
-    app = new QApplication(argc, (char**)argv);
+    char argv[][100] = {"QTguitest", "Someotherthings"};
+    int argc = 0;
+    app = new QApplication(argc, NULL);
     //canvas = new QGraphicsWidget();
     //canvas->setSceneRect(0, 0, 800, 600);
     qwindow = new QMainWindow();
@@ -39,9 +39,14 @@ int xultb_guicore_platform_init() {
 }
 
 int xultb_guicore_platform_show(struct xultb_window*win) {
+
 	return 0;
 }
 
+int xultb_guicore_platform_run() {
+    app->exec();
+	return 0;
+}
 
 #ifdef __cplusplus
 }

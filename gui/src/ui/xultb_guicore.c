@@ -17,5 +17,6 @@ int xultb_guicore_system_init() {
 	xultb_list_system_init();
 	xultb_window_system_init();
 	xultb_guicore_platform_show(xultb_window_create(&title));
+	xultb_guicore_platform_run();
 	return 0;
 }
