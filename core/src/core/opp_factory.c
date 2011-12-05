@@ -304,7 +304,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 
 struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, struct opp_pool*addpoint, void*nofreememory) {
 	// allocate a block of memory
-	struct opp_pool*pool = nofreememory;
+	struct opp_pool*pool = (struct opp_pool*)nofreememory;
 	if(!pool && !(pool = (struct opp_pool*)sync_malloc(obuff->memory_chunk_size))) {
 		SYNC_LOG(SYNC_ERROR, "Out of memory\n");
 		return NULL;
@@ -556,7 +556,7 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, co
 }
 
 int opp_callback(void*data, int callback, void*cb_data) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
 	struct opp_factory*obuff = obj->obuff;
 	SYNC_ASSERT(obuff->callback);
 	CHECK_OBJ(obj);
@@ -565,7 +565,7 @@ int opp_callback(void*data, int callback, void*cb_data) {
 }
 
 int opp_callback2(void*data, int callback, void*cb_data, ...) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
 	struct opp_factory*obuff = obj->obuff;
 	SYNC_ASSERT(obuff->callback);
 	CHECK_OBJ(obj);
@@ -616,7 +616,7 @@ void*opp_get(struct opp_factory*obuff, int token) {
 }
 
 void opp_shrink(void*data, int size) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
 	int slots;
 	struct opp_factory*obuff = obj->obuff;
 	
@@ -670,7 +670,7 @@ void opp_unset_flag_by_token(struct opp_factory*obuff, int token, unsigned int f
 #endif
 
 void opp_unset_flag(void*data, unsigned int flag) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
 	CHECK_OBJ(obj);
 	SYNC_ASSERT(obj->refcount);
 #ifndef SYNC_HAS_ATOMIC_OPERATION
@@ -702,7 +702,7 @@ void opp_unset_flag(void*data, unsigned int flag) {
 }
 
 void opp_set_flag(void*data, unsigned int flag) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
 	struct opp_object_ext*ext = (struct opp_object_ext*)data;
 	CHECK_OBJ(obj);
 	SYNC_ASSERT(obj->refcount);
@@ -748,8 +748,8 @@ void opp_set_flag(void*data, unsigned int flag) {
 }
 
 void opp_set_hash(void*data, opp_hash_t hash) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
-	struct opp_object_ext*ext = data;
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
+	struct opp_object_ext*ext = (struct opp_object_ext*)data;
 	struct opp_factory*obuff = obj->obuff;
 	CHECK_OBJ(obj);
 	SYNC_ASSERT(obj->refcount);
@@ -789,7 +789,7 @@ int obj_test_flag(const void*data, unsigned int flag) {
 #endif
 
 void*opp_ref(void*data, const char*filename, int lineno) {
-	struct opp_object*obj = (data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(data - sizeof(struct opp_object));
 	SYNC_ASSERT(data);
 	CHECK_OBJ(obj);
 #ifdef SYNC_HAS_ATOMIC_OPERATION
@@ -840,7 +840,7 @@ void*opp_ref(void*data, const char*filename, int lineno) {
 
 //#ifdef OPP_BUFFER_HAS_LOCK
 void opp_unref_unlocked(void**data, const char*filename, int lineno) {
-	struct opp_object*obj = (*data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(*data - sizeof(struct opp_object));
 #ifdef OPP_HAS_RECYCLING
 	struct opp_pool*pool;
 #endif
@@ -897,7 +897,7 @@ void opp_unref_unlocked(void**data, const char*filename, int lineno) {
 //#endif
 
 void opp_unref(void**data, const char*filename, int lineno) {
-	struct opp_object*obj = (*data - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(*data - sizeof(struct opp_object));
 	if(!*data)
 		return;
 #ifdef OPP_DEBUG_REFCOUNT
@@ -961,7 +961,7 @@ void opp_unref(void**data, const char*filename, int lineno) {
 
 #ifdef OPP_HAS_HIJACK
 int opp_hijack(void**src, void*dest, const char*filename, int lineno) {
-	struct opp_object*obj = (*src - sizeof(struct opp_object));
+	struct opp_object*obj = (struct opp_object*)(*src - sizeof(struct opp_object));
 	int ret = -1;
 	struct opp_factory*obuff = obj->obuff;
 #ifdef OPP_HAS_RECYCLING
@@ -1081,7 +1081,7 @@ void*opp_find_list_full_donot_use(struct opp_factory*obuff, int (*compare_func)(
 					CHECK_OBJ(obj);
 					CHECK_WEAK_OBJ(obj);
 					item = (struct opp_list_item*)(obj+1);
-					obj = (item->obj_data - sizeof(struct opp_object));
+					obj = (struct opp_object*)(item->obj_data - sizeof(struct opp_object));
 					CHECK_OBJ(obj);
 					CHECK_WEAK_OBJ(obj);
 					if(obuff->property & OPPF_EXTENDED) {
@@ -1400,7 +1400,7 @@ void opp_factory_list_do_full(struct opp_factory*obuff, int (*obj_do)(void*data,
 							continue;
 						}
 					}
-					obj = (item->obj_data - sizeof(struct opp_object));
+					obj = (struct opp_object*)(item->obj_data - sizeof(struct opp_object));
 					CHECK_WEAK_OBJ(obj);
 					CHECK_OBJ(obj);
 					if(obj->obuff->property & OPPF_EXTENDED) {
@@ -1506,7 +1506,7 @@ void*opp_iterator_next(struct opp_iterator*iterator) {
 				SYNC_UWORD16_T bit_idx = SYNC_OBJ_CTZ(bsv);
 				SYNC_UWORD16_T obj_idx = BITSTRING_IDX_TO_BITS(k) + bit_idx;
 				if(obj_idx < pool_size) {
-					struct opp_object *obj = (void*)(pool->head + obj_idx*iterator->fac->obj_size);
+					struct opp_object *obj = (struct opp_object *)(pool->head + obj_idx*iterator->fac->obj_size);
 					CHECK_OBJ(obj);
 					if(iterator->fac->property & OPPF_EXTENDED) {
 						SYNC_UWORD16_T oflag = ((struct opp_object_ext*)(obj+1))->flag;
@@ -1639,7 +1639,7 @@ exitpoint:
 				bit_idx = SYNC_OBJ_CTZ(bsv);
 				obj_idx = BITSTRING_IDX_TO_BITS(k) + bit_idx;
 				if(obj_idx < obuff->pool_size) {
-					obj = (void*)(pool->head + obj_idx*obuff->obj_size);
+					obj = (struct opp_object*)(pool->head + obj_idx*obuff->obj_size);
 					CHECK_OBJ(obj);
 					if(obuff->property & OPPF_EXTENDED) {
 						oflag = ((struct opp_object_ext*)(obj+1))->flag;

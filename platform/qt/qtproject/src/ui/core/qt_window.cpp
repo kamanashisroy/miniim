@@ -28,10 +28,10 @@ extern "C" {
 static QMainWindow*qwindow;
 static QApplication*app;
 //static QGraphicsWidget*canvas;
-int xultb_guicore_platform_init() {
-    char argv[][100] = {"QTguitest", "Someotherthings"};
-    int argc = 0;
-    app = new QApplication(argc, NULL);
+int xultb_guicore_platform_init(int argc, char **argv) {
+//    char argv[][100] = {"QTguitest", "Someotherthings"};
+//    int argc = 0;
+    app = new QApplication(argc, argv);
     //canvas = new QGraphicsWidget();
     //canvas->setSceneRect(0, 0, 800, 600);
     qwindow = new QMainWindow();
@@ -47,6 +47,17 @@ int xultb_guicore_platform_run() {
     app->exec();
 	return 0;
 }
+
+void xultb_log_helper(void*fdptr, const char *fmt, ...) {
+	int fd = *(int *)fdptr;
+	va_list ap;
+	char somebuff[256];
+	va_start(ap, fmt);
+	vsnprintf(somebuff, sizeof(somebuff), fmt, ap);
+	va_end(ap);
+	printf("%s", somebuff);
+}
+
 
 #ifdef __cplusplus
 }

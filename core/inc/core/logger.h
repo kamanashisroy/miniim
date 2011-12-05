@@ -29,6 +29,7 @@ C_CAPSULE_END
 #define SYNC_DEBUG_VERB(x, ...)
 
 #define SYNC_LOG(y, ...)
+#define SYNC_LOG_OPP(x)
 #else
 #ifdef ASTERISK_CHANNEL
 #include "ast_logger.h"

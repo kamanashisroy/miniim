@@ -28,9 +28,13 @@
 #endif
 #endif
 
+C_CAPSULE_START
+
 typedef SYNC_UWORD32_T opp_hash_t;
 #define OPP_OBJECT_EXT_TINY() opp_hash_t hash;OPP_VOLATILE_VAR SYNC_UWORD16_T flag,token;
 #define OPP_RBTREE
+
+C_CAPSULE_END
 
 #ifdef OPP_RBTREE
 #include "opp/opp_rbtree_internal.h"

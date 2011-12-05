@@ -3,7 +3,7 @@
 
 #include "core/config.h"
 C_CAPSULE_START
-enum xultb_bool {
+enum {
 	XULTB_TRUE = 1,
 	XULTB_FALSE = 0,
 };
@@ -15,7 +15,7 @@ struct xultb_str {
 };
 
 typedef struct xultb_str xultb_str_t;
-typedef enum xultb_bool xultb_bool_t;
+typedef int xultb_bool_t;
 
 #define xultb_str_create(x) ({xultb_str_t y;y.str = x,y.hash = 0,y.len = strlen(x);y;})
 

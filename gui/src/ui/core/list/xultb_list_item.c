@@ -31,7 +31,7 @@ struct xultb_list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img
 }
 
 struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width) {
-	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
+	struct xultb_list_item*item = (struct xultb_list_item*)OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->img = img;
 	item->is_editable = change_bg_on_focus;
@@ -41,7 +41,7 @@ struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xult
 }
 
 struct xultb_list_item*xultb_list_item_create_selection_box(xultb_str_t*label, xultb_str_t*text, xultb_bool_t editable) {
-	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
+	struct xultb_list_item*item = (struct xultb_list_item*)OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->text = *text;
 	item->is_editable = editable;
@@ -50,7 +50,7 @@ struct xultb_list_item*xultb_list_item_create_selection_box(xultb_str_t*label, x
 }
 
 struct xultb_list_item*xultb_list_item_create_text_input_full(xultb_str_t*label, xultb_str_t*text, xultb_bool_t wrapped, xultb_bool_t editable) {
-	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
+	struct xultb_list_item*item = (struct xultb_list_item*)OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->text = (text == NULL)?xultb_str_create(""):*text;
 	item->wrapped = wrapped;
@@ -64,7 +64,7 @@ struct xultb_list_item*xultb_list_item_create_text_input(xultb_str_t*label, xult
 }
 
 static struct xultb_list_item*xultb_list_item_create_checkbox_full(xultb_str_t*label, xultb_bool_t checked, xultb_bool_t editable, xultb_bool_t is_radio) {
-	struct xultb_list_item*item = OPP_ALLOC2(&item_factory, NULL);
+	struct xultb_list_item*item = (struct xultb_list_item*)OPP_ALLOC2(&item_factory, NULL);
 	item->label = *label;
 	item->checked = checked;
 	item->is_editable = editable;
@@ -284,7 +284,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 }
 
 OPP_CB(xultb_list_item) {
-	struct xultb_list_item*item = data;
+	struct xultb_list_item*item = (struct xultb_list_item*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		item->paint = xultb_list_item_paint;

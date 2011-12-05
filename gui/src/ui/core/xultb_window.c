@@ -19,14 +19,18 @@
  */
 
 #include "config.h"
+#include "core/logger.h"
 #include "core/xultb_obj_factory.h"
 #include "ui/core/xultb_window.h"
 #include "ui/core/xultb_menu.h"
 
+C_CAPSULE_START
+
 static struct opp_factory window_factory;
 struct xultb_window*xultb_window_create(xultb_str_t*title) {
-	struct xultb_window*win = OPP_ALLOC2(&window_factory, NULL);
+	struct xultb_window*win = (struct xultb_window*)OPP_ALLOC2(&window_factory, NULL);
 	if(title)win->title = *title;
+	SYNC_LOG_OPP(&window_factory);
 	return win;
 }
 
@@ -87,7 +91,7 @@ static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g)
 }
 
 OPP_CB(xultb_window) {
-	struct xultb_window*win = data;
+	struct xultb_window*win = (struct xultb_window*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		win->PADDING = 2;
@@ -113,3 +117,5 @@ int xultb_window_system_init() {
 		) == 0);
 	return 0;
 }
+
+C_CAPSULE_END

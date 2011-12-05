@@ -10,12 +10,10 @@
 #include "opp/opp_iterator.h"
 #include "opp/opp_list.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+C_CAPSULE_START
 
 OPP_CB(list_item) {
-	struct opp_list_item*item = data;
+	struct opp_list_item*item = (struct opp_list_item*)data;
 	switch(callback) {
 	case OPPN_ACTION_FINALIZE:
 		OPPUNREF(item->obj_data);
@@ -29,7 +27,7 @@ OPP_CB(list_item) {
 }
 
 void*opp_indexed_list_get(struct opp_factory*olist, int index) {
-	struct opp_list_item*holder = opp_search(olist, index, NULL, NULL);
+	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL);
 	void*ret = NULL;
 	if(holder) {
 		ret = holder->obj_data;
@@ -44,7 +42,7 @@ void*opp_indexed_list_get(struct opp_factory*olist, int index) {
 int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 	int ret = 0;
 	opp_factory_lock_donot_use(olist);
-	struct opp_list_item*holder = opp_search(olist, index, NULL, NULL);
+	struct opp_list_item*holder = (struct opp_list_item*)opp_search(olist, index, NULL, NULL);
 	if(holder) {
 		opp_set_flag(holder, OPPN_ZOMBIE);
 		void*tmp = holder;
@@ -52,7 +50,7 @@ int opp_indexed_list_set(struct opp_factory*olist, int index, void*obj_data) {
 		OPPUNREF(tmp);
 	}
 	if(obj_data) {
-		struct opp_list_item*item = OPP_ALLOC2(olist, obj_data);
+		struct opp_list_item*item = (struct opp_list_item*)OPP_ALLOC2(olist, obj_data);
 		if(!item) {
 			ret = -1;
 		} else {
@@ -70,6 +68,4 @@ int opp_indexed_list_create2(struct opp_factory*olist, int pool_size) {
 			, OPP_CB_FUNC(list_item));
 }
 
-#ifdef __cplusplus
-}
-#endif
+C_CAPSULE_END

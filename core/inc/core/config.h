@@ -1,10 +1,9 @@
 #ifndef XULTB_CORE_CONFIG_H
 #define XULTB_CORE_CONFIG_H
 
-#define NO_LOG
 #define COMPONENT_SCALABILITY 2
 
-#ifdef QTGUI_LIBRARY
+#ifdef QT
 #include "qt_config.h"
 #else
 #include <unistd.h>

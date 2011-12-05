@@ -105,7 +105,16 @@ rb_probe (struct rb_table *tree, struct opp_object_ext *item)
   struct opp_object_ext *p; /* Traverses tree looking for insertion point. */
 //  struct sync_object_ext *n; /* Newly inserted node. */
 
-  struct opp_object_ext placeholder = {.rb_link = {NULL,NULL},.sibling = NULL};
+#ifdef __cplusplus
+  struct opp_object_ext placeholder;
+  placeholder.rb_link[0] = NULL,placeholder.rb_link[1] = NULL;
+  placeholder.sibling = NULL;
+#else
+  struct opp_object_ext placeholder = {.rb_link={NULL,NULL},.sibling=NULL};
+#endif
+
+//  C_CAPSULE_DEC_ST(struct opp_object_ext, placeholder, (rb_link = {NULL, NULL}), .sibling = NULL);
+
   SYNC_ASSERT (tree != NULL && item != NULL);
 
   item->rb_link[0] = item->rb_link[1] = item->sibling = NULL;
@@ -235,7 +244,13 @@ int opp_lookup_table_delete(opp_lookup_table_t *tree, struct opp_object_ext*node
   struct opp_object_ext *p;    /* The node to delete, or a node part way to it. */
 //  int cmp;              /* Result of comparison between |item| and |p|. */
   SYNC_ASSERT (tree != NULL && node != NULL);
+#ifdef __cplusplus
+  struct opp_object_ext placeholder;
+  placeholder.rb_link[0] = NULL,placeholder.rb_link[1] = NULL;
+  placeholder.sibling = NULL;
+#else
   struct opp_object_ext placeholder = {.rb_link = {NULL,NULL},.sibling = NULL};
+#endif
 
   placeholder.rb_link[0] = tree->rb_root;
 #if 1

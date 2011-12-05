@@ -1,22 +1,8 @@
 #ifndef XULTB_QT_CONFIG_H
 #define XULTB_QT_CONFIG_H
 
+//#include <QtCore>
 #include "QtCore/qglobal.h"
-//#include "QtCore/qobject.h"
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <sys/types.h>
-//#include <string.h>
-//#include <time.h>
-//#include <errno.h>
-//#include <assert.h>
-//#include <math.h>
-//#include <fcntl.h>
-//#include <sys/socket.h>
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
-//#include <sys/time.h>
-//#include <sys/ioctl.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -23,7 +23,7 @@ enum {
 
 static struct opp_factory str2_factory;
 char*opp_str2_alloc(int size) {
-	return opp_alloc4(&str2_factory, size, 0, NULL);
+	return (char*)opp_alloc4(&str2_factory, size, 0, NULL);
 }
 
 char*opp_str2_reuse(char*string) {
@@ -41,7 +41,7 @@ char*opp_str2_reuse(char*string) {
 	}
 
 	len = strlen(string);
-	ret = opp_alloc4(&str2_factory, len+1, 0, NULL);
+	ret = (char*)opp_alloc4(&str2_factory, len+1, 0, NULL);
 
 	if(!ret) {
 		return NULL;
@@ -68,7 +68,7 @@ void opp_str2_reuse2(char**dest, char*string) {
 		return;
 	}
 	len = strlen(string);
-	*dest = opp_alloc4(&str2_factory, len+1, 0, NULL);
+	*dest = (char*)opp_alloc4(&str2_factory, len+1, 0, NULL);
 
 	memcpy(*dest, string, len);
 	*(*dest + len) = '\0';
@@ -83,7 +83,7 @@ char*opp_str2_dup(const char*string) {
 		return NULL;
 	}
 	len = strlen(string);
-	ret = opp_alloc4(&str2_factory, len+1, 0, NULL);
+	ret = (char*)opp_alloc4(&str2_factory, len+1, 0, NULL);
 
 	if(!ret) {
 		return NULL;
@@ -104,7 +104,7 @@ void opp_str2_dup2(char**dest, const char*string) {
 		return;
 	}
 	len = strlen(string);
-	*dest = opp_alloc4(&str2_factory, len+1, 0, NULL);
+	*dest = (char*)opp_alloc4(&str2_factory, len+1, 0, NULL);
 
 	memcpy(*dest, string, len);
 	*(*dest + len) = '\0';

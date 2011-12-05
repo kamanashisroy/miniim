@@ -44,7 +44,7 @@ static int xultb_list_show_item(struct xultb_list*list, struct xultb_graphics*g,
 	  li = getListItem(obj);
 	}
 #else
-	li = data;
+	li = (struct xultb_list_item*)data;
 #endif
 	if(li == NULL)
 	  return 0;
@@ -142,7 +142,7 @@ static struct xultb_list_item* xultb_list_get_list_item(void*data) {
 }
 
 OPP_CB(xultb_list) {
-	struct xultb_list*list = data;
+	struct xultb_list*list = (struct xultb_list*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		//list->get_selected_index = xultb_list_get_selected_index;
@@ -162,7 +162,7 @@ OPP_CB(xultb_list) {
 
 static struct opp_factory xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
-	struct xultb_list*list = OPP_ALLOC2(&xultb_list_factory, NULL);
+	struct xultb_list*list = (struct xultb_list*)OPP_ALLOC2(&xultb_list_factory, NULL);
 	list->title = *title;
 	list->default_command = *default_command;
 	return list;

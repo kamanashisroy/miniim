@@ -5,14 +5,12 @@
  *  Created on: Feb 9, 2011
  *      Author: Kamanashis Roy
  */
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "opp/opp_factory.h"
 #include "opp/opp_queue.h"
 #include "core/logger.h"
 
+C_CAPSULE_START
 
 enum {
 	OPP_QUEUE_INITIALIZED = 14,
@@ -231,7 +229,7 @@ int opp_enqueue(struct opp_queue*queue, void*obj_data) {
 #else
 	opp_factory_lock_donot_use(queue_factorys+queue->_factory_idx);
 	OBJ_QUEUE_INTEGRITY_TEST(queue);
-	struct opp_queue_item*node = OPP_ALLOC2(queue_factorys+queue->_factory_idx, NULL);
+	struct opp_queue_item*node = (struct opp_queue_item*)OPP_ALLOC2(queue_factorys+queue->_factory_idx, NULL);
 	if(node) {
 		node->obj_data = OPPREF(obj_data);
 		node->_next = NULL;
@@ -525,7 +523,7 @@ int opp_queue_do_full_on_stack(struct opp_queue*queue, int (*func)(void*data, vo
 }
 
 OPP_CB(opp_queue_item) {
-	struct opp_queue_item*node = data;
+	struct opp_queue_item*node = (struct opp_queue_item*)data;
 	switch(callback) {
 	case OPPN_ACTION_FINALIZE:
 		OPPUNREF(node->obj_data);
@@ -606,7 +604,6 @@ int opp_queue_test_deinit() {
 }
 #endif // TEST_OBJ_FACTORY_UTILS
 
-#ifdef __cplusplus
-}
-#endif
+C_CAPSULE_END
+
 
