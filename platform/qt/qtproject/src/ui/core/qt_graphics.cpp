@@ -84,6 +84,7 @@ static void qt_impl_fill_round_rect(struct xultb_graphics*g, int x, int y, int w
 
 static void qt_impl_set_color(struct xultb_graphics*g, int rgb) {
     struct qt_graphics*qtg = (struct qt_graphics*)(g+1);
+    SYNC_LOG(SYNC_VERB, "Trying to set color for %p\n", qtg);
     qtg->pen->setRgb(rgb);
     qtg->painter->setPen(*qtg->pen);
 }
@@ -94,7 +95,7 @@ static void qt_impl_set_font(struct xultb_graphics*g, xultb_font_t*font) {
     //qtg->painter->setFont(font->data);
 }
 
-OPP_CB(xultb_graphics) {
+OPP_CB(qt_impl_graphics) {
     struct xultb_graphics*g = (struct xultb_graphics*)data;
     struct qt_graphics*qtg = (struct qt_graphics*)g+1;
 	switch(callback) {
@@ -138,7 +139,7 @@ struct xultb_graphics*xultb_graphics_platform_create() {
 int xultb_graphics_system_init() {
 	SYNC_ASSERT(OPP_FACTORY_CREATE(&graphics_factory, 1
 			,sizeof(struct xultb_graphics)+sizeof(struct qt_graphics)
-			,OPP_CB_FUNC(xultb_graphics)) == 0);
+            ,OPP_CB_FUNC(qt_impl_graphics)) == 0);
 	return 0;
 }
 
