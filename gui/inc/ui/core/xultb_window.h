@@ -17,10 +17,11 @@
  * along with MiniIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+#ifndef XULTB_WINDOW_H
+#define XULTB_WINDOW_H
 struct graphics;
 
-#include "core/xultb_decorator.h"
+#include "core/config.h"
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_font.h"
 #include "ui/core/xultb_graphics.h"
@@ -68,3 +69,5 @@ struct xultb_window*xultb_window_create(xultb_str_t*title);
 int xultb_window_system_init();
 
 C_CAPSULE_END
+
+#endif // XULTB_WINDOW_H

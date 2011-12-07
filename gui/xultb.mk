@@ -33,6 +33,9 @@ ctags:
 .c.o:
 	$(CC) $(XULTB_CFLAGS) -c $(XULTB_INCLUDES) $< -o $@
 
+#.cpp.o:
+#	$(CC) $(XULTB_CFLAGS) -c $(XULTB_INCLUDES) $< -o $@
+
 $(XULTB_TARGETA): $(XULTB_OBJECTS)
 	ar crv $@ $(XULTB_OBJECTS)
 	nm $@ | wc

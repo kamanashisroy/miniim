@@ -17,29 +17,30 @@
  * along with MiniIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+/*
+ * qt_window.cpp
+ *
+ *  Created on: Jan 14, 2011
+ *      Author: ayaskanti
+ */
 #include <QtGui>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "ui/core/xultb_window.h"
 
-static QMainWindow*qwindow;
+C_CAPSULE_START
+
+//static QMainWindow*qwindow;
 static QApplication*app;
-//static QGraphicsWidget*canvas;
-int xultb_guicore_platform_init(int argc, char **argv) {
-//    char argv[][100] = {"QTguitest", "Someotherthings"};
-//    int argc = 0;
-    app = new QApplication(argc, argv);
-    //canvas = new QGraphicsWidget();
-    //canvas->setSceneRect(0, 0, 800, 600);
-    qwindow = new QMainWindow();
-    qwindow->showMaximized();
+int xultb_guicore_platform_init(int*argc, char *argv[]) {
+    app = new QApplication(*argc, argv);
 }
 
+static QGraphicsView*canvas;
 int xultb_guicore_platform_show(struct xultb_window*win) {
-
+    //qwindow = new QMainWindow();
+    //qwindow->showMaximized();
+    canvas = new QGraphicsView();
+    canvas->show();
 	return 0;
 }
 
@@ -59,6 +60,4 @@ void xultb_log_helper(void*fdptr, const char *fmt, ...) {
 }
 
 
-#ifdef __cplusplus
-}
-#endif
+C_CAPSULE_END

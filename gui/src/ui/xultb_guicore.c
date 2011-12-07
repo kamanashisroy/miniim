@@ -11,7 +11,7 @@
 
 C_CAPSULE_START
 
-int xultb_guicore_system_init(int argc, char **argv) {
+int xultb_guicore_system_init(int*argc, char *argv[]) {
 	xultb_str_t title = xultb_str_create("Xultube");
 
 	xultb_guicore_platform_init(argc, argv);

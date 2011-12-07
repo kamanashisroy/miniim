@@ -5,8 +5,8 @@
  *      Author: ayaskanti
  */
 
-#ifndef GUICORE_H_
-#define GUICORE_H_
+#ifndef XULTB_GUICORE_H
+#define XULTB_GUICORE_H
 
 #include "core/xultb_decorator.h"
 #include "core/xultb_exttypes.h"
@@ -24,11 +24,16 @@
 
 C_CAPSULE_START
 
-int xultb_guicore_system_init(int argc, char **argv);
-int xultb_guicore_platform_init(int argc, char **argv);
+/*
+ * Some library initialization code especially
+ * qt requires the exact argc address passsed into
+ * the main() function.
+ * */
+int xultb_guicore_system_init(int*argc, char *argv[]);
+int xultb_guicore_platform_init(int*argc, char *argv[]);
 int xultb_guicore_platform_show(struct xultb_window*win);
 int xultb_guicore_platform_run();
 
 C_CAPSULE_END
 
-#endif /* GUICORE_H_ */
+#endif /* XULTB_GUICORE_H */
