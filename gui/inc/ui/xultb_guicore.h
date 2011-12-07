@@ -24,6 +24,9 @@
 
 C_CAPSULE_START
 
+enum {
+	OPPN_ACTION_GUI_RENDER = 1024,
+};
 /*
  * Some library initialization code especially
  * qt requires the exact argc address passsed into
@@ -31,8 +34,9 @@ C_CAPSULE_START
  * */
 int xultb_guicore_system_init(int*argc, char *argv[]);
 int xultb_guicore_platform_init(int*argc, char *argv[]);
-int xultb_guicore_platform_show(struct xultb_window*win);
+int xultb_guicore_walk(int ms);
 int xultb_guicore_platform_walk(int ms);
+int xultb_guicore_set_dirty(struct xultb_window*win);
 
 C_CAPSULE_END
 

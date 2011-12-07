@@ -111,7 +111,7 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 				x, y + XULTB_LIST_RESOLUTION);
 	}
 
-	list->win.paint(&list->win, g);
+	if(list->proto_paint)list->proto_paint(&list->win, g);
 	xultb_str_t* hint = list->get_hint(list);
 	if (hint != NULL && !xultb_menu_is_active() && list->selected_index != -1 && list->get_count(list)
 			!= 0) {
@@ -125,16 +125,22 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 	}
 }
 
+
+static void xultb_list_window_paint_wrapper(struct xultb_window*win, struct xultb_graphics*g) {
+	struct xultb_list*list = (struct xultb_list*)win;
+	xultb_list_paint(list, g);
+}
+
 static xultb_str_t* xultb_list_get_hint(struct xultb_list*list) {
 	return NULL;
 }
 
-static void xultb_list_set_action_listener(struct xultb_action_listener*lis) {
+static void xultb_list_set_action_listener(struct xultb_action_listener*list) {
 	return;
 }
 
 static struct opp_factory* xultb_list_get_items(struct xultb_list*list) {
-	return NULL;
+	return &list->_items;
 }
 
 static struct xultb_list_item* xultb_list_get_list_item(void*data) {
@@ -143,6 +149,8 @@ static struct xultb_list_item* xultb_list_get_list_item(void*data) {
 
 OPP_CB(xultb_list) {
 	struct xultb_list*list = (struct xultb_list*)data;
+	// do a cleanup
+	memset(list, 0, sizeof(struct xultb_list));
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		//list->get_selected_index = xultb_list_get_selected_index;
@@ -152,9 +160,14 @@ OPP_CB(xultb_list) {
 		list->get_hint = xultb_list_get_hint;
 		list->set_action_listener = xultb_list_set_action_listener;
 		list->set_selected_index = xultb_list_set_selected_index;
-		list->paint = xultb_list_paint;
+//		list->paint = xultb_list_paint;
+		list->proto_paint = list->win.paint;
+		list->win.paint = xultb_list_window_paint_wrapper;
+		opp_indexed_list_create2(&list->_items, 4);
 		return 0;
 	case OPPN_ACTION_FINALIZE:
+		opp_factory_destroy(&list->_items);
+//		xultb_list_platform_finalize(list);
 		break;
 	}
 	return 0;
@@ -165,6 +178,10 @@ struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_comma
 	struct xultb_list*list = (struct xultb_list*)OPP_ALLOC2(&xultb_list_factory, NULL);
 	list->title = *title;
 	list->default_command = *default_command;
+	if(xultb_window_platform_create(&list->win)) {
+		OPPUNREF(list);
+		return NULL;
+	}
 	return list;
 }
 
@@ -173,6 +190,7 @@ int xultb_list_system_init() {
 			&xultb_list_factory
 			, 1,sizeof(struct xultb_list)
 			, OPP_CB_FUNC(xultb_list)) == 0);
+//	xultb_list_platform_init();
 	return 0;
 }
 

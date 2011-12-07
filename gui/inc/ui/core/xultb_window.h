@@ -63,9 +63,11 @@ struct xultb_window {
 	void (*push_balloon)(xultb_str_t message, xultb_img_t img);
 #endif
 	struct xultb_window*(*get_current)();
+	void *platform_data;
 };
 
 struct xultb_window*xultb_window_create(xultb_str_t*title);
+int xultb_window_platform_create(struct xultb_window*win);
 int xultb_window_system_init();
 
 C_CAPSULE_END

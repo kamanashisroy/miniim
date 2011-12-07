@@ -68,6 +68,8 @@ struct xultb_graphics {
 };
 
 int xultb_graphics_system_init();
+#define xultb_graphics_create xultb_graphics_platform_create
+struct xultb_graphics*xultb_graphics_platform_create();
 
 C_CAPSULE_END
 

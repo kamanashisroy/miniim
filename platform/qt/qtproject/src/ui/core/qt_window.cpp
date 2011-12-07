@@ -1,63 +1,41 @@
-/*
- * This file part of MiniIM.
- *
- * Copyright (C) 2007  Kamanashis Roy
- *
- * MiniIM is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * MiniIM is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with MiniIM.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
-/*
- * qt_window.cpp
- *
- *  Created on: Jan 14, 2011
- *      Author: ayaskanti
- */
-#include <QtGui>
 
-#include "ui/core/xultb_window.h"
+#include "config.h"
+#include "core/logger.h"
+#include "ui/xultb_guicore.h"
+#include "ui/core/xultb_list.h"
+#include <QtGui>
 
 C_CAPSULE_START
 
-//static QMainWindow*qwindow;
-static QApplication*app;
-int xultb_guicore_platform_init(int*argc, char *argv[]) {
-    app = new QApplication(*argc, argv);
+struct qt_window_impl {
+    QGraphicsView*canvas;
+    void (*proto_paint)(struct xultb_window*win, struct xultb_graphics*g);
+};
+
+static void qt_window_impl_paint_wrapper(struct xultb_window*win, struct xultb_graphics*g) {
+    struct qt_window_impl*ql = (struct qt_window_impl*)win->platform_data;
+    SYNC_LOG(SYNC_VERB, "Painting list\n");
+    ql->proto_paint(win, g);
+    SYNC_LOG(SYNC_VERB, "Rendering list\n");
+    opp_callback(g, OPPN_ACTION_GUI_RENDER, ql->canvas);
 }
 
-static QGraphicsView*canvas;
-int xultb_guicore_platform_show(struct xultb_window*win) {
-    //qwindow = new QMainWindow();
-    //qwindow->showMaximized();
-    canvas = new QGraphicsView();
-    canvas->show();
-	return 0;
+static void qt_window_impl_show(struct xultb_window*win) {
+    struct qt_window_impl*ql = (struct qt_window_impl*)win->platform_data;
+    xultb_guicore_set_dirty(win);
+    ql->canvas->show();
 }
 
-int xultb_guicore_platform_walk(int ms) {
-    app->processEvents(0,100);
-	return 0;
-}
 
-void xultb_log_helper(void*fdptr, const char *fmt, ...) {
-	int fd = *(int *)fdptr;
-	va_list ap;
-	char somebuff[256];
-	va_start(ap, fmt);
-	vsnprintf(somebuff, sizeof(somebuff), fmt, ap);
-	va_end(ap);
-	printf("%s", somebuff);
+int xultb_window_platform_create(struct xultb_window*win) {
+    struct qt_window_impl*ql = new qt_window_impl();
+    ql->canvas = new QGraphicsView();
+    ql->proto_paint = win->paint;
+    win->platform_data = ql;
+    win->show = qt_window_impl_show;
+    win->paint = qt_window_impl_paint_wrapper;
+    return 0;
 }
-
 
 C_CAPSULE_END
+

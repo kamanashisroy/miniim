@@ -37,7 +37,7 @@ C_CAPSULE_END
 #ifdef SYMBIAN_CLIENT
 #include "symb_logger.h"
 #else
-#ifdef QT
+#ifdef  QTGUI_LIBRARY
 #include "qt_logger.h"
 #else
 #include "linux_logger.h"

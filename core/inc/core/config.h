@@ -3,7 +3,7 @@
 
 #define COMPONENT_SCALABILITY 2
 
-#ifdef QT
+#ifdef  QTGUI_LIBRARY
 #include "qt_config.h"
 #else
 #include <unistd.h>

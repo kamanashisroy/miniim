@@ -14,7 +14,14 @@ include(.config.pro)
 DEFINES += QTGUI_LIBRARY
 
 SOURCES += src/ui/core/qt_graphics.cpp \
+    src/ui/core/qt_platform.cpp \
     src/ui/core/qt_window.cpp
 
 INCLUDEPATH+=inc
+
+
+CXXFLAGS+=-ggdb3
+
+
+
 

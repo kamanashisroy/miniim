@@ -47,7 +47,7 @@ struct xultb_list {
 	xultb_str_t title;
 	xultb_str_t default_command;
 	
-	void (*set_action_listener)(struct xultb_action_listener*lis);
+	void (*set_action_listener)(struct xultb_action_listener*list);
 	
 	struct opp_factory*(*get_items)(struct xultb_list*list);
 	struct xultb_list_item* (*get_list_item)(void*data);
@@ -59,7 +59,9 @@ struct xultb_list {
 	void (*set_selected_index)(struct xultb_list*list, int index);
 	int (*get_selected_index)(struct xultb_list*list);
 	
-	void (*paint)(struct xultb_list*list, struct xultb_graphics*g);
+//	void (*paint)(struct xultb_list*list, struct xultb_graphics*g);
+	void (*proto_paint)(struct xultb_window*win, struct xultb_graphics*g);
+	struct opp_factory _items;
 };
 
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command);
