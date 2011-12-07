@@ -28,8 +28,6 @@ int xultb_guicore_system_init(int*argc, char *argv[]) {
 			, win->width, win->height);
 
 	xultb_guicore_platform_show(win);
-
-	xultb_guicore_platform_run();
 	return 0;
 }
 

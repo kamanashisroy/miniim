@@ -44,8 +44,8 @@ int xultb_guicore_platform_show(struct xultb_window*win) {
 	return 0;
 }
 
-int xultb_guicore_platform_run() {
-    app->exec();
+int xultb_guicore_platform_walk(int ms) {
+    app->processEvents(0,100);
 	return 0;
 }
 

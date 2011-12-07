@@ -12,7 +12,11 @@ int main(int argc, char *argv[]) {
 
 	xultb_guicore_system_init(&argc, argv);
 	xultb_list_create(&title, &dc);
-	sleep(5);
+
+	while(1) {
+		usleep(100);
+		xultb_guicore_platform_walk(100);
+	}
 	return 0;
 }
 

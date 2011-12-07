@@ -32,7 +32,7 @@ C_CAPSULE_START
 int xultb_guicore_system_init(int*argc, char *argv[]);
 int xultb_guicore_platform_init(int*argc, char *argv[]);
 int xultb_guicore_platform_show(struct xultb_window*win);
-int xultb_guicore_platform_run();
+int xultb_guicore_platform_walk(int ms);
 
 C_CAPSULE_END
 
