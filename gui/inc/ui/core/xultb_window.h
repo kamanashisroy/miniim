@@ -66,7 +66,7 @@ struct xultb_window {
 	void *platform_data;
 };
 
-struct xultb_window*xultb_window_create(xultb_str_t*title);
+struct xultb_window*xultb_window_create(xultb_str_t*title, struct xultb_window*win);
 int xultb_window_platform_create(struct xultb_window*win);
 int xultb_window_system_init();
 

@@ -14,6 +14,8 @@ struct qt_window_impl {
 
 static void qt_window_impl_paint_wrapper(struct xultb_window*win, struct xultb_graphics*g) {
     struct qt_window_impl*ql = (struct qt_window_impl*)win->platform_data;
+    // TODO see if the xultb_graphics is initiated ..
+    opp_callback(g, 999, ql->canvas);
     SYNC_LOG(SYNC_VERB, "Painting list\n");
     ql->proto_paint(win, g);
     SYNC_LOG(SYNC_VERB, "Rendering list\n");

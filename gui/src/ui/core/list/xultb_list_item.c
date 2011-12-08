@@ -19,6 +19,7 @@
  */
 
 #include "config.h"
+#include "core/logger.h"
 #include "core/xultb_exttypes.h"
 #include "core/xultb_obj_factory.h"
 #include "ui/core/xultb_text_format.h"
@@ -146,6 +147,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 		imgspacing = XULTB_LIST_ITEM_RESOLUTION + XULTB_LIST_ITEM_PADDING;
 	}
 
+	SYNC_LOG(SYNC_VERB, "Drawing list item ..\n");
 	// Write the Label
 	labelWidth = labelHeight = start = pos = ret = lineCount = 0;
 	if (item->label.len != 0) {

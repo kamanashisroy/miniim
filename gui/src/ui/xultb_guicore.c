@@ -15,8 +15,6 @@ C_CAPSULE_START
 static struct opp_queue painter_queue;
 static struct xultb_graphics*gr;
 int xultb_guicore_system_init(int*argc, char *argv[]) {
-	xultb_str_t title = xultb_str_create("Xultube");
-
 	xultb_guicore_platform_init(argc, argv);
 	xultb_graphics_system_init();
 	xultb_list_item_system_init();
@@ -45,6 +43,7 @@ int xultb_guicore_walk(int ms) {
 		OPPUNREF(win);
 	}
 	xultb_guicore_platform_walk(ms);
+	return 0;
 }
 
 C_CAPSULE_END

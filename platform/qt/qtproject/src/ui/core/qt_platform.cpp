@@ -32,6 +32,7 @@ C_CAPSULE_START
 static QApplication*app;
 int xultb_guicore_platform_init(int*argc, char *argv[]) {
     app = new QApplication(*argc, argv);
+    return 0;
 }
 
 int xultb_guicore_platform_walk(int ms) {
@@ -40,7 +41,7 @@ int xultb_guicore_platform_walk(int ms) {
 }
 
 void xultb_log_helper(void*fdptr, const char *fmt, ...) {
-	int fd = *(int *)fdptr;
+//	int fd = *(int *)fdptr;
 	va_list ap;
 	char somebuff[256];
 	va_start(ap, fmt);

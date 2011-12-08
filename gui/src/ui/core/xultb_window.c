@@ -27,13 +27,6 @@
 C_CAPSULE_START
 
 static struct opp_factory window_factory;
-struct xultb_window*xultb_window_create(xultb_str_t*title) {
-	struct xultb_window*win = (struct xultb_window*)OPP_ALLOC2(&window_factory, NULL);
-	if(title)win->title = *title;
-	SYNC_LOG_OPP(&window_factory);
-	return win;
-}
-
 static void xultb_window_init(struct xultb_window*win, int w, int h) {
 #if 0
 	if(SharedCanvas.singleInstance == null) {
@@ -49,8 +42,18 @@ static void xultb_window_init(struct xultb_window*win, int w, int h) {
 	/** The height of the list */
 	/** Menu start position by pixel along Y-axis */
 	win->height = h;
-	win->menuY = h - xultb_menu_get_base_height();
-	win->panelTop = win->TITLE_FONT->get_height(win->TITLE_FONT)+ win->PADDING*2;
+	win->menuY = h - 0;//xultb_menu_get_base_height();
+	win->panelTop = /*win->TITLE_FONT->get_height(win->TITLE_FONT)*/+ win->PADDING*2;
+}
+
+struct xultb_window*xultb_window_create(xultb_str_t*title, struct xultb_window*win) {
+	if(!win && !(win = (struct xultb_window*)OPP_ALLOC2(&window_factory, NULL))) {
+		return NULL;
+	}
+	xultb_window_init(win, 100, 100);
+	if(title)win->title = *title;
+	xultb_window_platform_create(win);
+	return win;
 }
 
 static void xultb_window_show(struct xultb_window*win) {

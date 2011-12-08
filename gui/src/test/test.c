@@ -25,8 +25,10 @@ int main(int argc, char *argv[]) {
 	struct xultb_list*list = xultb_list_create(&title, &dc);
 	xultb_str_t elem1 = xultb_str_create("good");
 	xultb_str_t elem2 = xultb_str_create("very good");
-	struct xultb_list_item*item = xultb_list_item_create_label(&elem1, NULL);
-	opp_indexed_list_set(&list->_items, 0, item);
+	struct xultb_list_item*item1 = xultb_list_item_create_label(&elem1, NULL);
+	struct xultb_list_item*item2 = xultb_list_item_create_label(&elem2, NULL);
+	opp_indexed_list_set(&list->_items, 0, item1);
+	opp_indexed_list_set(&list->_items, 1, item2);
 	list->win.show(&list->win);
 
 	while(1) {

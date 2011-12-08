@@ -28,8 +28,8 @@ obj_dir:
 ctags:
 	ctags $(SOURCES)
 	
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(wildcard extobjs/*.o) $(LDFLAGS) $(LIBS)
+$(TARGET): $(OBJECTS) build_extobjs
+	$(CC) $(CFLAGS) -o $(TARGET) $(wildcard extobjs/*.o) $(LDFLAGS) $(LIBS)
 
 qtsharedlib:
 	$(PQTMAKE) all

@@ -19,6 +19,7 @@
  */
 
 #include "config.h"
+#include "core/logger.h"
 #include "ui/core/xultb_list.h"
 
 static struct xultb_list_item*xultb_list_get_selected(struct xultb_list*list) {
@@ -59,6 +60,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 	void*obj;
 	int posY = list->win.panelTop + list->topMargin;
 
+	SYNC_LOG(SYNC_VERB, "Iterating items...\n");
 	// sanity check
 	if (items == NULL) {
 		return;
@@ -70,11 +72,13 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 
 	g->set_font(g, list->item_font);
 
+	SYNC_LOG(SYNC_VERB, "Iterating items(%d)\n", list->vpos);
 	for (i = list->vpos - 1; (obj = opp_indexed_list_get(items,i));i++) {
 		/* see if selected index is more than the item count */
 		if (list->selected_index > i && !opp_indexed_list_get(items,i)) {
 			list->selected_index = i;
 		}
+		SYNC_LOG(SYNC_VERB, "Showing item\n");
 		posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
 		if (posY > (list->win.menuY - list->bottomMargin)) {
 			if (list->selected_index >= i && list->vpos < list->selected_index) {
@@ -98,7 +102,8 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 }
 
 static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
-    /* Draw the List Items */
+	SYNC_LOG(SYNC_VERB, "Drawing list...\n");
+	/* Draw the List Items */
 	xultb_list_show_items(list, g);
 	if (list->vpos > 0) {
 		// So there are elements that can be scrolled back ..
@@ -164,6 +169,7 @@ OPP_CB(xultb_list) {
 		list->proto_paint = list->win.paint;
 		list->win.paint = xultb_list_window_paint_wrapper;
 		opp_indexed_list_create2(&list->_items, 4);
+		list->vpos = 1;
 		return 0;
 	case OPPN_ACTION_FINALIZE:
 		opp_factory_destroy(&list->_items);
@@ -178,7 +184,7 @@ struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_comma
 	struct xultb_list*list = (struct xultb_list*)OPP_ALLOC2(&xultb_list_factory, NULL);
 	list->title = *title;
 	list->default_command = *default_command;
-	if(xultb_window_platform_create(&list->win)) {
+	if(!xultb_window_create(title, &list->win)) {
 		OPPUNREF(list);
 		return NULL;
 	}
