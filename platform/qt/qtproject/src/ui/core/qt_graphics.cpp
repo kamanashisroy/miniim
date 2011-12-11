@@ -22,12 +22,19 @@ C_CAPSULE_START
 struct qt_graphics {
     QPainter*painter;
     QColor*pen;
+    QWidget*canvas;
 };
 
 #define TO_QT_G(x) (struct qt_graphics*)(x+1)
 static struct opp_factory graphics_factory;
 
 C_CAPSULE_END
+
+class QtXulTbGraphics: public QWidget {
+private:
+    QPainter*painter;
+    QColor*pen;
+};
 
 #if 0
 void(*draw_image)(struct xultb_graphics*g, struct xultb_img*img, int x, int y, int anchor);
@@ -42,6 +49,16 @@ void(*set_color)(struct xultb_graphics*g, int rgb);
 void(*set_font)(struct xultb_graphics*g, xultb_font_t*font);
 #endif
 
+#define QTG_CAPSULE(code) ({struct qt_graphics *qtg = TO_QT_G(g); \
+    if(!qtg->canvas) { \
+        SYNC_LOG(SYNC_VERB, "Could not draw canvas\n"); \
+        return; \
+    } \
+    qtg->painter->begin(qtg->canvas); \
+    code; \
+    qtg->painter->end(); \
+})
+
 static void qt_impl_draw_image(struct xultb_graphics*g, struct xultb_img*img, int x, int y, int anchor) {
     struct qt_graphics*qtg = TO_QT_G(g);
     // TODO create qimage
@@ -49,30 +66,35 @@ static void qt_impl_draw_image(struct xultb_graphics*g, struct xultb_img*img, in
 }
 
 static void qt_impl_draw_line(struct xultb_graphics*g, int x1, int y1, int x2, int y2) {
-    struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     qtg->painter->drawLine(x1, y1, x2, y2);
+    );
 }
 
 static void qt_impl_draw_rect(struct xultb_graphics*g, int x, int y, int width, int height) {
-    struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     qtg->painter->drawRect(x, y, width, height);
+    );
 }
 
 static void qt_impl_draw_round_rect(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight) {
-    struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     qtg->painter->drawRoundedRect(x, y, width, height, arcWidth, arcHeight,  Qt::RelativeSize);
+    );
 }
 
 static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor) {
-    struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     QString*text = new QString(str->str);
     qtg->painter->drawText(x, y, *text);
 	delete text;
+    );
 }
 
 static void qt_impl_fill_rect(struct xultb_graphics*g, int x, int y, int width, int height) {
-    struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     qtg->painter->fillRect(x, y, width, height, *qtg->pen);
+    );
 }
 
 static void qt_impl_fill_triangle(struct xultb_graphics*g, int x1, int y1, int x2, int y2, int x3, int y3) {
@@ -83,15 +105,18 @@ static void qt_impl_fill_triangle(struct xultb_graphics*g, int x1, int y1, int x
 
 static void qt_impl_fill_round_rect(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight) {
     struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     qtg->painter->fillRect(x, y, width, height, *qtg->pen);
+    );
 }
 
 static void qt_impl_set_color(struct xultb_graphics*g, int rgb) {
-    struct qt_graphics*qtg = TO_QT_G(g);
+    QTG_CAPSULE(
     //SYNC_LOG_OPP(&graphics_factory);
     //opp_callback2(g, OPPN_ACTION_VIEW, NULL);
     qtg->pen->setRgb(rgb);
     qtg->painter->setPen(*qtg->pen);
+    );
 }
 
 static void qt_impl_set_font(struct xultb_graphics*g, xultb_font_t*font) {
@@ -120,9 +145,10 @@ OPP_CB(qt_impl_graphics) {
         return 0;
 	case 999:
 		if(!qtg->painter) {
-			QGraphicsView*canvas = (QGraphicsView*)cb_data;
-			qtg->painter = new QPainter(canvas);
-		}
+            qtg->canvas = (QGraphicsView*)cb_data;
+            qtg->painter = new QPainter(qtg->canvas);
+            SYNC_LOG(SYNC_VERB, "Canvas is set\n");
+        }
 		break;
     case OPPN_ACTION_GUI_RENDER:
     {
