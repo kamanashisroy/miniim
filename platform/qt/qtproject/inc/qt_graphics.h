@@ -9,6 +9,4 @@
 #define QT_GRAPHICS_H_
 
 
-
-
 #endif /* QT_GRAPHICS_H_ */
