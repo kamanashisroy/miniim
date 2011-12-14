@@ -151,11 +151,12 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 	// Write the Label
 	labelWidth = labelHeight = start = pos = ret = lineCount = 0;
 	if (item->label.len != 0) {
-
+		SYNC_LOG(SYNC_VERB, "We have a text in label ..\n");
 		// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.listitemfactory.fg%);
 		g->set_color(g, 0x000000);
 		while ((pos = xultb_wrap_next(&item->label, item->ITEM_FONT, start, width
 				- imgspacing - XULTB_LIST_ITEM_DPADDING)) != -1) {
+			SYNC_LOG(SYNC_VERB, "Wrapping text ..\n");
 			if (item->focused && item->is_editable && item->type == XULTB_LIST_ITEM_LABEL) {
 				// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.listitemfactory.bgHover%);
 				g->set_color(g, 0x0099CC);
@@ -192,6 +193,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 				// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.listitemfactory.fgHover%);
 				g->set_color(g, 0xFFFFFF);
 			}
+			SYNC_LOG(SYNC_VERB, "Putting text ..\n");
 			g->draw_string(g, xultb_substring((&item->label), start, pos, (&tmp_str)), x + imgspacing + XULTB_LIST_ITEM_PADDING,
 					y + ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 			ret += item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;

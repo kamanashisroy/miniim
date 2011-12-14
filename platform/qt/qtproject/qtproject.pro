@@ -17,6 +17,8 @@ SOURCES += src/ui/core/qt_graphics.cpp \
     src/ui/core/qt_platform.cpp \
     src/ui/core/qt_window.cpp
 
+HEADERS += inc/qt_config.h inc/qt_graphics.h inc/qt_window.h inc/qt_logger.h
+
 INCLUDEPATH+=inc
 
 

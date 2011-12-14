@@ -6,10 +6,10 @@ include platform.mk
 CFLAGS+=-Wall -ggdb3 -D_GNU_SOURCE
 
 XULMAKE=$(MAKE) -f xultb.mk -C ../../core -I ../platform/qt
-XULMAKE+=--quiet
+#XULMAKE+=--quiet
 
 XULGMAKE=$(MAKE) -f xultb.mk -C ../../gui -I ../platform/qt
-XULGMAKE+=--quiet
+#XULGMAKE+=--quiet
 
 QTMAKETEMPLATE = "DEFINES += QT\r\n\
 DEFINES += _GNU_SOURCE\r\n\

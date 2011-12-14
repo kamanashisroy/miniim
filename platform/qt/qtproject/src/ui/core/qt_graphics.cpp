@@ -16,136 +16,13 @@
 #include <QPixmap>
 #include <QVariant>
 
-
-
-class QtXulTbGraphics: public QWidget {
-Q_OBJECT
-public:
-  QtXulTbGraphics(QWidget *parent = 0 ):QWidget( parent ) {
-    QSizePolicy policy( QSizePolicy::Preferred, QSizePolicy::Preferred );
-    policy.setHeightForWidth( true );
-    setSizePolicy( policy );
-    pen = new QColor();
-    page = new QPixmap(100,100);
-    painter = new QPainter(page);
-  }
-  ~QtXulTbGraphics() {
-    if(painter)delete painter;
-    if(pen)delete pen;
-    if(page)delete page;
-  }
-
-public: // implements QWidget method
-  int heightForWidth(int width) const {
-    return width;
-  }
-  QSize sizeHint() const {
-    return QSize( 100, 100 );
-  }
-  QSize minimumSizeHint () const {
-      return QSize( 100, 100 );
-  }
-
-public  Q_SLOTS: // implements QWidget method
-  void 	setVisible ( bool ) {
-      return;
-  }
-
-protected:
-    // Event handlers
-    void mousePressEvent(QMouseEvent *) {
-    }
-    void mouseReleaseEvent(QMouseEvent *) {}
-    void mouseDoubleClickEvent(QMouseEvent *) {}
-    void mouseMoveEvent(QMouseEvent *){}
-#ifndef QT_NO_WHEELEVENT
-    void wheelEvent(QWheelEvent *){}
-#endif
-    void keyPressEvent(QKeyEvent *){}
-    void keyReleaseEvent(QKeyEvent *){}
-    void focusInEvent(QFocusEvent *){}
-    void focusOutEvent(QFocusEvent *){}
-    void enterEvent(QEvent *){}
-    void leaveEvent(QEvent *){}
-    void paintEvent(QPaintEvent *){
-    //QPainter p( this );
-    page->fill(this, 0, 0);
-    //p.drawImage(0, 0, *page);
-  }
-    void moveEvent(QMoveEvent *){}
-    void resizeEvent(QResizeEvent *){}
-    void closeEvent(QCloseEvent *){}
-#ifndef QT_NO_CONTEXTMENU
-    void contextMenuEvent(QContextMenuEvent *){}
-#endif
-#ifndef QT_NO_TABLETEVENT
-    void tabletEvent(QTabletEvent *){}
-#endif
-#ifndef QT_NO_ACTION
-    void actionEvent(QActionEvent *){}
-#endif
-
-#ifndef QT_NO_DRAGANDDROP
-    void dragEnterEvent(QDragEnterEvent *){}
-    void dragMoveEvent(QDragMoveEvent *){}
-    void dragLeaveEvent(QDragLeaveEvent *){}
-    void dropEvent(QDropEvent *){}
-#endif
-
-    void showEvent(QShowEvent *){}
-    void hideEvent(QHideEvent *){}
-
-#if defined(Q_WS_MAC)
-    bool macEvent(EventHandlerCallRef, EventRef){return false;}
-#endif
-#if defined(Q_WS_WIN)
-    bool winEvent(MSG *message, long *result){return false;}
-#endif
-#if defined(Q_WS_X11)
-    bool x11Event(XEvent *){return false;}
-#endif
-#if defined(Q_WS_QWS)
-    bool qwsEvent(QWSEvent *){return false;}
-#endif
-
-    // Misc. protected functions
-    void changeEvent(QEvent *){}
-
-    void inputMethodEvent(QInputMethodEvent *){}
-public:
-    QVariant inputMethodQuery(Qt::InputMethodQuery) const {
-      return QVariant();
-    }
-
-protected:
-    bool focusNextPrevChild(bool ) {
-        return false;
-    }
-protected:
-    void styleChange(QStyle&) {} // compat
-    void enabledChange(bool) {}  // compat
-    void paletteChange(const QPalette &) {}  // compat
-    void fontChange(const QFont &) {} // compat
-    void windowActivationChange(bool) {} // compat
-    void languageChange() {} // compat
-public:
-    QPainter*painter;
-    QColor*pen;
-private:
-    QPixmap*page;
-};
-
 C_CAPSULE_START
 static struct opp_factory graphics_factory;
-#define TO_QT_G(x) (QtXulTbGraphics*)(x+1)
-#define QTG_CAPSULE(code) ({QtXulTbGraphics *qtg = TO_QT_G(g); \
-    code; \
-})
 
 static void qt_impl_draw_image(struct xultb_graphics*g, struct xultb_img*img, int x, int y, int anchor) {
-    QtXulTbGraphics*qtg = TO_QT_G(g);
-    // TODO create qimage
-    //qtg->painter->drawImage(x, y, img->data);
+	QTG_CAPSULE(
+//			qtg->painter->drawImage(x, y, img->data);
+	);
 }
 
 static void qt_impl_draw_line(struct xultb_graphics*g, int x1, int y1, int x2, int y2) {
@@ -168,6 +45,7 @@ static void qt_impl_draw_round_rect(struct xultb_graphics*g, int x, int y, int w
 
 static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor) {
     QTG_CAPSULE(
+    SYNC_LOG(SYNC_VERB, "Drawing string %s\n", str->str);
     QString*text = new QString(str->str);
     qtg->painter->drawText(x, y, *text);
 	delete text;
@@ -208,8 +86,6 @@ static void qt_impl_set_font(struct xultb_graphics*g, xultb_font_t*font) {
     //qtg->painter->setFont(font->data);
 }
 
-QWidget*xultbCanvas = NULL;
-
 OPP_CB(qt_impl_graphics) {
     struct xultb_graphics*g = (struct xultb_graphics*)data;
     QtXulTbGraphics*qtg = TO_QT_G(g);
@@ -225,9 +101,7 @@ OPP_CB(qt_impl_graphics) {
         g->fill_triangle = qt_impl_fill_triangle;
         g->set_color = qt_impl_set_color;
         g->set_font = qt_impl_set_font;
-        //new (qtg) QtXulTbGraphics();
-        new QtXulTbGraphics(NULL);
-        xultbCanvas = qtg;
+        new (qtg) QtXulTbGraphics();
         return 0;
     case OPPN_ACTION_GUI_RENDER:
     {
@@ -240,8 +114,7 @@ OPP_CB(qt_impl_graphics) {
         SYNC_LOG(SYNC_VERB, "Allocated at %p\n", data);
         break;
     case OPPN_ACTION_FINALIZE:
-        //qtg->~QtXulTbGraphics();
-        xultbCanvas = NULL;
+        qtg->~QtXulTbGraphics();
 		break;
 	}
 	return 0;

@@ -16,7 +16,7 @@ LIBS+=$(STATIC_LIBS)
 
 
 PQTMAKE=$(MAKE) -C ../../platform/qt
-PQTMAKE+=--quiet
+#PQTMAKE+=--quiet
 
 all: qtsharedlib $(TARGET)
 	echo -e "export LD_LIBRARY_PATH=$(QT_HOME)/lib"
