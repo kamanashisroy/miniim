@@ -291,6 +291,7 @@ OPP_CB(xultb_list_item) {
 	struct xultb_list_item*item = (struct xultb_list_item*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
+		item->ITEM_FONT = xultb_font_create();
 		item->paint = xultb_list_item_paint;
 		return 0;
 	case OPPN_ACTION_FINALIZE:

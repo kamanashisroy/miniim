@@ -3,7 +3,7 @@
 #include "ui/core/xultb_text_format.h"
 
 int xultb_wrap_next(xultb_str_t*str, xultb_font_t*font, int pos, int width) {
-#if 0
+#if 1
 	int i = pos,start = pos;
 	if(str == NULL || font == NULL || width <= 0 ) {
 	  return -1;

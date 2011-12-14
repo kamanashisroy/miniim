@@ -182,6 +182,7 @@ OPP_CB(xultb_list) {
 static struct opp_factory xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
 	struct xultb_list*list = (struct xultb_list*)OPP_ALLOC2(&xultb_list_factory, NULL);
+	list->item_font = xultb_font_create();
 	list->title = *title;
 	list->default_command = *default_command;
 	if(!xultb_window_create(title, &list->win)) {

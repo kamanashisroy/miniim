@@ -9,6 +9,7 @@
 #include "ui/xultb_guicore.h"
 #include "ui/core/xultb_graphics.h"
 #include "qt_graphics.h"
+#include "qt_font.h"
 //#include <QtCore>
 #include <QPainter>
 #include <QColor>
@@ -81,9 +82,11 @@ static void qt_impl_set_color(struct xultb_graphics*g, int rgb) {
 }
 
 static void qt_impl_set_font(struct xultb_graphics*g, xultb_font_t*font) {
-    QtXulTbGraphics*qtg = TO_QT_G(g);
-    // TODO set font
-    //qtg->painter->setFont(font->data);
+    SYNC_ASSERT(font);
+    QTG_CAPSULE(
+    QtXulTbFont*qtfont = TO_QT_FONT(font);
+    qtg->painter->setFont(qtfont->font);
+	);
 }
 
 OPP_CB(qt_impl_graphics) {

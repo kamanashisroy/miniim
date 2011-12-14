@@ -15,9 +15,10 @@ DEFINES += QTGUI_LIBRARY
 
 SOURCES += src/ui/core/qt_graphics.cpp \
     src/ui/core/qt_platform.cpp \
-    src/ui/core/qt_window.cpp
+    src/ui/core/qt_window.cpp \
+    src/ui/core/qt_font.cpp
 
-HEADERS += inc/qt_config.h inc/qt_graphics.h inc/qt_window.h inc/qt_logger.h
+HEADERS += inc/qt_config.h inc/qt_graphics.h inc/qt_window.h inc/qt_logger.h inc/qt_font.h
 
 INCLUDEPATH+=inc
 

@@ -12,6 +12,10 @@ struct xultb_font {
 
 typedef struct xultb_font xultb_font_t;
 
+#define xultb_font_create xultb_font_platform_create
+struct xultb_font*xultb_font_platform_create();
+int xultb_font_system_init();
+
 C_CAPSULE_END
 
 #endif // XULTB_FONT_H
