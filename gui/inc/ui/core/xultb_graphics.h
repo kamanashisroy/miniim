@@ -5,6 +5,7 @@
 #include "core/xultb_decorator.h"
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_font.h"
+#include "opp/opp_type.h"
 
 C_CAPSULE_START
 struct xultb_img;
@@ -66,6 +67,8 @@ struct xultb_graphics {
 	void(*translate)(int x, int y);
 #endif
 };
+
+//opp_type_new(xultb_graphics);
 
 int xultb_graphics_system_init();
 #define xultb_graphics_create xultb_graphics_platform_create
