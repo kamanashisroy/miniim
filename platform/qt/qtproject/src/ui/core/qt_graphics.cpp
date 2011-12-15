@@ -137,5 +137,6 @@ int xultb_graphics_system_init() {
             ,OPP_CB_FUNC(qt_impl_graphics)) == 0);
 	return 0;
 }
+
 C_CAPSULE_END
 

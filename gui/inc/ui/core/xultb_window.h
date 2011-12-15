@@ -21,6 +21,7 @@
 #define XULTB_WINDOW_H
 struct graphics;
 
+#include "opp/opp_type.h"
 #include "core/config.h"
 #include "core/xultb_exttypes.h"
 #include "ui/core/xultb_font.h"
@@ -28,21 +29,7 @@ struct graphics;
 
 C_CAPSULE_START
 
-struct xultb_window {
-	int PADDING;
-	xultb_str_t title;
-	xultb_font_t*TITLE_FONT;
-	
-	/** The width of the list */
-	int width;
-	int halfWidth;
-
-	/** The height of the list */
-	/** Menu start position by pixel along Y-axis */
-	int height;
-	int menuY;
-	int panelTop;
-	
+opp_type_vtable(xultb_window,
 	void (*init)(struct xultb_window*win, int w, int h);
 	void (*show)(struct xultb_window*win);
 	void (*show_full)(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);
@@ -63,12 +50,28 @@ struct xultb_window {
 	void (*push_balloon)(xultb_str_t message, xultb_img_t img);
 #endif
 	struct xultb_window*(*get_current)();
-	void *platform_data;
-};
+);
 
-struct xultb_window*xultb_window_create(xultb_str_t*title, struct xultb_window*win);
-int xultb_window_platform_create(struct xultb_window*win);
+opp_type_obj(xultb_window,
+	int PADDING;
+	xultb_str_t title;
+	xultb_font_t*TITLE_FONT;
+
+	/** The width of the list */
+	int width;
+	int halfWidth;
+
+	/** The height of the list */
+	/** Menu start position by pixel along Y-axis */
+	int height;
+	int menuY;
+	int panelTop;
+);
+
+struct xultb_window*xultb_window_extend(xultb_str_t*title);
+struct xultb_window*xultb_window_platform_create(int (*callback)(void*data, int callback, void*cb_data, va_list ap));
 int xultb_window_system_init();
+int xultb_window_system_platform_init();
 
 C_CAPSULE_END
 

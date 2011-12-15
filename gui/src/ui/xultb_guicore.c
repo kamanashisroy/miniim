@@ -40,7 +40,7 @@ int xultb_guicore_walk(int ms) {
 			break;
 		}
 		SYNC_LOG(SYNC_VERB, "Painting window\n");
-		win->paint(win, gr);
+		win->vtable->paint(win, gr);
 		OPPUNREF(win);
 	}
 	xultb_guicore_platform_walk(ms);

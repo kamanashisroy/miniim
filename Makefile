@@ -1,8 +1,10 @@
 
 
 all:
-	make -C core
-	make -C gui
+	$(MAKE) -C apps/qt_test
+
+#make -C core
+#make -C gui
 	
 
 test:
@@ -10,7 +12,10 @@ test:
 	make -C gui test
 
 clean:
-	make -C core clean
-	make -C gui clean
+	$(MAKE) -C apps/qt_test clean
+
+#make -C core
+#make -C core clean
+#make -C gui clean
 
 .PHONY: clean test

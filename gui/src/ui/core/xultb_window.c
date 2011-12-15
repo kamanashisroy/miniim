@@ -26,7 +26,6 @@
 
 C_CAPSULE_START
 
-static struct opp_factory window_factory;
 static void xultb_window_init(struct xultb_window*win, int w, int h) {
 #if 0
 	if(SharedCanvas.singleInstance == null) {
@@ -44,16 +43,6 @@ static void xultb_window_init(struct xultb_window*win, int w, int h) {
 	win->height = h;
 	win->menuY = h - 0;//xultb_menu_get_base_height();
 	win->panelTop = /*win->TITLE_FONT->get_height(win->TITLE_FONT)*/+ win->PADDING*2;
-}
-
-struct xultb_window*xultb_window_create(xultb_str_t*title, struct xultb_window*win) {
-	if(!win && !(win = (struct xultb_window*)OPP_ALLOC2(&window_factory, NULL))) {
-		return NULL;
-	}
-	xultb_window_init(win, 100, 100);
-	if(title)win->title = *title;
-	xultb_window_platform_create(win);
-	return win;
 }
 
 static void xultb_window_show(struct xultb_window*win) {
@@ -93,17 +82,20 @@ static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g)
 	xultb_menu_show(g, win->width, win->height);
 }
 
+struct opp_vtable_xultb_window vtable_xultb_window = {
+	.init = xultb_window_init,
+	.show = xultb_window_show,
+	.show_full = xultb_window_show_full,
+	.is_showing = xultb_window_is_showing,
+	.paint = xultb_window_paint,
+};
+
 OPP_CB(xultb_window) {
 	struct xultb_window*win = (struct xultb_window*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		win->PADDING = 2;
-		win->title = xultb_str_create("XulTube");
-		win->init = xultb_window_init;
-		win->show = xultb_window_show;
-		win->show_full = xultb_window_show_full;
-		win->is_showing = xultb_window_is_showing;
-		win->paint = xultb_window_paint;
+		opp_vtable_set(win, xultb_window);
 		return 0;
 	case OPPN_ACTION_FINALIZE:
 		break;
@@ -111,13 +103,18 @@ OPP_CB(xultb_window) {
 	return 0;
 }
 
+struct xultb_window*xultb_window_create(struct xultb_window*win, xultb_str_t*title) {
+	struct xultb_window*win = xultb_window_platform_create(OPP_CB_FUNC(xultb_window));
+	if(!win) {
+		return NULL;
+	}
+	xultb_window_init(win, 100, 100);
+	if(title)win->title = *title;
+	return win;
+}
+
 int xultb_window_system_init() {
-	SYNC_ASSERT(
-			OPP_FACTORY_CREATE(&window_factory
-			,1
-			,sizeof(struct xultb_window)
-			, OPP_CB_FUNC(xultb_window)
-		) == 0);
+	xultb_window_system_platform_init();
 	return 0;
 }
 

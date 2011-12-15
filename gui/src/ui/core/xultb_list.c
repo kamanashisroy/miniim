@@ -22,6 +22,10 @@
 #include "core/logger.h"
 #include "ui/core/xultb_list.h"
 
+C_CAPSULE_START
+
+opp_vtable_extern(xultb_window);
+
 static struct xultb_list_item*xultb_list_get_selected(struct xultb_list*list) {
 	return NULL;
 }
@@ -56,7 +60,7 @@ static int xultb_list_show_item(struct xultb_list*list, struct xultb_graphics*g,
 
 static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*g) {
 	int i = -1;
-	struct opp_factory*items = list->get_items(list);
+	struct opp_factory*items = list->vtable->get_items(list);
 	void*obj;
 	int posY = list->win.panelTop + list->topMargin;
 
@@ -116,9 +120,9 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 				x, y + XULTB_LIST_RESOLUTION);
 	}
 
-	if(list->proto_paint)list->proto_paint(&list->win, g);
-	xultb_str_t* hint = list->get_hint(list);
-	if (hint != NULL && !xultb_menu_is_active() && list->selected_index != -1 && list->get_count(list)
+	vtable_xultb_window.paint(&list->win, g);
+	xultb_str_t* hint = list->vtable->get_hint(list);
+	if (hint != NULL && !xultb_menu_is_active() && list->selected_index != -1 && list->vtable->get_count(list)
 			!= 0) {
 		// #ifndef net.ayaslive.miniim.ui.core.list.draw_menu_at_last
 		// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.bg%);
@@ -152,22 +156,38 @@ static struct xultb_list_item* xultb_list_get_list_item(void*data) {
 	return NULL;
 }
 
+struct opp_vtable_xultb_list vtable_xultb_list = {
+		//.get_selected_index = xultb_list_get_selected_index,
+		.get_selected = xultb_list_get_selected,
+		.get_items = xultb_list_get_items,
+		.get_list_item = xultb_list_get_list_item,
+		.get_hint = xultb_list_get_hint,
+		.set_action_listener = xultb_list_set_action_listener,
+		.set_selected_index = xultb_list_set_selected_index
+};
+
+
+static struct opp_vtable_xultb_window vtable_xultb_window_list;
+/*
+opp_vtable_define(xultb_list,(
+	.get_selected = xultb_list_get_selected,
+	.get_items = xultb_list_get_items,
+	.get_list_item = xultb_list_get_list_item,
+	.get_hint = xultb_list_get_hint,
+	.set_action_listener = xultb_list_set_action_listener,
+	.set_selected_index = xultb_list_set_selected_index
+	)
+);
+*/
+
 OPP_CB(xultb_list) {
 	struct xultb_list*list = (struct xultb_list*)data;
 	// do a cleanup
 	memset(list, 0, sizeof(struct xultb_list));
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
-		//list->get_selected_index = xultb_list_get_selected_index;
-		list->get_selected = xultb_list_get_selected;
-		list->get_items = xultb_list_get_items;
-		list->get_list_item = xultb_list_get_list_item;
-		list->get_hint = xultb_list_get_hint;
-		list->set_action_listener = xultb_list_set_action_listener;
-		list->set_selected_index = xultb_list_set_selected_index;
-//		list->paint = xultb_list_paint;
-		list->proto_paint = list->win.paint;
-		list->win.paint = xultb_list_window_paint_wrapper;
+		list->win.vtable = &vtable_xultb_window_list;
+		opp_vtable_set(list, xultb_list);
 		opp_indexed_list_create2(&list->_items, 4);
 		list->vpos = 1;
 		return 0;
@@ -193,6 +213,8 @@ struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_comma
 }
 
 int xultb_list_system_init() {
+	vtable_xultb_window_list = vtable_xultb_window;
+	vtable_xultb_window_list.paint = xultb_list_window_paint_wrapper;
 	SYNC_ASSERT(OPP_FACTORY_CREATE(
 			&xultb_list_factory
 			, 1,sizeof(struct xultb_list)
@@ -201,3 +223,4 @@ int xultb_list_system_init() {
 	return 0;
 }
 
+C_CAPSULE_END

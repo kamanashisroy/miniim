@@ -22,13 +22,28 @@
  */
 
 //#include "config.h"
+#include "opp/opp_type.h"
 #include "core/config.h"
 #include "ui/xultb_guicore.h"
 
 C_CAPSULE_START
 
+opp_type_vtable(xultb_list,
+	void (*set_action_listener)(struct xultb_action_listener*list);
+
+	struct opp_factory*(*get_items)(struct xultb_list*list);
+	struct xultb_list_item* (*get_list_item)(void*data);
+	int (*get_count)(struct xultb_list*list);
+	xultb_str_t*(*get_hint)(struct xultb_list*list);
+
+	struct xultb_list_item*(*get_selected)(struct xultb_list*list);
+
+	void (*set_selected_index)(struct xultb_list*list, int index);
+	int (*get_selected_index)(struct xultb_list*list);
+);
+
 /** \todo support object item showing, truncated text showing .. */
-struct xultb_list {
+opp_type_obj(xultb_list,
 	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
 	struct xultb_window win;
 
@@ -46,23 +61,9 @@ struct xultb_list {
 
 	xultb_str_t title;
 	xultb_str_t default_command;
-	
-	void (*set_action_listener)(struct xultb_action_listener*list);
-	
-	struct opp_factory*(*get_items)(struct xultb_list*list);
-	struct xultb_list_item* (*get_list_item)(void*data);
-	int (*get_count)(struct xultb_list*list);
-	xultb_str_t*(*get_hint)(struct xultb_list*list);
-	
-	struct xultb_list_item*(*get_selected)(struct xultb_list*list);
-	
-	void (*set_selected_index)(struct xultb_list*list, int index);
-	int (*get_selected_index)(struct xultb_list*list);
-	
-//	void (*paint)(struct xultb_list*list, struct xultb_graphics*g);
-	void (*proto_paint)(struct xultb_window*win, struct xultb_graphics*g);
 	struct opp_factory _items;
-};
+);
+
 
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command);
 int xultb_list_system_init();
