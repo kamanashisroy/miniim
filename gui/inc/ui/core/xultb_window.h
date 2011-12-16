@@ -29,7 +29,8 @@ struct graphics;
 
 C_CAPSULE_START
 
-opp_type_vtable(xultb_window,
+opp_vtable_declare(xultb_window,
+	int PADDING;
 	void (*init)(struct xultb_window*win, int w, int h);
 	void (*show)(struct xultb_window*win);
 	void (*show_full)(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);
@@ -52,8 +53,7 @@ opp_type_vtable(xultb_window,
 	struct xultb_window*(*get_current)();
 );
 
-opp_type_obj(xultb_window,
-	int PADDING;
+opp_class_declare(xultb_window,
 	xultb_str_t title;
 	xultb_font_t*TITLE_FONT;
 
@@ -68,8 +68,7 @@ opp_type_obj(xultb_window,
 	int panelTop;
 );
 
-struct xultb_window*xultb_window_extend(xultb_str_t*title);
-struct xultb_window*xultb_window_platform_create(int (*callback)(void*data, int callback, void*cb_data, va_list ap));
+int xultb_window_platform_create(struct xultb_window*win);
 int xultb_window_system_init();
 int xultb_window_system_platform_init();
 

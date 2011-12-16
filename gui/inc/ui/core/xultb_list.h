@@ -28,7 +28,7 @@
 
 C_CAPSULE_START
 
-opp_type_vtable(xultb_list,
+opp_vtable_declare(xultb_list,
 	void (*set_action_listener)(struct xultb_action_listener*list);
 
 	struct opp_factory*(*get_items)(struct xultb_list*list);
@@ -43,7 +43,7 @@ opp_type_vtable(xultb_list,
 );
 
 /** \todo support object item showing, truncated text showing .. */
-opp_type_obj(xultb_list,
+opp_class_declare(xultb_list,
 	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
 	struct xultb_window win;
 
