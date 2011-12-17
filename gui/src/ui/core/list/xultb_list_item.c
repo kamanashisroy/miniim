@@ -196,8 +196,10 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 				g->set_color(g, 0xFFFFFF);
 			}
 			SYNC_LOG(SYNC_VERB, "Putting text ..\n");
-			g->draw_string(g, xultb_substring((&item->label), start, pos, (&tmp_str)), x + imgspacing + XULTB_LIST_ITEM_PADDING,
-					y + ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
+			g->draw_string(g, xultb_substring((&item->label), start, pos, (&tmp_str))
+					, x + imgspacing + XULTB_LIST_ITEM_PADDING
+					,y + ret + XULTB_LIST_ITEM_PADDING
+					, 1000, width, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 			ret += vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
 			start = pos;
 			if (start == 0) {
@@ -227,7 +229,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 				while ((pos = xultb_wrap_next(&item->text, vtable_xultb_list_item.ITEM_FONT, start, width
 						- XULTB_LIST_ITEM_DPADDING)) != -1 && lineCount < 3) {
 					g->draw_string(g, xultb_substring((&item->text), start, pos, (&tmp_str)), x + XULTB_LIST_ITEM_PADDING, y
-							+ ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
+							+ ret + XULTB_LIST_ITEM_PADDING, 1000, width, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 					ret += vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
 					start = pos;
 					lineCount++;
@@ -247,7 +249,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 					- XULTB_LIST_ITEM_DPADDING - imgWidth - XULTB_LIST_ITEM_DPADDING);
 			if (pos != -1) {
 				g->draw_string(g, xultb_substring((&item->text),0, pos, (&tmp_str)), x + labelWidth + XULTB_LIST_ITEM_PADDING,
-						y + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
+						y + XULTB_LIST_ITEM_PADDING, 1000, width, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
 				if (pos < item->text.len) {
 					/* show an image at last to indicate that there are more data .. */
 				}

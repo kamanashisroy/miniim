@@ -129,7 +129,12 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 		g->set_color(g, 0xFFFFFF);
 		g->set_font(g, xultb_menu_get_base_font());
 		// #endif
-		g->draw_string(g, hint, list->super_data.halfWidth, list->super_data.height - XULTB_MENU_PADDING, 1/*Graphics.HCENTER|Graphics.BOTTOM*/);
+		g->draw_string(g, hint
+				, 0
+				, 0
+				, list->super_data.width
+				, list->super_data.height - XULTB_MENU_PADDING
+				, XULTB_GRAPHICS_HCENTER|XULTB_GRAPHICS_BOTTOM);
 		/* TODO show "<>"(90 degree rotated) icon to indicate that we can traverse through the list  */
 	}
 }

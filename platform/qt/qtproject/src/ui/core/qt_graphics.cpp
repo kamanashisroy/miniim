@@ -44,13 +44,26 @@ static void qt_impl_draw_round_rect(struct xultb_graphics*g, int x, int y, int w
     );
 }
 
-static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor) {
+static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int width, int height, int anchor) {
     QTG_CAPSULE(
-	SYNC_LOG(SYNC_VERB, "Drawing string %d\n", str->len);
 	SYNC_LOG(SYNC_VERB, "Drawing string %s\n", str->str);
-    QString*text = new QString(str->str);
-    qtg->painter->drawText(x, y, *text);
-	delete text;
+    QString text(str->str);
+    int flags = 0;
+
+    if(anchor & XULTB_GRAPHICS_TOP) {
+    	flags |= Qt::AlignTop;
+    }
+    if(anchor & XULTB_GRAPHICS_LEFT) {
+    	flags |= Qt::AlignLeft;
+    }
+    if(anchor & XULTB_GRAPHICS_HCENTER) {
+    	flags |= Qt::AlignHCenter;
+    }
+    if(anchor & XULTB_GRAPHICS_BOTTOM) {
+    	flags |= Qt::AlignBottom;
+    }
+	qtg->painter->drawText(x, y, width, height, flags, text);
+//    	qtg->painter->drawText(x, y, text);
     );
 }
 

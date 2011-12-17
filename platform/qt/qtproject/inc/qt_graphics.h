@@ -20,7 +20,7 @@ class QtXulTbGraphics {
 public:
 	QtXulTbGraphics() {
 		pen = new QColor();
-		page = new QPixmap(100,100);
+		page = new QPixmap(200,400);
 		painter = new QPainter(page);
 	}
 	~QtXulTbGraphics() {

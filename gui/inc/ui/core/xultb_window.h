@@ -32,6 +32,7 @@ C_CAPSULE_START
 opp_vtable_declare(xultb_window,
 	int PADDING;
 	xultb_font_t*TITLE_FONT;
+//	int TITLE_FONT_HEIGHT;
 	void (*init)(struct xultb_window*win, int w, int h);
 	void (*show)(struct xultb_window*win);
 	void (*show_full)(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);

@@ -10,9 +10,10 @@
 C_CAPSULE_START
 struct xultb_img;
 enum xultb_graphics_anchor {
-	XULTB_GRAPHICS_TOP = 0,
-	XULTB_GRAPHICS_HCENTER,
-	XULTB_GRAPHICS_LEFT,
+	XULTB_GRAPHICS_TOP = 1,
+	XULTB_GRAPHICS_HCENTER = (1<<1),
+	XULTB_GRAPHICS_LEFT = (1 << 2),
+	XULTB_GRAPHICS_BOTTOM = (1 << 3),
 };
 
 struct xultb_graphics {
@@ -31,7 +32,7 @@ struct xultb_graphics {
 	void(*drawRGB)(int *rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha);
 #endif
 	void(*draw_round_rect)(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight);
-	void(*draw_string)(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor);
+	void(*draw_string)(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int width, int height, int anchor);
 #if 0
 	void(*drawSubstring)(String str, int offset, int len, int x, int y, int anchor);
 	void(*fillArc)(int x, int y, int width, int height, int startAngle, int arcAngle);

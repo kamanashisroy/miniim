@@ -94,8 +94,10 @@ static void xultb_window_show_title(struct xultb_window*win, struct xultb_graphi
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleFg%);
 	g->set_color(g, 0xFFFFFF);
 	g->set_font(g, win->vtable->TITLE_FONT);
-	g->draw_string(g, &win->title, win->halfWidth
-			, vtable_xultb_window.PADDING, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
+	g->draw_string(g, &win->title, 0, vtable_xultb_window.PADDING
+			, win->width
+			, win->height
+			, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
 }
 
 static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g) {
@@ -108,7 +110,7 @@ OPP_CB(xultb_window) {
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		opp_vtable_set(win, xultb_window);
-		xultb_window_init(win, 100, 100);
+		xultb_window_init(win, 200, 400);
 		xultb_window_platform_create(win);
 		return 0;
 	case OPPN_ACTION_FINALIZE:
@@ -120,6 +122,7 @@ OPP_CB(xultb_window) {
 
 int xultb_window_system_init() {
 	vtable_xultb_window.TITLE_FONT = xultb_font_create();
+//	vtable_xultb_window.TITLE_FONT_HEIGHT = vtable_xultb_window.TITLE_FONT.get_height(vtable_xultb_window.TITLE_FONT);
 	xultb_window_system_platform_init();
 	return 0;
 }

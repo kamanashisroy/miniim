@@ -125,7 +125,7 @@ protected:
     void paintEvent(QPaintEvent *){
         if(page) {
             QPainter p( this );
-            p.drawPixmap(0,0, 100, 100, *page);
+            p.drawPixmap(0, 0, 200, 400, *page);
             //page->fill(this, 0, 0);
         	SYNC_LOG(SYNC_VERB, "Filling with pixmap\n");
         }
