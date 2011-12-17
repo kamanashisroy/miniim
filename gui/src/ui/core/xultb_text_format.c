@@ -31,7 +31,7 @@ int xultb_wrap_next(xultb_str_t*str, xultb_font_t*font, int pos, int width) {
 	pos += (pos >= len) ? 0 : 1;
 	return pos;
 #else
-	return pos >= str->len ? -1 : str->len;
+	return pos == 0 ? str->len :-1;
 #endif
 }
 

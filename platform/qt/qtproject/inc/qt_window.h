@@ -133,7 +133,6 @@ protected:
     }
 public:
     QPixmap*page;
-    void (*proto_paint)(struct xultb_window*win, struct xultb_graphics*g);
 };
 
 

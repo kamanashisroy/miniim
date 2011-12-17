@@ -23,13 +23,14 @@ int main(int argc, char *argv[]) {
 
 	// show the list
 	struct xultb_list*list = xultb_list_create(&title, &dc);
+	SYNC_ASSERT(list);
 	xultb_str_t elem1 = xultb_str_create("good");
 	xultb_str_t elem2 = xultb_str_create("very good");
 	struct xultb_list_item*item1 = xultb_list_item_create_label(&elem1, NULL);
 	struct xultb_list_item*item2 = xultb_list_item_create_label(&elem2, NULL);
 	opp_indexed_list_set(&list->_items, 0, item1);
 	opp_indexed_list_set(&list->_items, 1, item2);
-	list->win.show(&list->win);
+	opp_extvt(list)->show(&list->super_data);
 
 	while(1) {
 		usleep(100);

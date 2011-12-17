@@ -17,10 +17,10 @@ static struct xultb_graphics*gr;
 int xultb_guicore_system_init(int*argc, char *argv[]) {
 	xultb_guicore_platform_init(argc, argv);
 	xultb_graphics_system_init();
+	xultb_font_system_init();
+	xultb_window_system_init();
 	xultb_list_item_system_init();
 	xultb_list_system_init();
-	xultb_window_system_init();
-	xultb_font_system_init();
 	opp_queuesystem_init();
 	opp_queue_init2(&painter_queue, 0);
 	gr = xultb_graphics_create();

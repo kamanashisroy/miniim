@@ -25,6 +25,8 @@
 #include "ui/core/xultb_text_format.h"
 #include "ui/core/list/xultb_list_item.h"
 
+struct opp_vtable_xultb_list_item vtable_xultb_list_item;
+
 
 static struct opp_factory item_factory;
 struct xultb_list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img_t*img) {
@@ -154,7 +156,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 		SYNC_LOG(SYNC_VERB, "We have a text in label ..\n");
 		// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.listitemfactory.fg%);
 		g->set_color(g, 0x000000);
-		while ((pos = xultb_wrap_next(&item->label, item->ITEM_FONT, start, width
+		while ((pos = xultb_wrap_next(&item->label, vtable_xultb_list_item.ITEM_FONT, start, width
 				- imgspacing - XULTB_LIST_ITEM_DPADDING)) != -1) {
 			SYNC_LOG(SYNC_VERB, "Wrapping text ..\n");
 			if (item->focused && item->is_editable && item->type == XULTB_LIST_ITEM_LABEL) {
@@ -169,7 +171,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 
 					// draw rounded background
 					// #expand g.fillRoundRect( x, y + ret, width, FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING, %net.ayaslive.miniim.ui.core.rounded_corner_radius%, %net.ayaslive.miniim.ui.core.rounded_corner_radius%);
-					g->fill_round_rect(g, x, y + ret, width, item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING,
+					g->fill_round_rect(g, x, y + ret, width, vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING,
 							4, 4);
 
 					// draw the shadow
@@ -178,9 +180,9 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 
 					// #expand g.fillRect( x + %net.ayaslive.miniim.ui.core.rounded_corner_radius%/2, y + ret + %net.ayaslive.miniim.ui.core.rounded_corner_radius%/2, width - %net.ayaslive.miniim.ui.core.rounded_corner_radius%, FONT_HEIGHT/2 + XULTB_LIST_ITEM_PADDING - %net.ayaslive.miniim.ui.core.rounded_corner_radius%);
 					g->fill_rect(g, x + 4 / 2, y + ret + 4 / 2, width - 4,
-							item->FONT_HEIGHT / 2 + XULTB_LIST_ITEM_PADDING - 4);
+							vtable_xultb_list_item.FONT_HEIGHT / 2 + XULTB_LIST_ITEM_PADDING - 4);
 				} else {
-					g->fill_rect(g, x, y + ret, width, item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING);
+					g->fill_rect(g, x, y + ret, width, vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING);
 				}
 
 				// #else
@@ -196,7 +198,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 			SYNC_LOG(SYNC_VERB, "Putting text ..\n");
 			g->draw_string(g, xultb_substring((&item->label), start, pos, (&tmp_str)), x + imgspacing + XULTB_LIST_ITEM_PADDING,
 					y + ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
-			ret += item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
+			ret += vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
 			start = pos;
 			if (start == 0) {
 				imgspacing = 0;
@@ -206,7 +208,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 			}
 		}
 		if (item->type != XULTB_LIST_ITEM_LABEL && item->type != XULTB_LIST_ITEM_CHECKBOX) {
-			labelWidth = item->ITEM_FONT->substring_width(item->ITEM_FONT, &item->label, 0, item->label.len);
+			labelWidth = vtable_xultb_list_item.ITEM_FONT->substring_width(vtable_xultb_list_item.ITEM_FONT, &item->label, 0, item->label.len);
 			if (!item->wrapped && (labelWidth > width - XULTB_LIST_ITEM_DPADDING)) {
 				item->wrapped = XULTB_FALSE;
 			}
@@ -222,17 +224,17 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 			if (item->text.len != 0) { /* when the string length is Zero */
 				/* write the text in the next line */
 				start = pos = 0;
-				while ((pos = xultb_wrap_next(&item->text, item->ITEM_FONT, start, width
+				while ((pos = xultb_wrap_next(&item->text, vtable_xultb_list_item.ITEM_FONT, start, width
 						- XULTB_LIST_ITEM_DPADDING)) != -1 && lineCount < 3) {
 					g->draw_string(g, xultb_substring((&item->text), start, pos, (&tmp_str)), x + XULTB_LIST_ITEM_PADDING, y
 							+ ret + XULTB_LIST_ITEM_PADDING, XULTB_GRAPHICS_TOP | XULTB_GRAPHICS_LEFT);
-					ret += item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
+					ret += vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING;
 					start = pos;
 					lineCount++;
 				}
 			}
 			/* we are trying to show 3 lines always, not more not less */
-			ret += (3 - lineCount) * (item->FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING);
+			ret += (3 - lineCount) * (vtable_xultb_list_item.FONT_HEIGHT + XULTB_LIST_ITEM_DPADDING);
 			labelWidth = 0;
 		} else {
 
@@ -241,7 +243,7 @@ static int xultb_list_item_paint(struct xultb_list_item*item, struct xultb_graph
 				imgWidth = XULTB_LIST_ITEM_RESOLUTION;
 			}
 
-			pos = xultb_wrap_next(&item->text, item->ITEM_FONT, 0, width - labelWidth
+			pos = xultb_wrap_next(&item->text, vtable_xultb_list_item.ITEM_FONT, 0, width - labelWidth
 					- XULTB_LIST_ITEM_DPADDING - imgWidth - XULTB_LIST_ITEM_DPADDING);
 			if (pos != -1) {
 				g->draw_string(g, xultb_substring((&item->text),0, pos, (&tmp_str)), x + labelWidth + XULTB_LIST_ITEM_PADDING,
@@ -291,8 +293,10 @@ OPP_CB(xultb_list_item) {
 	struct xultb_list_item*item = (struct xultb_list_item*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
-		item->ITEM_FONT = xultb_font_create();
-		item->paint = xultb_list_item_paint;
+		item->text = xultb_str_create(""); // TODO create blank text constant variable
+//		item->ITEM_FONT = xultb_font_create();
+//		item->FONT_HEIGHT = item->ITEM_FONT->get_height(item->ITEM_FONT);
+		opp_vtable_set(item, xultb_list_item);
 		return 0;
 	case OPPN_ACTION_FINALIZE:
 		break;
@@ -301,6 +305,9 @@ OPP_CB(xultb_list_item) {
 }
 
 int xultb_list_item_system_init() {
+	vtable_xultb_list_item.ITEM_FONT = xultb_font_create();
+	vtable_xultb_list_item.FONT_HEIGHT = vtable_xultb_list_item.ITEM_FONT->get_height(vtable_xultb_list_item.ITEM_FONT);
+	vtable_xultb_list_item.paint = xultb_list_item_paint;
 	SYNC_ASSERT(OPP_FACTORY_CREATE(&item_factory, 8
 			,sizeof(struct xultb_list_item)
 			,OPP_CB_FUNC(xultb_list_item)) == 0);

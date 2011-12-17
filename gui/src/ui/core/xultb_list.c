@@ -53,7 +53,7 @@ static int xultb_list_show_item(struct xultb_list*list, struct xultb_graphics*g,
 #endif
 	if(li == NULL)
 	  return 0;
-	int ret = li->paint(li, g, list->leftMargin + XULTB_LIST_HMARGIN, y + XULTB_LIST_VMARGIN, list->win.width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN - 1 - list->leftMargin - list->rightMargin, selected) + XULTB_LIST_VMARGIN + XULTB_LIST_VMARGIN;
+	int ret = li->vtable->paint(li, g, list->leftMargin + XULTB_LIST_HMARGIN, y + XULTB_LIST_VMARGIN, list->super_data.width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN - 1 - list->leftMargin - list->rightMargin, selected) + XULTB_LIST_VMARGIN + XULTB_LIST_VMARGIN;
 	OPPUNREF(li);
 	return ret;
 }
@@ -62,7 +62,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 	int i = -1;
 	struct opp_factory*items = list->vtable->get_items(list);
 	void*obj;
-	int posY = list->win.panelTop + list->topMargin;
+	int posY = list->super_data.panelTop + list->topMargin;
 
 	SYNC_LOG(SYNC_VERB, "Iterating items...\n");
 	// sanity check
@@ -72,7 +72,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 	// clear
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.bg%);
 	g->set_color(g, 0xFFFFFF);
-	g->fill_rect(g, list->leftMargin, list->win.panelTop, list->win.width, list->win.menuY - list->win.panelTop);
+	g->fill_rect(g, list->leftMargin, list->super_data.panelTop, list->super_data.width, list->super_data.menuY - list->super_data.panelTop);
 
 	g->set_font(g, list->item_font);
 
@@ -84,7 +84,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 		}
 		SYNC_LOG(SYNC_VERB, "Showing item\n");
 		posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
-		if (posY > (list->win.menuY - list->bottomMargin)) {
+		if (posY > (list->super_data.menuY - list->bottomMargin)) {
 			if (list->selected_index >= i && list->vpos < list->selected_index) {
 				list->vpos++;
 				/* try to draw again */
@@ -96,8 +96,8 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 			// draw an arrow
 			// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.indicator%);
 			g->set_color(g, 0x006699);
-			int x = list->win.width - 3 * XULTB_LIST_HMARGIN - XULTB_LIST_RESOLUTION - list->rightMargin;
-			int y = list->win.menuY - list->bottomMargin - list->win.PADDING - 2 * XULTB_LIST_RESOLUTION;
+			int x = list->super_data.width - 3 * XULTB_LIST_HMARGIN - XULTB_LIST_RESOLUTION - list->rightMargin;
+			int y = list->super_data.menuY - list->bottomMargin - vtable_xultb_window.PADDING - 2 * XULTB_LIST_RESOLUTION;
 			g->fill_triangle(g, x + XULTB_LIST_RESOLUTION / 2, y + XULTB_LIST_RESOLUTION, x + XULTB_LIST_RESOLUTION,
 					y, x, y);
 			return;
@@ -114,13 +114,13 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 		// draw an arrow
 		// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.indicator%);
 		g->set_color(g, 0x006699);
-		int x = list->win.width - 3 * XULTB_LIST_HMARGIN - XULTB_LIST_RESOLUTION - list->rightMargin;
-		int y = list->win.panelTop + list->topMargin + list->win.PADDING + XULTB_LIST_RESOLUTION;
+		int x = list->super_data.width - 3 * XULTB_LIST_HMARGIN - XULTB_LIST_RESOLUTION - list->rightMargin;
+		int y = list->super_data.panelTop + list->topMargin + vtable_xultb_window.PADDING + XULTB_LIST_RESOLUTION;
 		g->fill_triangle(g, x + XULTB_LIST_RESOLUTION / 2, y, x + XULTB_LIST_RESOLUTION, y + XULTB_LIST_RESOLUTION,
 				x, y + XULTB_LIST_RESOLUTION);
 	}
 
-	vtable_xultb_window.paint(&list->win, g);
+	vtable_xultb_window.paint(&list->super_data, g);
 	xultb_str_t* hint = list->vtable->get_hint(list);
 	if (hint != NULL && !xultb_menu_is_active() && list->selected_index != -1 && list->vtable->get_count(list)
 			!= 0) {
@@ -129,7 +129,7 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 		g->set_color(g, 0xFFFFFF);
 		g->set_font(g, xultb_menu_get_base_font());
 		// #endif
-		g->draw_string(g, hint, list->win.halfWidth, list->win.height - XULTB_MENU_PADDING, 1/*Graphics.HCENTER|Graphics.BOTTOM*/);
+		g->draw_string(g, hint, list->super_data.halfWidth, list->super_data.height - XULTB_MENU_PADDING, 1/*Graphics.HCENTER|Graphics.BOTTOM*/);
 		/* TODO show "<>"(90 degree rotated) icon to indicate that we can traverse through the list  */
 	}
 }
@@ -166,7 +166,6 @@ struct opp_vtable_xultb_list vtable_xultb_list = {
 		.set_selected_index = xultb_list_set_selected_index
 };
 
-
 static struct opp_vtable_xultb_window vtable_xultb_window_list;
 /*
 opp_vtable_define(xultb_list,(
@@ -186,14 +185,26 @@ OPP_CB(xultb_list) {
 	memset(list, 0, sizeof(struct xultb_list));
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
-		list->win.vtable = &vtable_xultb_window_list;
+		{
+			va_list ap;
+			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_INITIALIZE, NULL, ap)) {
+				return -1;
+			}
+		}
+		list->super_data.vtable = &vtable_xultb_window_list;
 		opp_vtable_set(list, xultb_list);
 		opp_indexed_list_create2(&list->_items, 4);
 		list->vpos = 1;
+		SYNC_LOG(SYNC_VERB, "Created xultb_list\n");
 		return 0;
 	case OPPN_ACTION_FINALIZE:
 		opp_factory_destroy(&list->_items);
-//		xultb_list_platform_finalize(list);
+		{
+			va_list ap;
+			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_FINALIZE, NULL, ap)) {
+				return -1;
+			}
+		}
 		break;
 	}
 	return 0;
@@ -202,13 +213,12 @@ OPP_CB(xultb_list) {
 static struct opp_factory xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
 	struct xultb_list*list = (struct xultb_list*)OPP_ALLOC2(&xultb_list_factory, NULL);
-	list->item_font = xultb_font_create();
-	list->title = *title;
-	list->default_command = *default_command;
-	if(!xultb_window_create(title, &list->win)) {
-		OPPUNREF(list);
+	if(!list) {
 		return NULL;
 	}
+	list->item_font = xultb_font_create();
+	if(title)list->super_data.title = *title;
+	list->default_command = *default_command;
 	return list;
 }
 
@@ -219,7 +229,6 @@ int xultb_list_system_init() {
 			&xultb_list_factory
 			, 1,sizeof(struct xultb_list)
 			, OPP_CB_FUNC(xultb_list)) == 0);
-//	xultb_list_platform_init();
 	return 0;
 }
 

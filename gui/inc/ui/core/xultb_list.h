@@ -45,7 +45,7 @@ opp_vtable_declare(xultb_list,
 /** \todo support object item showing, truncated text showing .. */
 opp_class_declare(xultb_list,
 	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
-	struct xultb_window win;
+	opp_class_extend(struct xultb_window);
 
 	xultb_font_t*item_font;
 	xultb_bool_t continuous_scrolling;
@@ -59,7 +59,6 @@ opp_class_declare(xultb_list,
 	int bottomMargin;
 	int RESOLUTION;
 
-	xultb_str_t title;
 	xultb_str_t default_command;
 	struct opp_factory _items;
 );

@@ -26,6 +26,26 @@
 
 C_CAPSULE_START
 
+
+OPP_CB(xultb_window);
+
+static void xultb_window_init(struct xultb_window*win, int w, int h);
+static void xultb_window_show(struct xultb_window*win);
+static void xultb_window_show_full(struct xultb_window*win
+		, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);
+static xultb_bool_t xultb_window_is_showing(struct xultb_window*win);
+static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g);
+
+struct opp_vtable_xultb_window vtable_xultb_window = {
+	.PADDING = 2,
+	.init = xultb_window_init,
+	.show = xultb_window_show,
+	.show_full = xultb_window_show_full,
+	.is_showing = xultb_window_is_showing,
+	.paint = xultb_window_paint,
+	.oppcb = OPP_CB_FUNC(xultb_window),
+};
+
 static void xultb_window_init(struct xultb_window*win, int w, int h) {
 #if 0
 	if(SharedCanvas.singleInstance == null) {
@@ -42,7 +62,7 @@ static void xultb_window_init(struct xultb_window*win, int w, int h) {
 	/** Menu start position by pixel along Y-axis */
 	win->height = h;
 	win->menuY = h - 0;//xultb_menu_get_base_height();
-	win->panelTop = /*win->TITLE_FONT->get_height(win->TITLE_FONT)*/+ win->PADDING*2;
+	win->panelTop = win->vtable->TITLE_FONT->get_height(win->vtable->TITLE_FONT)+ win->vtable->PADDING*2;
 }
 
 static void xultb_window_show(struct xultb_window*win) {
@@ -73,47 +93,33 @@ static void xultb_window_show_title(struct xultb_window*win, struct xultb_graphi
 	/* Write the title */
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleFg%);
 	g->set_color(g, 0xFFFFFF);
-	g->set_font(g, win->TITLE_FONT);
-	g->draw_string(g, &win->title, win->halfWidth, win->PADDING, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
+	g->set_font(g, win->vtable->TITLE_FONT);
+	g->draw_string(g, &win->title, win->halfWidth
+			, vtable_xultb_window.PADDING, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
 }
 
 static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g) {
 	xultb_window_show_title(win, g);
-	xultb_menu_show(g, win->width, win->height);
+//	xultb_menu_show(g, win->width, win->height);
 }
-
-OPP_CB(xultb_window);
-
-struct opp_vtable_xultb_window vtable_xultb_window = {
-	.PADDING = 2,
-	.init = xultb_window_init,
-	.show = xultb_window_show,
-	.show_full = xultb_window_show_full,
-	.is_showing = xultb_window_is_showing,
-	.paint = xultb_window_paint,
-	.oppcb = OPP_CB_FUNC(xultb_window),
-};
 
 OPP_CB(xultb_window) {
 	struct xultb_window*win = (struct xultb_window*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		opp_vtable_set(win, xultb_window);
+		xultb_window_init(win, 100, 100);
 		xultb_window_platform_create(win);
 		return 0;
 	case OPPN_ACTION_FINALIZE:
+//		xultb_window_platform_destroy(win);
 		break;
 	}
 	return 0;
 }
 
-//struct xultb_window*xultb_window_create(struct xultb_window*win, xultb_str_t*title) {
-//	xultb_window_init(win, 100, 100);
-//	if(title)win->title = *title;
-//	return win;
-//}
-
 int xultb_window_system_init() {
+	vtable_xultb_window.TITLE_FONT = xultb_font_create();
 	xultb_window_system_platform_init();
 	return 0;
 }

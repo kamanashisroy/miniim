@@ -31,6 +31,7 @@ C_CAPSULE_START
 
 opp_vtable_declare(xultb_window,
 	int PADDING;
+	xultb_font_t*TITLE_FONT;
 	void (*init)(struct xultb_window*win, int w, int h);
 	void (*show)(struct xultb_window*win);
 	void (*show_full)(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);
@@ -55,8 +56,6 @@ opp_vtable_declare(xultb_window,
 
 opp_class_declare(xultb_window,
 	xultb_str_t title;
-	xultb_font_t*TITLE_FONT;
-
 	/** The width of the list */
 	int width;
 	int halfWidth;
@@ -66,6 +65,7 @@ opp_class_declare(xultb_window,
 	int height;
 	int menuY;
 	int panelTop;
+	void*platform_data;
 );
 
 int xultb_window_platform_create(struct xultb_window*win);

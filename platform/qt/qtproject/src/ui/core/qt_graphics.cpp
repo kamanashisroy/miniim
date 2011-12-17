@@ -46,7 +46,8 @@ static void qt_impl_draw_round_rect(struct xultb_graphics*g, int x, int y, int w
 
 static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int anchor) {
     QTG_CAPSULE(
-    SYNC_LOG(SYNC_VERB, "Drawing string %s\n", str->str);
+	SYNC_LOG(SYNC_VERB, "Drawing string %d\n", str->len);
+	SYNC_LOG(SYNC_VERB, "Drawing string %s\n", str->str);
     QString*text = new QString(str->str);
     qtg->painter->drawText(x, y, *text);
 	delete text;

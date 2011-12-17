@@ -30,6 +30,9 @@ C_CAPSULE_START
 
 #define opp_class_define(name,x) struct opp_class_##name c_##name = {.callback = x};
 
+#define opp_class_extend(x) x super_data;
+#define opp_extvt(x) x->super_data.vtable
+
 C_CAPSULE_END
 
 #endif /* OPP_TYPE_H_ */

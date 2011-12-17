@@ -34,11 +34,15 @@ enum xultb_list_item_type {
 	XULTB_LIST_ITEM_CHECKBOX,
 };
 
-#define LIST_ITEM_SIGNATURE 0x93
-struct xultb_list_item {
-	int sgn1;
+opp_vtable_declare(xultb_list_item,
 	struct xultb_font*ITEM_FONT;
 	int FONT_HEIGHT;
+	int (*paint)(struct xultb_list_item*item, struct xultb_graphics*g, int x, int y, int width, int selected);
+);
+
+
+#define LIST_ITEM_SIGNATURE 0x93
+opp_class_declare(xultb_list_item,
 	xultb_str_t label;
 	xultb_str_t text;
 	xultb_bool_t checked;
@@ -48,15 +52,9 @@ struct xultb_list_item {
 	xultb_bool_t truncate_text_to_fit_width;
 	xultb_bool_t focused;
 	xultb_img_t*img;
-	int (*paint)(struct xultb_list_item*item, struct xultb_graphics*g, int x, int y, int width, int selected);
-	int sgn2;
 	enum xultb_list_item_type type;
 	void *__more__;
-	int sgn3;
-};
-
-#define CHECK_LIST_ITEM(x) assert(x->sgn1 == LIST_ITEM_SIGNATURE && x->sgn2 == LIST_ITEM_SIGNATURE && x->sgn3 == LIST_ITEM_SIGNATURE)
-
+);
 
 struct xultb_list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img_t*img);
 struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width);

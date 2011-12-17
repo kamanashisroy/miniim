@@ -22,7 +22,7 @@ typedef int xultb_bool_t;
 #if 0
 xultb_str_t*xultb_substring(xultb_str_t*src, int off, int width, xultb_str_t*dest);
 #endif
-#define xultb_substring(src,off,width,dest) ({dest->str = src->str+off;dest->len = width;dest->hash=0;dest;})
+#define xultb_substring(src,off,width,dest) ({(dest)->str = (src)->str+off;(dest)->len = width;(dest)->hash=0;dest;})
 
 C_CAPSULE_END
 
