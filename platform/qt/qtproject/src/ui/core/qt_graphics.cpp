@@ -56,6 +56,9 @@ static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x,
     if(anchor & XULTB_GRAPHICS_LEFT) {
     	flags |= Qt::AlignLeft;
     }
+    if(anchor & XULTB_GRAPHICS_RIGHT) {
+		flags |= Qt::AlignRight;
+	}
     if(anchor & XULTB_GRAPHICS_HCENTER) {
     	flags |= Qt::AlignHCenter;
     }

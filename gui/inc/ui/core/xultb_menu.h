@@ -28,13 +28,14 @@
 C_CAPSULE_START
 
 enum {
-	XULTB_MENU_PADDING,
+	XULTB_MENU_PADDING = 3,
 };
 
 int xultb_menu_get_base_height();
-void xultb_menu_show(struct xultb_graphics*g, int width, int height);
+void xultb_menu_paint(struct xultb_graphics*g, int width, int height);
 xultb_bool_t xultb_menu_is_active();
 struct xultb_font*xultb_menu_get_base_font();
+int xultb_menu_system_init();
 
 C_CAPSULE_END
 

@@ -102,7 +102,7 @@ static void xultb_window_show_title(struct xultb_window*win, struct xultb_graphi
 
 static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g) {
 	xultb_window_show_title(win, g);
-//	xultb_menu_show(g, win->width, win->height);
+	xultb_menu_paint(g, win->width, win->height);
 }
 
 OPP_CB(xultb_window) {
@@ -124,6 +124,7 @@ int xultb_window_system_init() {
 	vtable_xultb_window.TITLE_FONT = xultb_font_create();
 //	vtable_xultb_window.TITLE_FONT_HEIGHT = vtable_xultb_window.TITLE_FONT.get_height(vtable_xultb_window.TITLE_FONT);
 	xultb_window_system_platform_init();
+	xultb_menu_system_init();
 	return 0;
 }
 

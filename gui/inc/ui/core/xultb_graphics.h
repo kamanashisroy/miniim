@@ -13,7 +13,8 @@ enum xultb_graphics_anchor {
 	XULTB_GRAPHICS_TOP = 1,
 	XULTB_GRAPHICS_HCENTER = (1<<1),
 	XULTB_GRAPHICS_LEFT = (1 << 2),
-	XULTB_GRAPHICS_BOTTOM = (1 << 3),
+	XULTB_GRAPHICS_RIGHT = (1 << 3),
+	XULTB_GRAPHICS_BOTTOM = (1 << 4),
 };
 
 struct xultb_graphics {
