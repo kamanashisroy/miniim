@@ -9,8 +9,9 @@ INCLUDES+=$(XULTB_INCLUDES)
 TARGET=qt_test.bin
 
 STATIC_LIBS+=../../core/libxultbcore.a
-#STATIC_LIBS+=../../gui/libxultbgui.a
-STATIC_LIBS+=../../gui/libxultbtest.a
+STATIC_LIBS+=../../gui/libxultbgui.a
+#STATIC_LIBS+=../../web/libxultbweb.a
+STATIC_LIBS+=../../web/libxultbtest.a
 STATIC_LIBS+=../../platform/qt/build/libqtguiproject.a
 LIBS+=$(STATIC_LIBS)
 

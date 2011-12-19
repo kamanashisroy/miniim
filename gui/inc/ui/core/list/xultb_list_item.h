@@ -34,6 +34,14 @@ enum xultb_list_item_type {
 	XULTB_LIST_ITEM_CHECKBOX,
 };
 
+
+enum {
+	XULTB_LIST_ITEM_PADDING = 2,
+	XULTB_LIST_ITEM_RESOLUTION = 3,
+	XULTB_LIST_ITEM_DPADDING = 5,
+};
+
+
 opp_vtable_declare(xultb_list_item,
 	struct xultb_font*ITEM_FONT;
 	int FONT_HEIGHT;

@@ -342,7 +342,7 @@ struct opp_pool*opp_factory_create_pool_donot_use(struct opp_factory*obuff, stru
 	return pool;
 }
 
-void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, const void*init_data) {
+void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, void*init_data, ...) {
 	SYNC_UWORD8_T*ret = NULL;
 	SYNC_UWORD8_T slots = 1;
 	
@@ -471,6 +471,9 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, co
 		obj->obuff = obuff;
 	}while(0);
 
+	va_list ap;
+	va_start(ap, init_data);
+
 	do {
 		if(!ret)
 			break;
@@ -522,7 +525,7 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, co
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
 #else
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
-		if(!(obuff->property & OPPF_FAST_INITIALIZE)&& obuff->callback && opp_callback2(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, obj->slots*obuff->obj_size - sizeof(struct opp_object))) {
+		if(!(obuff->property & OPPF_FAST_INITIALIZE)&& obuff->callback && obuff->callback(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ap/*obj->slots*obuff->obj_size - sizeof(struct opp_object)*/)) {
 			void*dup = ret;
 			OPPUNREF(ret);
 			if(doubleref) {
@@ -544,13 +547,14 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, co
 
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
-	if(ret && (obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback && opp_callback2(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object))) {
+	if(ret && (obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback && obuff->callback(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ap/*, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object)*/)) {
 		void*dup = ret;
 		OPPUNREF(ret);
 		if(doubleref) {
 			OPPUNREF(dup);
 		}
 	}
+	va_end(ap);
 //	SYNC_ASSERT(ret);
 	return ret;
 }

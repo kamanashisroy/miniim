@@ -1,0 +1,14 @@
+
+This is an ongoing work to rewrite miniim in C.
+
+Please follow the following instruction to compile
+the code,
+
+1. copy the config.mk.sample to .config.mk
+2. edit the .config.mk to something appropriate 
+3. make
+
+And the test application is here,
+
+apps/qt_test/qt_test.bin
+

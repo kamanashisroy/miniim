@@ -1,3 +1,5 @@
+#ifndef XULTB_MARKUP_LIST_H
+#define XULTB_MARKUP_LIST_H
 /*
  * This file part of MiniIM.
  *
@@ -18,6 +20,25 @@
  *
  */
 
-#include "ui/markup/xultb_media_loader.h"
+#include "config.h"
+#include "ui/xultb_guicore.h"
+#include "ui/page/xultb_event_listener.h"
+#include "ui/page/xultb_media_loader.h"
 
+C_CAPSULE_START
 
+opp_vtable_declare(xultb_markup_list,
+	void (*set_event_listener)(struct xultb_event_listener*ls);
+	void (*set_media_loader)(struct xultb_media_loader*ml);
+);
+
+opp_class_declare(xultb_markup_list,
+	opp_class_extend(struct xultb_list);
+);
+
+struct xultb_markup_list*xultb_markup_list_create(xultb_str_t*title, xultb_str_t*default_command);
+int xultb_markup_list_system_init();
+
+C_CAPSULE_END
+
+#endif // XULTB_MARKUP_LIST_H

@@ -134,7 +134,7 @@ void opp_factory_verb(struct opp_factory*obuff, int (*verb_obj)(const void*data,
 // obj api
 #define OPP_ALLOC1(x) ({opp_alloc4(x, 0, 0, NULL);})
 #define OPP_ALLOC2(x, y) ({opp_alloc4(x, 0, 0, y);})
-void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, const void*init_data);
+void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, void*init_data, ...);
 void opp_shrink(void*data, int size);
 void opp_set_hash(void*data, opp_hash_t hash);
 void opp_set_flag(void*data, unsigned int flag);

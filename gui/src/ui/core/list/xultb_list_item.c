@@ -85,12 +85,6 @@ struct xultb_list_item*xultb_list_item_create_radio_button(xultb_str_t*label, xu
 	return xultb_list_item_create_checkbox_full(label, checked, editable, XULTB_TRUE);
 }
 
-enum {
-	XULTB_LIST_ITEM_PADDING = 2,
-	XULTB_LIST_ITEM_RESOLUTION = 3,
-	XULTB_LIST_ITEM_DPADDING = 5,
-};
-
 static void draw_selectionbox_icon(struct xultb_list_item*li, struct xultb_graphics*g, int x, int y,
 		xultb_bool_t focused) {
 	// now indicate that it is checked ..

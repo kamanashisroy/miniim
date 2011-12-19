@@ -21,7 +21,6 @@
  *
  */
 
-//#include "config.h"
 #include "opp/opp_type.h"
 #include "core/config.h"
 #include "ui/xultb_guicore.h"

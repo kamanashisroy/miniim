@@ -83,7 +83,6 @@ static void qt_impl_fill_triangle(struct xultb_graphics*g, int x1, int y1, int x
 }
 
 static void qt_impl_fill_round_rect(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight) {
-    QtXulTbGraphics*qtg = TO_QT_G(g);
     QTG_CAPSULE(
     qtg->painter->fillRect(x, y, width, height, *qtg->pen);
     );
@@ -93,9 +92,15 @@ static void qt_impl_set_color(struct xultb_graphics*g, int rgb) {
     QTG_CAPSULE(
     //SYNC_LOG_OPP(&graphics_factory);
     //opp_callback2(g, OPPN_ACTION_VIEW, NULL);
+	qtg->color = rgb;
     qtg->pen->setRgb(rgb);
     qtg->painter->setPen(*qtg->pen);
     );
+}
+
+static int qt_impl_get_color(struct xultb_graphics*g) {
+	QtXulTbGraphics*qtg = TO_QT_G(g);
+	return qtg->color;
 }
 
 static void qt_impl_set_font(struct xultb_graphics*g, xultb_font_t*font) {
@@ -121,6 +126,7 @@ OPP_CB(qt_impl_graphics) {
         g->fill_triangle = qt_impl_fill_triangle;
         g->set_color = qt_impl_set_color;
         g->set_font = qt_impl_set_font;
+        g->get_color = qt_impl_get_color;
         new (qtg) QtXulTbGraphics();
         return 0;
     case OPPN_ACTION_GUI_RENDER:

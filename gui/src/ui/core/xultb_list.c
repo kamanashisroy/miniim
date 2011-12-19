@@ -20,6 +20,7 @@
 
 #include "config.h"
 #include "core/logger.h"
+#include "opp/opp_salt.h"
 #include "ui/core/xultb_list.h"
 
 C_CAPSULE_START
@@ -77,30 +78,38 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 	g->set_font(g, list->item_font);
 
 	SYNC_LOG(SYNC_VERB, "Iterating items(%d)\n", list->vpos);
-	for (i = list->vpos - 1; (obj = opp_indexed_list_get(items,i));i++) {
-		/* see if selected index is more than the item count */
-		if (list->selected_index > i && !opp_indexed_list_get(items,i)) {
-			list->selected_index = i;
-		}
-		SYNC_LOG(SYNC_VERB, "Showing item\n");
-		posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
-		if (posY > (list->super_data.menuY - list->bottomMargin)) {
-			if (list->selected_index >= i && list->vpos < list->selected_index) {
-				list->vpos++;
-				/* try to draw again */
-				xultb_list_show_items(list, g);
+	for (i = list->vpos - 1;;i++) {
+		int break_here = 0;
+		opp_at_ncode(obj, items, i,
+			/* see if selected index is more than the item count */
+			if (list->selected_index > i) {
+				list->selected_index = i;
 			}
-			/* no more place to draw */
+			SYNC_LOG(SYNC_VERB, "Showing item\n");
+			posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
+			if (posY > (list->super_data.menuY - list->bottomMargin)) {
+				if (list->selected_index >= i && list->vpos < list->selected_index) {
+					list->vpos++;
+					/* try to draw again */
+					xultb_list_show_items(list, g);
+				}
+				/* no more place to draw */
 
-			// So there are more elements left ..
-			// draw an arrow
-			// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.indicator%);
-			g->set_color(g, 0x006699);
-			int x = list->super_data.width - 3 * XULTB_LIST_HMARGIN - XULTB_LIST_RESOLUTION - list->rightMargin;
-			int y = list->super_data.menuY - list->bottomMargin - vtable_xultb_window.PADDING - 2 * XULTB_LIST_RESOLUTION;
-			g->fill_triangle(g, x + XULTB_LIST_RESOLUTION / 2, y + XULTB_LIST_RESOLUTION, x + XULTB_LIST_RESOLUTION,
-					y, x, y);
-			return;
+				// So there are more elements left ..
+				// draw an arrow
+				// #expand g.setColor(%net.ayaslive.miniim.ui.core.list.indicator%);
+				g->set_color(g, 0x006699);
+				int x = list->super_data.width - 3 * XULTB_LIST_HMARGIN - XULTB_LIST_RESOLUTION - list->rightMargin;
+				int y = list->super_data.menuY - list->bottomMargin - vtable_xultb_window.PADDING - 2 * XULTB_LIST_RESOLUTION;
+				g->fill_triangle(g, x + XULTB_LIST_RESOLUTION / 2, y + XULTB_LIST_RESOLUTION, x + XULTB_LIST_RESOLUTION,
+						y, x, y);
+				break_here = 1;
+			}
+		) else {
+			break;
+		}
+		if(break_here) {
+			break;
 		}
 	}
 }
@@ -191,15 +200,24 @@ OPP_CB(xultb_list) {
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
 		{
-			va_list ap;
-			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_INITIALIZE, NULL, ap)) {
+			va_list apa;
+			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_INITIALIZE, NULL, apa)) {
+				va_end(apa);
 				return -1;
 			}
+			va_end(apa);
 		}
 		list->super_data.vtable = &vtable_xultb_window_list;
 		opp_vtable_set(list, xultb_list);
 		opp_indexed_list_create2(&list->_items, 4);
 		list->vpos = 1;
+		list->item_font = xultb_font_create();
+		if(cb_data) {
+			xultb_str_t*title = cb_data;
+			if(title)list->super_data.title = *title;
+			xultb_str_t*default_command = va_arg(ap, xultb_str_t*);
+			if(default_command)list->default_command = *default_command;
+		}
 		SYNC_LOG(SYNC_VERB, "Created xultb_list\n");
 		return 0;
 	case OPPN_ACTION_FINALIZE:
@@ -217,14 +235,7 @@ OPP_CB(xultb_list) {
 
 static struct opp_factory xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
-	struct xultb_list*list = (struct xultb_list*)OPP_ALLOC2(&xultb_list_factory, NULL);
-	if(!list) {
-		return NULL;
-	}
-	list->item_font = xultb_font_create();
-	if(title)list->super_data.title = *title;
-	list->default_command = *default_command;
-	return list;
+	return opp_alloc4(&xultb_list_factory, 0, 0, NULL);
 }
 
 int xultb_list_system_init() {

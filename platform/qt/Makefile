@@ -6,10 +6,13 @@ include platform.mk
 CFLAGS+=-Wall -ggdb3 -D_GNU_SOURCE
 
 XULMAKE=$(MAKE) -f xultb.mk -C ../../core -I ../platform/qt
-#XULMAKE+=--quiet
+XULMAKE+=--quiet
 
 XULGMAKE=$(MAKE) -f xultb.mk -C ../../gui -I ../platform/qt
-#XULGMAKE+=--quiet
+XULGMAKE+=--quiet
+
+XULMARKMAKE=$(MAKE) -f xultb.mk -C ../../web -I ../platform/qt
+XULMARKMAKE+=--quiet
 
 QTMAKETEMPLATE = "DEFINES += QT\r\n\
 DEFINES += _GNU_SOURCE\r\n\
@@ -28,6 +31,9 @@ xultb:
 	$(XULGMAKE) all
 	$(XULGMAKE) test
 
+#$(XULMARKMAKE) all
+#$(XULMARKMAKE) test
+
 qtprojectmake:
 	mkdir -p build
 	$(ECHO) $(QTMAKETEMPLATE) > qtproject/.config.pro
@@ -36,6 +42,7 @@ qtprojectmake:
 clean:
 	$(XULMAKE) clean
 	$(XULGMAKE) clean
+	$(XULMARKMAKE) clean
 	rm -f build/*
 	
 

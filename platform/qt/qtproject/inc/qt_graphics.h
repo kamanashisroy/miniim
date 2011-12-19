@@ -32,6 +32,7 @@ public:
 	QPainter*painter;
 	QColor*pen;
 	QPixmap*page;
+	int color;
 };
 
 #define TO_QT_G(x) (QtXulTbGraphics*)(x+1)

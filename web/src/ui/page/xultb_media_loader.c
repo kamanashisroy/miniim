@@ -18,7 +18,6 @@
  *
  */
 
-struct xultb_media_loader {
-	struct xultb_img*(*get_image)();
-};
+#include "ui/page/xultb_media_loader.h"
+
 

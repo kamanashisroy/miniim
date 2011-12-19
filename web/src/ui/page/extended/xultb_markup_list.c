@@ -19,16 +19,14 @@
  */
 
 #include "ui/core/list/xultb_list_item.h"
-#include "ui/markup/extended/xultb_markup_list.h"
+#include "ui/page/extended/xultb_markup_list.h"
 
-struct xultb_markup_list*xultb_markup_list_create(xultb_str_t*title, xultb_str_t*default_command) {
+opp_vtable_extern(xultb_list);
 
-}
-
-static struct xultb_list_item*getListItem(struct xultb_element*elem) {
-	xultb_str_t*name = elem->get_name();
-	xultb_str_t*label = elem->get_attribute_value("l");
-	if (name == NULL || name->equals("m")) {
+static struct xultb_list_item*getListItem(struct xultb_ml_node*elem) {
+	xultb_str_t*name = elem->get_name(elem);
+	xultb_str_t*label = elem->get_attribute_value(elem, "l");
+	if (!name || xultb_equals_static(name, "m")) {
 		return xultb_markup_item_create(elem, ml, XULTB_FALSE, el);
 	} else if (name->equals("l")) {
 		xultb_str_t*text = ".";
@@ -270,15 +268,58 @@ static void do_edit(Element elem) {
 	buff.setLength(0);
 }
 
-static int xultb_markup_list_initialize(void*data) {
-	struct xultb_markup_list*mlist = data;
-	struct xultb_list*list = xultb_list_create(NULL, NULL);
-	OBJ_HIJACK(mlist->list, list);
 
-	mlist->set_event_listener = xultb_markup_list_set_event_listener;
-	mlist->set_media_loader = xultb_markup_list_set_media_loader;
-	mlist->
+struct opp_vtable_xultb_markup_list vtable_xultb_markup_list = {
+	.set_event_listener = xultb_markup_list_set_event_listener,
+	.set_media_loader = xultb_markup_list_set_media_loader,
+};
 
+
+OPP_CB(xultb_markup_list) {
+	struct xultb_markup_list*mlist = (struct xultb_markup_list*)data;
+	// do a cleanup
+	memset(mlist, 0, sizeof(struct xultb_markup_list));
+	switch(callback) {
+	case OPPN_ACTION_INITIALIZE:
+//		mlist->super_data.vtable = &vtable_xultb_window_list;
+		{
+			va_list apa;
+			va_copy(apa, ap);
+			if(vtable_xultb_window.oppcb(&mlist->super_data, OPPN_ACTION_INITIALIZE, cb_data, apa)) {
+				va_end(apa);
+				return -1;
+			}
+			va_end(apa);
+		}
+		opp_vtable_set(mlist, xultb_markup_list);
+		SYNC_LOG(SYNC_VERB, "Created xultb_markup_list\n");
+		return 0;
+	case OPPN_ACTION_FINALIZE:
+		opp_factory_destroy(&list->_items);
+		{
+			va_list ap;
+			if(vtable_xultb_window.oppcb(&mlist->super_data, OPPN_ACTION_FINALIZE, NULL, ap)) {
+				return -1;
+			}
+		}
+		break;
+	}
+	return 0;
+}
+
+static struct opp_factory xultb_markup_list_factory;
+
+struct xultb_markup_list*xultb_markup_list_create(xultb_str_t*title, xultb_str_t*default_command) {
+	return (struct xultb_markup_list*)opp_alloc4(&xultb_markup_list_factory, 0, 0, title, default_command);
+}
+
+static int xultb_markup_list_system_init() {
+//	vtable_xultb_window_list = vtable_xultb_window;
+//	vtable_xultb_window_list.paint = xultb_list_window_paint_wrapper;
+	SYNC_ASSERT(OPP_FACTORY_CREATE(
+			&xultb_markup_list_factory
+			, 1,sizeof(struct xultb_markup_list)
+			, OPP_CB_FUNC(xultb_markup_list)) == 0);
 	return 0;
 }
 

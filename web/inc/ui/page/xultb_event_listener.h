@@ -1,3 +1,6 @@
+#ifndef XULTB_EVENT_LISTENER_H
+#define XULTB_EVENT_LISTENER_H
+
 /*
  * This file part of MiniIM.
  *
@@ -18,12 +21,19 @@
  *
  */
 
+#include "config.h"
+#include "pull_parser/xultb_parser_core.h"
+
+C_CAPSULE_START
 
 enum markup_event_type {
 	MARKUP_CLICK = 100,
 };
 
 struct xultb_event_listener {
-	void (*handle_event)(struct element elem, enum markup_event_type type);
+	void (*handle_event)(struct xultb_ml_node elem, enum markup_event_type type);
 };
 
+C_CAPSULE_END
+
+#endif // XULTB_EVENT_LISTENER_H

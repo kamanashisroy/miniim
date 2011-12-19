@@ -1,3 +1,6 @@
+#ifndef XULTB_MEDIA_LOADER_H
+#define XULTB_MEDIA_LOADER_H
+
 /*
  * This file part of MiniIM.
  *
@@ -18,10 +21,8 @@
  *
  */
 
-struct xultb_markup_list {
-	struct xultb_list list;
-	void (*set_event_listener)(struct xultb_event_listener*ls);
-	void (*set_media_loader)(struct xultb_media_loader*ml);
+struct xultb_media_loader {
+	struct xultb_img*(*get_image)();
 };
 
-struct xultb_markup_list*xultb_markup_list_create(xultb_str_t*title, xultb_str_t*default_command);
+#endif // XULTB_MEDIA_LOADER_H

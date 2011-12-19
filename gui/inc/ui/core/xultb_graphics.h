@@ -47,7 +47,9 @@ struct xultb_graphics {
 	int(*getClipWidth)();
 	int(*getClipX)();
 	int(*getClipY)();
-	int(*getColor)();
+#endif
+	int (*get_color)(struct xultb_graphics*g);
+#if 0
 	int(*getDisplayColor)(int color);
 	Font(*getFont)();
 	int(*getGrayScale)();
