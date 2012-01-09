@@ -1,0 +1,20 @@
+
+include ../../.config.mk
+CURRENTPATH=$(XULTUBE_HOME)/platform/qt
+include platform.mk
+
+ifeq ("$(PLATFORM)","win")
+MAKESTATIC=make
+else
+MAKESTATIC=make;make staticlib
+endif
+
+
+all:
+	$(QMAKE) ../qtproject/qtproject.pro
+	make clean
+	$(MAKESTATIC)
+
+
+
+

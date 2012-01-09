@@ -35,12 +35,12 @@ int xultb_guicore_platform_init(int*argc, char *argv[]) {
     return 0;
 }
 
-int xultb_guicore_platform_walk(int ms) {
+int xultb_guicore_platform_walk(int UNUSED_VAR(ms)) {
     app->processEvents(0,100);
 	return 0;
 }
 
-void xultb_log_helper(void*fdptr, const char *fmt, ...) {
+void xultb_log_helper(void*UNUSED_VAR(fdptr), const char *fmt, ...) {
 //	int fd = *(int *)fdptr;
 	va_list ap;
 	char somebuff[256];

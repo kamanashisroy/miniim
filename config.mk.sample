@@ -1,10 +1,7 @@
 
-# specify where the qt is 
-QT_HOME=/home/ayaskanti/opt/qt/Desktop/Qt/474/gcc
-
-# specify current path
-XULTUBE_HOME=/media/active/projects/miniim
-
-# specify if we need to add -e to do escape character
-# parsing in echo command
+QT_HOME=/home/kamanashisroy/opt/QtSDK/Desktop/Qt/474/gcc/
+XULTUBE_HOME=/active/projects/xultube
 ECHO=echo -e
+#CC=gcc
+REMOVE_FILE=rm -f
+PLATFORM=linux

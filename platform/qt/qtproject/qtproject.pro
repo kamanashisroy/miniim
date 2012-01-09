@@ -22,7 +22,7 @@ HEADERS += inc/qt_config.h inc/qt_graphics.h inc/qt_window.h inc/qt_logger.h inc
 
 INCLUDEPATH+=inc
 
-
+LFLAGS = -static-libgcc
 CXXFLAGS+=-ggdb3
 
 

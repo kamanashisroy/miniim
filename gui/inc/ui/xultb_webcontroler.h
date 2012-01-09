@@ -26,7 +26,7 @@ struct xultb_webcontroler
 {
 	int initialize(void*data);
 	int finalize(void*data);
-	public boolean pushWrapper(ResourceIdentifier id, boolean back);
+	public boolean push_wrapper_impl(ResourceIdentifier id, boolean back);
 	public void handleContent(String url, Object obj);
 	public Image getImage(String src);
 	public ContentConnection open(String url);

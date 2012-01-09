@@ -4,9 +4,11 @@
 #include "core/logger.h"
 #include "ui/xultb_guicore.h"
 #include "ui/core/xultb_list.h"
+#include "ui/xultb_gui_input.h"
 #include <QtGui>
 #include "qt_window.h"
 #include "qt_graphics.h"
+
 
 C_CAPSULE_START
 
@@ -16,13 +18,15 @@ static void (*backup_paint)(struct xultb_window*win, struct xultb_graphics*g);
 static void qt_window_impl_paint_wrapper(struct xultb_window*win, struct xultb_graphics*g) {
 	QtXulTbWindow*qw = (QtXulTbWindow*)win->platform_data;
     // TODO see if the xultb_graphics is initiated ..
-    SYNC_LOG(SYNC_VERB, "Painting list\n");
+	GUI_LOG("Painting list\n");
     backup_paint(win, g);
     QTG_CAPSULE(
-    		qw->setPage(qtg->page);
-    		qtg->painter->end();
+		qw->setPage(qtg->page);
+		qtg->painter->end();
+//		qw->update(0,0,win->width, win->height); // XXX why ??
+		qw->repaint(0,0,win->width, win->height); // TODO refresh only appropriate rectangle ..
     );
-    SYNC_LOG(SYNC_VERB, "Rendering list(TODO: refresh now)\n");
+    GUI_LOG("Rendering list(TODO: refresh now)\n");
     //opp_callback(g, OPPN_ACTION_GUI_RENDER, ql->canvas);
 }
 
@@ -30,10 +34,25 @@ static void qt_window_impl_show(struct xultb_window*win) {
 	QtXulTbWindow*qw = (QtXulTbWindow*)win->platform_data;
     xultb_guicore_set_dirty(win);
     xultb_guicore_walk(0); // XXX should I force it to render ??
-    SYNC_LOG(SYNC_VERB, "Showing Window ..\n");
+    GUI_LOG("Showing Window ..[It should be called once ..]\n");
+    qw->resize(win->width, win->height);// resize
     qw->show();
 }
 
+static int (*qt_handle_event)(int flags, int key_code, int x, int y) = NULL;
+int qt_process_mouse_event_helper(int flags, int key_code, int x, int y) {
+	if(qt_handle_event) {
+//		GUI_INPUT_LOG("event callback ..\n");
+        return qt_handle_event(flags, key_code, x, y);
+	}
+	return 0;
+}
+
+int xultb_gui_input_platform_init(int (*handle_event)(int flags, int key_code, int x, int y)) {
+	GUI_INPUT_LOG("Setting event handler\n");
+	qt_handle_event = handle_event;
+	return 0;
+}
 
 int xultb_window_platform_create(struct xultb_window*win) {
 	QtXulTbWindow*qw = new QtXulTbWindow();

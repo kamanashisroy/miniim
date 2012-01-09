@@ -70,6 +70,7 @@ struct xultb_graphics {
 	void(*setStrokeStyle)(int style);
 	void(*translate)(int x, int y);
 #endif
+	void(*start)(struct xultb_graphics*g);
 };
 
 //opp_type_new(xultb_graphics);

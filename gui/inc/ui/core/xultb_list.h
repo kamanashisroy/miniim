@@ -28,22 +28,22 @@
 C_CAPSULE_START
 
 opp_vtable_declare(xultb_list,
-	void (*set_action_listener)(struct xultb_action_listener*list);
+	void (*set_action_listener)(struct xultb_list*list, struct xultb_action_listener*lis);
 
 	struct opp_factory*(*get_items)(struct xultb_list*list);
-	struct xultb_list_item* (*get_list_item)(void*data);
+	struct xultb_list_item* (*get_list_item)(struct xultb_list*list, void*data);
 	int (*get_count)(struct xultb_list*list);
 	xultb_str_t*(*get_hint)(struct xultb_list*list);
 
-	struct xultb_list_item*(*get_selected)(struct xultb_list*list);
+	void*(*get_selected)(struct xultb_list*list);
 
 	void (*set_selected_index)(struct xultb_list*list, int index);
 	int (*get_selected_index)(struct xultb_list*list);
+
+	xultb_bool_t (*handle_item)(struct xultb_list*list, void*target, int flags, int key_code, int x, int y);
 );
 
-/** \todo support object item showing, truncated text showing .. */
 opp_class_declare(xultb_list,
-	/*! \todo show arrow signs(left and right arrow) to indicate that the text is truncated */
 	opp_class_extend(struct xultb_window);
 
 	xultb_font_t*item_font;
@@ -58,7 +58,8 @@ opp_class_declare(xultb_list,
 	int bottomMargin;
 	int RESOLUTION;
 
-	xultb_str_t default_command;
+	xultb_str_t*default_command;
+//	struct xultb_action_listener*lis;
 	struct opp_factory _items;
 );
 

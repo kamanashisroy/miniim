@@ -24,6 +24,28 @@ static int qt_impl_substring_width(struct xultb_font*font, xultb_str_t*str, int 
     return qtfont->metrics.width(text, width);
 }
 
+static struct xultb_font*some_default_font = NULL;
+struct xultb_font*xultb_font_get(int UNUSED_VAR(face), int UNUSED_VAR(style), int UNUSED_VAR(size)) {
+	if(!some_default_font) {
+		some_default_font = xultb_font_create();
+	}
+	return some_default_font;
+}
+
+int xultb_font_get_face(struct xultb_font*UNUSED_VAR(font)) {
+	// TODO implement me
+	return 0;
+}
+int xultb_font_get_style(struct xultb_font*UNUSED_VAR(font)) {
+	// TODO implement me
+	return 0;
+}
+int xultb_font_get_size(struct xultb_font*UNUSED_VAR(font)) {
+	// TODO implement me
+	return 0;
+}
+
+
 OPP_CB(qt_impl_font) {
     struct xultb_font*font = (struct xultb_font*)data;
     QtXulTbFont*qtfont = TO_QT_FONT(font);

@@ -1,0 +1,20 @@
+<x xmlns="http://miniim.sourceforge.net/namespace/0.0.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://miniim.sourceforge.net/namespace/0.0.1 ../markup.xsd">
+	<m r="y">
+	<c href="app://Settings.OK">OK</c>
+	</m><m>
+	<c href="app://home">Cancel</c>
+	</m>
+	<ls t="Settings">
+		<t l="Message" h="I am Busy" w="y"></t>
+		<s l="Status">
+			<o s="y">Available</o>
+			<o>Away</o>
+			<o>Dnd</o>
+			<o>Unavailable</o>
+		</s>
+		<t l="Message" h="I am Busy" w="y"></t>
+	</ls>
+</x>
+
+

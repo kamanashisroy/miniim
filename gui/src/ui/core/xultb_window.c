@@ -21,6 +21,7 @@
 #include "config.h"
 #include "core/logger.h"
 #include "core/xultb_obj_factory.h"
+#include "ui/xultb_guicore.h"
 #include "ui/core/xultb_window.h"
 #include "ui/core/xultb_menu.h"
 
@@ -32,19 +33,36 @@ OPP_CB(xultb_window);
 static void xultb_window_init(struct xultb_window*win, int w, int h);
 static void xultb_window_show(struct xultb_window*win);
 static void xultb_window_show_full(struct xultb_window*win
-		, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count);
+		, struct opp_factory*left_option, xultb_str_t*right_option);
 static xultb_bool_t xultb_window_is_showing(struct xultb_window*win);
 static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g);
+static xultb_bool_t xultb_window_handle_event_impl(struct xultb_window*win, void*target, int flags, int key_code, int x, int y);
+void xultb_window_set_title(struct xultb_window*win, xultb_str_t*title);
 
 struct opp_vtable_xultb_window vtable_xultb_window = {
 	.PADDING = 2,
 	.init = xultb_window_init,
 	.show = xultb_window_show,
 	.show_full = xultb_window_show_full,
+	.set_title = xultb_window_set_title,
 	.is_showing = xultb_window_is_showing,
 	.paint = xultb_window_paint,
+	.handle_event = xultb_window_handle_event_impl,
 	.oppcb = OPP_CB_FUNC(xultb_window),
 };
+
+void xultb_window_set_title(struct xultb_window*win, xultb_str_t*title) {
+	win->title = title;
+}
+
+static xultb_bool_t xultb_window_handle_event_impl(struct xultb_window*win, void*target, int flags, int key_code, int x, int y) {
+	SYNC_LOG(SYNC_VERB, "Handle menu commands\n");
+	if(xultb_menu_handle_event(win, target, flags, key_code, x, y)) {
+		xultb_guicore_set_dirty(win);
+		return 1;
+	}
+	return 0;
+}
 
 static void xultb_window_init(struct xultb_window*win, int w, int h) {
 #if 0
@@ -69,9 +87,10 @@ static void xultb_window_show(struct xultb_window*win) {
 	XULTB_CORE_UNIMPLEMENTED();
 }
 
-static void xultb_window_show_full(struct xultb_window*win, xultb_str_t*right_option, xultb_str_t*left_option, int left_option_count) {
-	//xultb_menu_set(right_option, left_option, left_option_count);
-	XULTB_CORE_UNIMPLEMENTED();
+static void xultb_window_show_full(struct xultb_window*win
+		, struct opp_factory*left_option, xultb_str_t*right_option) {
+	xultb_menu_set(left_option, right_option);
+	win->vtable->show(win);
 }
 
 static xultb_bool_t xultb_window_is_showing(struct xultb_window*win) {
@@ -79,7 +98,7 @@ static xultb_bool_t xultb_window_is_showing(struct xultb_window*win) {
 	return XULTB_TRUE;
 }
 
-static void xultb_window_show_title(struct xultb_window*win, struct xultb_graphics*g) {
+static void xultb_window_paint_title_impl(struct xultb_window*win, struct xultb_graphics*g) {
 	/* Cleanup Background */
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleBg%);
 	g->set_color(g, 0x006699);
@@ -94,14 +113,14 @@ static void xultb_window_show_title(struct xultb_window*win, struct xultb_graphi
 	// #expand g.setColor(%net.ayaslive.miniim.ui.core.window.titleFg%);
 	g->set_color(g, 0xFFFFFF);
 	g->set_font(g, win->vtable->TITLE_FONT);
-	g->draw_string(g, &win->title, 0, vtable_xultb_window.PADDING
+	g->draw_string(g, win->title, 0, vtable_xultb_window.PADDING
 			, win->width
 			, win->height
 			, XULTB_GRAPHICS_TOP|XULTB_GRAPHICS_HCENTER);
 }
 
 static void xultb_window_paint(struct xultb_window*win, struct xultb_graphics*g) {
-	xultb_window_show_title(win, g);
+	xultb_window_paint_title_impl(win, g);
 	xultb_menu_paint(g, win->width, win->height);
 }
 
@@ -109,6 +128,7 @@ OPP_CB(xultb_window) {
 	struct xultb_window*win = (struct xultb_window*)data;
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
+		memset(win, 0, sizeof(*win));
 		opp_vtable_set(win, xultb_window);
 		xultb_window_init(win, 200, 400);
 		xultb_window_platform_create(win);

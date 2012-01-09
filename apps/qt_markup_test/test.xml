@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<x xmlns="http://miniim.sourceforge.net/namespace/0.0.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://miniim.sourceforge.net/namespace/0.0.1 markup.xsd">
+	<ls t="Links">
+		<l href="pages/contacts.xml" src="images/contacts.png">Contacts</l>
+		<l src="images/settings.png">Settings</l>
+		<l src="images/accounts.png">Accounts</l>
+		<l href="pages/more.xml" src="images/miniim.png">More</l>
+		<!-- <l href="res://im/LogViewer.xml" src="images/logs.png">Logs</l> -->
+		<l href="app://quit" src="images/quit.png">Quit</l>
+	</ls>
+</x>
+
+

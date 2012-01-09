@@ -6,14 +6,12 @@
 C_CAPSULE_START
 
 int main(int argc, char *argv[]) {
-
-	xultb_str_t title = xultb_str_create("Test");
-	xultb_str_t dc = xultb_str_create("quit");
-
 	xultb_guicore_system_init(&argc, argv);
 
 
 	// show the window
+	xultb_str_t title = xultb_str_create("Test");
+	xultb_str_t dc = xultb_str_create("quit");
 //	struct xultb_window*win = xultb_window_create(&title);
 //	win->width = 10;
 //	SYNC_LOG(SYNC_VERB, "Window title:%s,width:%d,height:%d\n"

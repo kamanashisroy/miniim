@@ -11,31 +11,34 @@ TARGET=qt_test.bin
 STATIC_LIBS+=../../core/libxultbcore.a
 #STATIC_LIBS+=../../gui/libxultbgui.a
 STATIC_LIBS+=../../gui/libxultbtest.a
+ifeq ("$(PLATFORM)","win")
+STATIC_LIBS+=../../platform/qt/build/debug/libqtguiproject.a
+else
 STATIC_LIBS+=../../platform/qt/build/libqtguiproject.a
+endif
 LIBS+=$(STATIC_LIBS)
 
 
 PQTMAKE=$(MAKE) -C ../../platform/qt
-#PQTMAKE+=--quiet
+PQTMAKE+=--quiet
 
 all: qtsharedlib $(TARGET)
-	echo -e "export LD_LIBRARY_PATH=$(QT_HOME)/lib"
-	@echo "You may want to execute the line above in the shell and then try $(TARGET)"
-
-obj_dir:
-	mkdir -p obj
+	$(ECHO) "In linux export the library path as:"
+	$(ECHO) "export LD_LIBRARY_PATH=$(QT_HOME)/lib"
+	$(ECHO) "In windows export the library path as:"
+	$(ECHO) "set PATH=%PATH%;$(QT_HOME)/lib;$(XULTUBE_HOME)/platform/qt/build/debug/"
+	@$(ECHO) "You may want to execute the line above in the shell and then try $(TARGET)"
 
 ctags:
 	ctags $(SOURCES)
 	
-$(TARGET): $(OBJECTS) build_extobjs
-	$(CC) $(CFLAGS) -o $(TARGET) $(wildcard extobjs/*.o) $(LDFLAGS) $(LIBS)
+$(TARGET): $(OBJECTS) resolder
+	$(CC) $(CFLAGS) extobjs/resolder.a -o $(TARGET) $(LDFLAGS) $(LIBS)
 
 qtsharedlib:
 	$(PQTMAKE) all
 
-build_extobjs:
-	mkdir -p extobjs
+resolder:
 	cp $(STATIC_LIBS) extobjs/
 	$(MAKE) -C extobjs
 

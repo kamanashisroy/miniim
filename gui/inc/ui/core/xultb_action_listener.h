@@ -21,11 +21,13 @@
  *
  */
 #include "core/config.h"
+#include "core/xultb_exttypes.h"
 
 C_CAPSULE_START
 
 struct xultb_action_listener {
-	void (*perform_action)(xultb_str_t*action);
+	void*cb_data;
+	void (*perform_action)(void*cb_data, xultb_str_t*action);
 };
 
 C_CAPSULE_END

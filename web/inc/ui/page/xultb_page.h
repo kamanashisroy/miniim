@@ -24,20 +24,29 @@
 #include "ui/xultb_guicore.h"
 #include "ui/page/xultb_event_listener.h"
 #include "ui/page/xultb_media_loader.h"
+#include "pull_parser/xultb_parser_core.h"
 
 C_CAPSULE_START
 
-opp_vtable_declare(xultb_markup_list,
-	void (*set_event_listener)(struct xultb_event_listener*ls);
-	void (*set_media_loader)(struct xultb_media_loader*ml);
+opp_vtable_declare(xultb_page,
+	void (*set_event_listener)(struct xultb_page*mlist, struct xultb_event_listener*ls);
+	void (*set_media_loader)(struct xultb_page*mlist, struct xultb_media_loader*ml);
+	void (*set_node)(struct xultb_page*mlist, struct xultb_ml_node*node, int selectedIndex);
 );
 
-opp_class_declare(xultb_markup_list,
+opp_class_declare(xultb_page,
 	opp_class_extend(struct xultb_list);
+	struct xultb_media_loader*ml;
+	struct xultb_event_listener*el;
+	int continuousScrolling;
+	int isMultipleSelection; // false;
+	struct xultb_ml_node*root;
+	xultb_str_t*right_menu;
+	struct opp_factory left_menu;
 );
 
-struct xultb_markup_list*xultb_markup_list_create(xultb_str_t*title, xultb_str_t*default_command);
-int xultb_markup_list_system_init();
+struct xultb_page*xultb_page_create(xultb_str_t*title, xultb_str_t*default_command);
+int xultb_page_system_init();
 
 C_CAPSULE_END
 

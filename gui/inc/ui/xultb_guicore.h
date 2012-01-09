@@ -27,6 +27,13 @@ C_CAPSULE_START
 enum {
 	OPPN_ACTION_GUI_RENDER = 1024,
 };
+
+struct xultb_gui_task {
+	int (*cb_run)(void*cb_data, int ms);
+};
+
+//#define GUI_LOG(...) SYNC_LOG(SYNC_VERB, __VA_ARGS__)
+#define GUI_LOG(...)
 /*
  * Some library initialization code especially
  * qt requires the exact argc address passsed into
@@ -35,9 +42,11 @@ enum {
 int xultb_guicore_system_init(int*argc, char *argv[]);
 int xultb_guicore_platform_init(int*argc, char *argv[]);
 int xultb_guicore_walk(int ms);
+int xultb_guicore_register_task(struct xultb_gui_task*task);
+int xultb_guicore_unregister_task(struct xultb_gui_task*task);
 int xultb_guicore_platform_walk(int ms);
 int xultb_guicore_set_dirty(struct xultb_window*win);
-
+#define xultb_guicore_set_dirty2(win, x, y, width, height) xultb_guicore_set_dirty(win)
 C_CAPSULE_END
 
 #endif /* XULTB_GUICORE_H */

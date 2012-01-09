@@ -2,6 +2,7 @@
 #define XULTB_FONT_H
 
 #include "core/config.h"
+#include "core/xultb_exttypes.h"
 
 C_CAPSULE_START
 
@@ -20,6 +21,7 @@ enum xultb_font_size {
 
 enum xultb_font_face {
 	XULTB_FONT_FACE_DEFAULT = 1,
+	XULTB_FONT_FACE_SYSTEM = 2,
 };
 
 struct xultb_font {

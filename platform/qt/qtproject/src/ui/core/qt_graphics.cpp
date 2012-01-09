@@ -20,10 +20,10 @@
 C_CAPSULE_START
 static struct opp_factory graphics_factory;
 
-static void qt_impl_draw_image(struct xultb_graphics*g, struct xultb_img*img, int x, int y, int anchor) {
-	QTG_CAPSULE(
+static void qt_impl_draw_image(struct xultb_graphics*UNUSED_VAR(g), struct xultb_img*UNUSED_VAR(img), int UNUSED_VAR(x), int UNUSED_VAR(y), int UNUSED_VAR(anchor)) {
+//	QTG_CAPSULE(
 //			qtg->painter->drawImage(x, y, img->data);
-	);
+//	);
 }
 
 static void qt_impl_draw_line(struct xultb_graphics*g, int x1, int y1, int x2, int y2) {
@@ -46,10 +46,11 @@ static void qt_impl_draw_round_rect(struct xultb_graphics*g, int x, int y, int w
 
 static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x, int y, int width, int height, int anchor) {
     QTG_CAPSULE(
-	SYNC_LOG(SYNC_VERB, "Drawing string %s\n", str->str);
+	GUI_LOG("Drawing string [%d]%s\n", str->len, str->str);
     QString text(str->str);
     int flags = 0;
 
+    text.resize(str->len);
     if(anchor & XULTB_GRAPHICS_TOP) {
     	flags |= Qt::AlignTop;
     }
@@ -66,7 +67,7 @@ static void qt_impl_draw_string(struct xultb_graphics*g, xultb_str_t*str, int x,
     	flags |= Qt::AlignBottom;
     }
 	qtg->painter->drawText(x, y, width, height, flags, text);
-//    	qtg->painter->drawText(x, y, text);
+//    qtg->painter->drawText(x, y, text);
     );
 }
 
@@ -76,13 +77,15 @@ static void qt_impl_fill_rect(struct xultb_graphics*g, int x, int y, int width, 
     );
 }
 
-static void qt_impl_fill_triangle(struct xultb_graphics*g, int x1, int y1, int x2, int y2, int x3, int y3) {
-    QtXulTbGraphics*qtg = TO_QT_G(g);
+static void qt_impl_fill_triangle(struct xultb_graphics*UNUSED_VAR(g)
+, int UNUSED_VAR(x1), int UNUSED_VAR(y1), int UNUSED_VAR(x2), int UNUSED_VAR(y2), int UNUSED_VAR(x3), int UNUSED_VAR(y3)) {
+//    QtXulTbGraphics*qtg = TO_QT_G(g);
     // TODO fill me
     //qtg->painter->fillPath(qtg->path, NULL);
 }
 
-static void qt_impl_fill_round_rect(struct xultb_graphics*g, int x, int y, int width, int height, int arcWidth, int arcHeight) {
+static void qt_impl_fill_round_rect(struct xultb_graphics*g, int x, int y, int width
+		, int height, int UNUSED_VAR(arcWidth), int UNUSED_VAR(arcHeight)) {
     QTG_CAPSULE(
     qtg->painter->fillRect(x, y, width, height, *qtg->pen);
     );
@@ -111,6 +114,14 @@ static void qt_impl_set_font(struct xultb_graphics*g, xultb_font_t*font) {
 	);
 }
 
+static void qt_impl_start(struct xultb_graphics*g) {
+    QTG_CAPSULE(
+    if(!qtg->painter->isActive()) {
+        qtg->painter->begin(qtg->page);
+    }
+	);
+}
+
 OPP_CB(qt_impl_graphics) {
     struct xultb_graphics*g = (struct xultb_graphics*)data;
     QtXulTbGraphics*qtg = TO_QT_G(g);
@@ -127,17 +138,20 @@ OPP_CB(qt_impl_graphics) {
         g->set_color = qt_impl_set_color;
         g->set_font = qt_impl_set_font;
         g->get_color = qt_impl_get_color;
+        g->start = qt_impl_start;
         new (qtg) QtXulTbGraphics();
         return 0;
+#if 0
     case OPPN_ACTION_GUI_RENDER:
     {
         QGraphicsView*canvas = (QGraphicsView*)cb_data;
         canvas->render(qtg->painter);
-        SYNC_LOG(SYNC_VERB, "Rendered canvas\n");
+        GUI_LOG("Rendered canvas\n");
         return 0;
     }
+#endif
     case OPPN_ACTION_VIEW:
-        SYNC_LOG(SYNC_VERB, "Allocated at %p\n", data);
+    	GUI_LOG("Allocated at %p\n", data);
         break;
     case OPPN_ACTION_FINALIZE:
         qtg->~QtXulTbGraphics();

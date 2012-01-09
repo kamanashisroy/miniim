@@ -19,13 +19,63 @@
  */
 
 #include "opp/opp_salt.h"
+#include "opp/opp_any_obj.h"
 #include "core/logger.h"
+#include "ui/core/xultb_font.h"
 #include "ui/core/xultb_text_format.h"
 #include "ui/page/xultb_markup_item.h"
 
-struct markup_item*xultb_markup_item_create(struct xultb_ml_node*root, struct xultb_media_loader*loader, xultb_bool_t selectable, struct xultb_event_listener*el) {
-	return NULL;
-}
+#if 0
+opp_vtable_declare(xultb_markup_item,
+//	int (*initialize)(struct xultb_markup_item*item, void*data);
+//	void (*render_node)(struct xultb_markup_item*item, struct xultb_font*font, struct xultb_ml_elem*elem);
+//	void (*render_text)(struct xultb_markup_item*item, struct xultb_font*font, const char*text);
+//	void (*render_image)(struct xultb_markup_item*item, struct xultb_ml_elem*elem);
+	void (*break_line)(struct xultb_markup_item*item);
+	void (*clear_line)(struct xultb_markup_item*item);
+	void (*clear_line_full)(struct xultb_markup_item*item, int y, int height);
+	void (*update_height)(struct xultb_markup_item*item, struct xultb_font*font);
+	void (*update_height_force)(struct xultb_markup_item*item, int newHeight);
+	/** List item implementation .. */
+	/*@{*/
+//	int (*paint)(struct graphics g, int x, int y, int width, boolean selected);
+	/*@}*/
+
+	void (*free)();
+
+	/// traverser
+	/*@{*/
+	void (*set_listener)(struct xultb_markup_item*item, struct xultb_event_listener*lis);
+
+	void (*free_traverser)(struct xultb_markup_item*item);
+	/** Key press listener to traverse the browsable elements */
+	int (*key_pressed)(struct xultb_markup_item*item, int key_code, int game_action);
+	void (*search_focusable_elements)(struct xultb_markup_item*item, struct xultb_ml_node*elem);
+	void (*set_focus)(struct xultb_markup_item*item, struct xultb_ml_node*elem);
+//	int (*is_focused)(struct xultb_markup_item*item, struct xultb_ml_elem*elem);
+	int (*is_active)(struct xultb_markup_item*item, struct xultb_ml_node*elem);
+	/*@}*/
+);
+#endif
+
+opp_class_declare_novtable(xultb_markup_item,
+	opp_class_extend(struct xultb_list_item);
+//	struct xultb_ml_node*root; // Document root
+	/**
+	 * y-coordinate position of the image
+	 */
+	int xPos; // = 0
+	int yPos;// = 0;
+
+//	struct xultb_graphics*g;// = null;
+
+	int lineHeight; // = 0;
+	int width;
+	xultb_bool_t selected;// = false;
+	struct xultb_media_loader*loader;// = null;
+);
+
+static int minLineHeight = 0;// = Font.getFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN,Font.SIZE_SMALL).getHeight()+PADDING;
 
 static void clear_line_full(struct xultb_markup_item*item, struct xultb_graphics*g, int y, int height) {
 	if (!item->selected)
@@ -49,7 +99,7 @@ static void break_line(struct xultb_markup_item*item, struct xultb_graphics*g) {
 	item->xPos = 0;
 
 	// reset line height to minimum
-	item->lineHeight = item->minLineHeight;
+	item->lineHeight = minLineHeight;
 
 	// clear the next line
 	clear_line(item, g);
@@ -73,19 +123,17 @@ static void update_height_for_font(struct xultb_markup_item*item, struct xultb_g
 	}
 }
 
-static int is_focused(struct xultb_ml_node*elem) {
-	xultb_str_t FOCUSED = xultb_str_create("focused"); // TODO make it static and initialize once
-	xultb_str_t*focused = elem->getAttributeValue(elem, &FOCUSED);
-	if(focused && xultb_equals_static(focused, "yes")) {
-		return 1;
+static xultb_bool_t is_focused(struct xultb_ml_node*elem) {
+	xultb_str_t*focused = xultb_ml_get_attribute_value(elem, "focused");
+	if(focused && xultb_str_equals_static(focused, "yes")) {
+		return XULTB_TRUE;
 	}
-	return 0;
+	return XULTB_FALSE;
 }
 
 static int is_active(struct xultb_ml_node*elem) {
-	xultb_str_t ACTIVE = xultb_str_create("active"); // TODO make it static and initialize once
-	xultb_str_t*active = elem->getAttributeValue(elem, &ACTIVE);
-	if(active && xultb_equals_static(active, "yes")) {
+	xultb_str_t*active = xultb_ml_get_attribute_value(elem, "active");
+	if(active && xultb_str_equals_static(active, "yes")) {
 		return 1;
 	}
 	return 0;
@@ -93,7 +141,7 @@ static int is_active(struct xultb_ml_node*elem) {
 
 static void renderImage(struct xultb_markup_item*item, struct xultb_ml_node*elem) {
 #if 0
-	xultb_str_t* src = elem->getAttributeValue(null, "src");
+	xultb_str_t* src = elem->get_attribute_value(null, "src");
 	if (src == null) {
 		return;
 	}
@@ -105,7 +153,7 @@ static void renderImage(struct xultb_markup_item*item, struct xultb_ml_node*elem
 	int imgHeight = img.getHeight();
 
 	// so we can use it inline
-	xultb_str_t* position = elem->getAttributeValue(null, "p");
+	xultb_str_t* position = elem->get_attribute_value(null, "p");
 	if (position != null) {
 		break_line();
 		if (position.equals("c")) {
@@ -174,45 +222,43 @@ static void render_text(struct xultb_markup_item*item, struct xultb_graphics*g, 
 	}
 }
 
-static void render_node(struct xultb_markup_item*item, struct xultb_graphics*g, struct xultb_font*font, struct xultb_ml_node*elem) {
-	xultb_str_t* tagName = elem->get_name(elem); /* Element name */
+static void render_node(struct xultb_markup_item*item, struct xultb_graphics*g
+		, struct xultb_font*font, struct xultb_ml_node*elem) {
+	xultb_str_t* tagName = elem->vtable->get_name(elem); /* Element name */
 	struct xultb_font*newFont = font;
 	int oldColor = g->get_color(g);
-	static xultb_str_t HREF;
-	HREF = xultb_str_create("href"); // TODO make it static and initialize once
-
 	SYNC_ASSERT(tagName->len != 0);
 
-	if (xultb_equals_static(tagName, "br")) {
+	if (xultb_str_equals_static(tagName, "br")) {
 		break_line(item, g);
-	} else if (xultb_equals_static(tagName, "img")) {
+	} else if (xultb_str_equals_static(tagName, "img")) {
 		renderImage(item, elem);
-	} else if (xultb_equals_static(tagName, "b")) {
+	} else if (xultb_str_equals_static(tagName, "b")) {
 		newFont = xultb_font_get(xultb_font_get_face(font), xultb_font_get_style(font)
 				| XULTB_FONT_STYLE_BOLD, xultb_font_get_size(font));
-	} else if (xultb_equals_static(tagName, "i")) {
+	} else if (xultb_str_equals_static(tagName, "i")) {
 		newFont = xultb_font_get(xultb_font_get_face(font), xultb_font_get_style(font)
 				| XULTB_FONT_STYLE_ITALIC, xultb_font_get_size(font));
-	} else if (xultb_equals_static(tagName, "big")) {
+	} else if (xultb_str_equals_static(tagName, "big")) {
 		newFont
 				= xultb_font_get(xultb_font_get_face(font), xultb_font_get_style(font), XULTB_FONT_SIZE_LARGE);
-	} else if (xultb_equals_static(tagName, "small")) {
+	} else if (xultb_str_equals_static(tagName, "small")) {
 		newFont
 				= xultb_font_get(xultb_font_get_face(font), xultb_font_get_style(font), XULTB_FONT_SIZE_SMALL);
-	} else if (xultb_equals_static(tagName, "strong") || xultb_equals_static(tagName, "em")) {
+	} else if (xultb_str_equals_static(tagName, "strong") || xultb_str_equals_static(tagName, "em")) {
 		/// \xxx what to do for strong text ??
 		newFont = xultb_font_get(xultb_font_get_face(font), xultb_font_get_style(font)
 				| XULTB_FONT_STYLE_BOLD, XULTB_FONT_SIZE_MEDIUM);
-	} else if (xultb_equals_static(tagName, "u")) {
+	} else if (xultb_str_equals_static(tagName, "u")) {
 		newFont = xultb_font_get(xultb_font_get_face(font), xultb_font_get_style(font)
 				| XULTB_FONT_STYLE_UNDERLINED, xultb_font_get_size(font));
-	} else if (xultb_equals_static(tagName, "p")) {
+	} else if (xultb_str_equals_static(tagName, "p")) {
 		// line break
 		break_line(item, g);
 		break_line(item, g);
-	} else if (xultb_equals_static(tagName, "a")) {
+	} else if (xultb_str_equals_static(tagName, "a")) {
 
-		xultb_str_t* link = elem->getAttributeValue(elem, &HREF);
+		xultb_str_t* link = xultb_ml_get_attribute_value(elem, "href");
 
 		// draw the anchor
 		if (!OPP_FACTORY_USE_COUNT(&elem->children) || !link) {
@@ -277,15 +323,15 @@ static int getActualCardHeight(struct xultb_markup_item*item) {
 
 /** List item implementation .. */
 /*@{*/
-static int paint(struct xultb_window*win, struct xultb_graphics*g, int x, int y, int width, int is_selected) {
-	struct xultb_markup_item*item;
+static int paint_impl(struct xultb_list_item*li, struct xultb_graphics*g, int x, int y, int width, int is_selected) {
+	struct xultb_markup_item*item = (struct xultb_markup_item*)li;
 	item->xPos = 0;
 	item->yPos = 0;
 	item->width = width;
 //	item->is_selected = is_selected;
 	// #expand g->set_color(%net.ayaslive.miniim.ui.core.markup.fg%);
 	g->set_color(g, 0x006699);
-	item->lineHeight = item->minLineHeight;
+	item->lineHeight = minLineHeight;
 //	g.translate(x, y);
 
 	// draw the line background
@@ -293,7 +339,7 @@ static int paint(struct xultb_window*win, struct xultb_graphics*g, int x, int y,
 
 	struct xultb_font*font = xultb_font_get(XULTB_FONT_FACE_DEFAULT, XULTB_FONT_STYLE_PLAIN, XULTB_FONT_SIZE_SMALL);
 	// draw the node recursively
-	render_node(item, g, font, item->root);
+	render_node(item, g, font, (struct xultb_ml_node*)item->super_data.target);
 
 
 	int ret = item->yPos;
@@ -305,4 +351,56 @@ static int paint(struct xultb_window*win, struct xultb_graphics*g, int x, int y,
 //	g->translate(-x, -y);
 //	g->set_font(ITEM_FONT);
 	return ret;
+}
+
+struct opp_vtable_xultb_list_item vtable_xultb_list_item_overriden;
+opp_vtable_extern(xultb_list_item);
+OPP_CB(xultb_markup_item) {
+	struct xultb_markup_item*item = (struct xultb_markup_item*)data;
+	memset(item, 0, sizeof(*item));
+	switch(callback) {
+	case OPPN_ACTION_INITIALIZE:
+		item->loader = va_arg(ap, struct xultb_media_loader*);
+		{
+			va_list dummy;
+			opp_super_cb(xultb_list_item)(&item->super_data, OPPN_ACTION_INITIALIZE, NULL, dummy, 0);
+		}
+		OPPUNREF(item->super_data.target); // may be not needed
+		item->super_data.target = OPPREF(cb_data);
+		opp_vtable_set(&item->super_data, xultb_list_item_overriden);
+		return 0;
+	case OPPN_ACTION_FINALIZE:
+		{
+			va_list dummy;
+			opp_super_cb(xultb_list_item)(&item->super_data, OPPN_ACTION_FINALIZE, NULL, dummy, 0);
+		}
+		break;
+	}
+	return 0;
+}
+
+static struct opp_factory markup_item_factory;
+struct xultb_list_item*xultb_markup_item_create(struct xultb_ml_node*root
+		, struct xultb_media_loader*loader, xultb_bool_t selectable
+		, struct xultb_event_listener*el) {
+	return opp_alloc4(&markup_item_factory
+				, 0, 0, root, loader, selectable, el);
+}
+
+int xultb_markup_item_system_init() {
+	vtable_xultb_list_item_overriden = vtable_xultb_list_item;
+	vtable_xultb_list_item_overriden.paint = paint_impl;
+	struct xultb_font*font = xultb_font_get(XULTB_FONT_FACE_SYSTEM, XULTB_FONT_STYLE_PLAIN, XULTB_FONT_SIZE_SMALL);
+	minLineHeight = font->get_height(font) + XULTB_LIST_ITEM_PADDING;
+	OPPUNREF(font);
+	SYNC_ASSERT(!OPP_FACTORY_CREATE(
+			&markup_item_factory
+			, 1,sizeof(struct xultb_markup_item)
+			, OPP_CB_FUNC(xultb_markup_item)));
+	return 0;
+}
+
+int xultb_markup_item_system_deinit() {
+	opp_factory_destroy(&markup_item_factory);
+	return 0;
 }

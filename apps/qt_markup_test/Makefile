@@ -10,6 +10,7 @@ TARGET=qt_test.bin
 
 STATIC_LIBS+=../../core/libxultbcore.a
 STATIC_LIBS+=../../gui/libxultbgui.a
+STATIC_LIBS+=../../ml/libxultbml.a
 #STATIC_LIBS+=../../web/libxultbweb.a
 STATIC_LIBS+=../../web/libxultbtest.a
 STATIC_LIBS+=../../platform/qt/build/libqtguiproject.a
@@ -17,14 +18,11 @@ LIBS+=$(STATIC_LIBS)
 
 
 PQTMAKE=$(MAKE) -C ../../platform/qt
-#PQTMAKE+=--quiet
+PQTMAKE+=--quiet
 
 all: qtsharedlib $(TARGET)
 	echo -e "export LD_LIBRARY_PATH=$(QT_HOME)/lib"
 	@echo "You may want to execute the line above in the shell and then try $(TARGET)"
-
-obj_dir:
-	mkdir -p obj
 
 ctags:
 	ctags $(SOURCES)
@@ -45,4 +43,4 @@ clean:
 	rm -f $(TARGET) $(OBJECTS)
 	$(MAKE) -C extobjs clean
 
-.PHONY: test clean ctags obj_dir all
+.PHONY: test clean ctags all

@@ -148,7 +148,7 @@ enum {
 #define OPP_FINALIZE_NOW(x,y) ({\
 	if((x->property & OPPF_SEARCHABLE) && (((struct opp_object_ext*)(y+1))->flag & OPPN_INTERNAL_1))\
 		opp_lookup_table_delete(&x->tree, (struct opp_object_ext*)(y+1));\
-	if(x->callback){static va_list va;x->callback(y+1, OPPN_ACTION_FINALIZE, NULL, va);}*(y->bitstring+BITFIELD_FINALIZE) &= ~( 1 << y->bit_idx);UNSET_PAIRED_BITS(y);\
+	if(x->callback){static va_list va;x->callback(y+1, OPPN_ACTION_FINALIZE, NULL, va, y->slots*x->obj_size - sizeof(struct opp_object));}*(y->bitstring+BITFIELD_FINALIZE) &= ~( 1 << y->bit_idx);UNSET_PAIRED_BITS(y);\
 })
 
 enum {
@@ -245,7 +245,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 		, SYNC_UWORD16_T obj_size
 		, int token_offset
 		, unsigned char property
-		, int (*callback)(void*data, int callback, void*cb_data, va_list ap)
+		, opp_callback_t callback
 	) {
 	SYNC_ASSERT(obj_size < (1024<<1));
 	SYNC_ASSERT(inc);
@@ -525,7 +525,11 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, vo
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
 #else
 		*(obj->bitstring) |= ( 1 << obj->bit_idx);
-		if(!(obuff->property & OPPF_FAST_INITIALIZE)&& obuff->callback && obuff->callback(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ap/*obj->slots*obuff->obj_size - sizeof(struct opp_object)*/)) {
+		if(!(obuff->property & OPPF_FAST_INITIALIZE)
+				&& obuff->callback
+				&& obuff->callback(ret, OPPN_ACTION_INITIALIZE
+						, (void*)init_data
+						, ap, obj->slots*obuff->obj_size - sizeof(struct opp_object))) {
 			void*dup = ret;
 			OPPUNREF(ret);
 			if(doubleref) {
@@ -547,7 +551,7 @@ void*opp_alloc4(struct opp_factory*obuff, SYNC_UWORD16_T size, int doubleref, vo
 
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);
-	if(ret && (obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback && obuff->callback(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ap/*, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object)*/)) {
+	if(ret && (obuff->property & OPPF_FAST_INITIALIZE) && obuff->callback && obuff->callback(ret, OPPN_ACTION_INITIALIZE, (void*)init_data, ap, ((struct opp_object*)ret-1)->slots*obuff->obj_size - sizeof(struct opp_object))) {
 		void*dup = ret;
 		OPPUNREF(ret);
 		if(doubleref) {
@@ -565,7 +569,7 @@ int opp_callback(void*data, int callback, void*cb_data) {
 	SYNC_ASSERT(obuff->callback);
 	CHECK_OBJ(obj);
 	static va_list va;
-	return obuff->callback(data, callback, cb_data, va);
+	return obuff->callback(data, callback, cb_data, va, 0);
 }
 
 int opp_callback2(void*data, int callback, void*cb_data, ...) {
@@ -575,7 +579,7 @@ int opp_callback2(void*data, int callback, void*cb_data, ...) {
 	CHECK_OBJ(obj);
 	va_list va;
 	va_start(va, cb_data);
-	int ret = obuff->callback(data, callback, cb_data, va);
+	int ret = obuff->callback(data, callback, cb_data, va, 0);
 	va_end(va);
 	return ret;
 }
@@ -641,7 +645,7 @@ void opp_shrink(void*data, int size) {
 	if(obuff->callback){
 		int new_len = slots*obuff->obj_size - sizeof(struct opp_object);
 		static va_list va;
-		obuff->callback(data, OPPN_ACTION_SHRINK, &new_len, va);
+		obuff->callback(data, OPPN_ACTION_SHRINK, &new_len, va, new_len);
 	}
 	DO_AUTO_GC_CHECK(obuff);
 	OPP_UNLOCK(obuff);

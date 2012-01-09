@@ -22,7 +22,8 @@
  */
 
 struct xultb_media_loader {
-	struct xultb_img*(*get_image)();
+	void*cb_data;
+	struct xultb_img*(*get_image)(void*cb_data);
 };
 
 #endif // XULTB_MEDIA_LOADER_H

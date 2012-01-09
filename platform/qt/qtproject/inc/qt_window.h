@@ -6,9 +6,15 @@
 #include <QGraphicsView>
 #include <QPixmap>
 #include <QVariant>
+#include <QMouseEvent>
 #include "config.h"
 #include "core/logger.h"
+#include "ui/xultb_gui_input.h"
+#include "ui/xultb_guicore.h"
 
+C_CAPSULE_START
+int qt_process_mouse_event_helper(int flags, int key_code, int x, int y);
+C_CAPSULE_END
 
 class QtXulTbWindow: public QWidget {
 Q_OBJECT
@@ -127,13 +133,36 @@ protected:
             QPainter p( this );
             p.drawPixmap(0, 0, 200, 400, *page);
             //page->fill(this, 0, 0);
-        	SYNC_LOG(SYNC_VERB, "Filling with pixmap\n");
+            GUI_LOG("Filling with pixmap\n");
         }
         //p.drawImage(0, 0, *page);
+    }
+    void keyPressEvent(QKeyEvent *event){
+    	GUI_INPUT_LOG("Key event\n");
+        QString text = event->text();
+        int x = 0;
+        int key = 0;
+        switch(event->key()) {
+        case Qt::Key_Up:
+            x = XULTB_INPUT_KEY_UP;
+        break;
+        case Qt::Key_Down:
+            x = XULTB_INPUT_KEY_DOWN;
+        break;
+        }
+        if(text.length()) {
+            key = text[0].toAscii();
+        }
+        qt_process_mouse_event_helper(XULTB_INPUT_KEYBOARD_EVENT, key, x, 0);
+    }
+    void mouseReleaseEvent(QMouseEvent *event) {
+    	if (event->button() == Qt::LeftButton) {
+    		GUI_INPUT_LOG("Mouse event\n");
+            qt_process_mouse_event_helper(XULTB_INPUT_SCREEN_EVENT, XULTB_INPUT_KEY_ENTER, event->x(), event->y());
+		}
     }
 public:
     QPixmap*page;
 };
-
 
 #endif // QT_WINDOW_H

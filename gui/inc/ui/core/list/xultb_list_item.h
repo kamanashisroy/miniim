@@ -46,13 +46,16 @@ opp_vtable_declare(xultb_list_item,
 	struct xultb_font*ITEM_FONT;
 	int FONT_HEIGHT;
 	int (*paint)(struct xultb_list_item*item, struct xultb_graphics*g, int x, int y, int width, int selected);
+	int (*do_edit)(struct xultb_list_item*item, int flags, int key_code, int x, int y);
+	int (*update)(struct xultb_list_item*item, xultb_str_t*text);
 );
 
 
 #define LIST_ITEM_SIGNATURE 0x93
 opp_class_declare(xultb_list_item,
-	xultb_str_t label;
-	xultb_str_t text;
+	void*target;
+	xultb_str_t*label;
+	xultb_str_t*text;
 	xultb_bool_t checked;
 	xultb_bool_t is_editable;
 	xultb_bool_t is_radio;
@@ -65,7 +68,8 @@ opp_class_declare(xultb_list_item,
 );
 
 struct xultb_list_item*xultb_list_item_create_label(xultb_str_t*label, xultb_img_t*img);
-struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img, xultb_bool_t change_bg_on_focus, xultb_bool_t truncate_text_to_fit_width);
+struct xultb_list_item*xultb_list_item_create_label_full(xultb_str_t*label, xultb_img_t*img
+		, xultb_bool_t change_bg_on_focus , xultb_bool_t truncate_text_to_fit_width, void*target);
 struct xultb_list_item*xultb_list_item_create_selection_box(xultb_str_t*label, xultb_str_t*text, xultb_bool_t editable);
 struct xultb_list_item*xultb_list_item_create_text_input_full(xultb_str_t*label, xultb_str_t*text, xultb_bool_t wrapped, xultb_bool_t editable);
 struct xultb_list_item*xultb_list_item_create_text_input(xultb_str_t*label, xultb_str_t*text);

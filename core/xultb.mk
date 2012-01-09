@@ -18,10 +18,11 @@ XULTB_TARGETSO=libxultbcore.so
 XULTB_TARGET_XULTB_CFLAGS=
 
 #all: obj_dir $(XULTB_TARGETA)  $(XULTB_TARGETSO)
-all: obj_dir $(XULTB_TARGETA)
-	#export LD_LIBRARY_PATH=$(shell pwd)
+all: obj $(XULTB_TARGETA)
+	
+#export LD_LIBRARY_PATH=$(shell pwd)
 
-obj_dir:
+obj:
 	mkdir -p obj
 
 ctags:
@@ -31,8 +32,9 @@ ctags:
 	$(CC) $(XULTB_CFLAGS) -c $(XULTB_INCLUDES) $< -o $@
 
 $(XULTB_TARGETA): $(XULTB_OBJECTS)
-	ar crv $@ $(XULTB_OBJECTS)
-	nm $@ | wc
+	ar cr $@ $(XULTB_OBJECTS)
+	
+#nm $@ | wc
 
 $(XULTB_TARGETSO): $(XULTB_OBJECTS)
 	$(CC) -shared -o $@ $(XULTB_OBJECTS)
@@ -47,7 +49,7 @@ test:
 install:
 
 clean:
-	rm -f $(XULTB_OBJECTS) $(XULTB_TARGETA) $(XULTB_TARGETSO)
+	$(REMOVE_FILE) $(XULTB_OBJECTS) $(XULTB_TARGETA) $(XULTB_TARGETSO)
 
 .PHONY: test clean ctags obj_dir install
 

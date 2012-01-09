@@ -31,7 +31,8 @@ enum markup_event_type {
 };
 
 struct xultb_event_listener {
-	void (*handle_event)(struct xultb_ml_node elem, enum markup_event_type type);
+	void*cb_data;
+	void (*handle_event)(void*cb_data, struct xultb_ml_node*elem, enum markup_event_type type);
 };
 
 C_CAPSULE_END

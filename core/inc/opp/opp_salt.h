@@ -10,7 +10,8 @@
 
 #define opp_get_ncode(var, factory, token, code) if((var = opp_get(factory, token))) {code;OPPUNREF(var);}
 
-#define opp_at_ncode(var, factory, index, code) if((var = opp_indexed_list_get(factory, index))) {code;OPPUNREF(var);}
+#define opp_at_ncode(var, factory, index, code) if((factory) && (var = opp_indexed_list_get(factory, index))) {code;OPPUNREF(var);}
+#define opp_at_ncode2(var, type, factory, index, code) if((var = (type)opp_indexed_list_get(factory, index))) {code;OPPUNREF(var);}
 
 /*#define opp_search_ncode(var, count, arg, code) ({\
 	void*var[count]; \

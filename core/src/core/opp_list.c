@@ -64,6 +64,18 @@ static int opp_factory_list_compare(void*data, void*func_data) {
 	return 0;
 }
 
+static int opp_list_prune_helper(void*data, void*target) {
+	if(((struct opp_list_item*)data)->obj_data == target) {
+		OPPUNREF(data);
+	}
+	return 0;
+}
+
+int opp_list_prune(struct opp_factory*olist, void*target, int if_flag, int if_not_flag, int hash) {
+	opp_factory_do_full(olist, opp_list_prune_helper, target, if_flag, if_not_flag, hash);
+	return 0;
+}
+
 int opp_list_find_from_factory(struct opp_factory*obuff, struct opp_factory*olist
 		, int (*compare_func)(const void*data, const void*compare_data), const void*compare_data) {
 	struct opp_find_list_helper helper = {

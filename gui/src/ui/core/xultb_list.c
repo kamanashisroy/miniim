@@ -22,16 +22,22 @@
 #include "core/logger.h"
 #include "opp/opp_salt.h"
 #include "ui/core/xultb_list.h"
+#include "ui/xultb_gui_input.h"
 
 C_CAPSULE_START
 
 opp_vtable_extern(xultb_window);
 
-static struct xultb_list_item*xultb_list_get_selected(struct xultb_list*list) {
-	return NULL;
+static void*xultb_list_get_selected(struct xultb_list*list) {
+	struct opp_factory*items = list->vtable->get_items(list);
+	if(!items) {
+		return NULL;
+	}
+	return opp_indexed_list_get(items, list->selected_index);
 }
 
 static void xultb_list_set_selected_index(struct xultb_list*list, int index) {
+	list->selected_index = index;
 	return;
 }
 
@@ -50,12 +56,22 @@ static int xultb_list_show_item(struct xultb_list*list, struct xultb_graphics*g,
 	  li = getListItem(obj);
 	}
 #else
-	li = (struct xultb_list_item*)data;
+	if(list->vtable->get_list_item) {
+		li = list->vtable->get_list_item(list, data);
+	} else {
+		li = (struct xultb_list_item*)data;
+	}
 #endif
 	if(li == NULL)
 	  return 0;
-	int ret = li->vtable->paint(li, g, list->leftMargin + XULTB_LIST_HMARGIN, y + XULTB_LIST_VMARGIN, list->super_data.width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN - 1 - list->leftMargin - list->rightMargin, selected) + XULTB_LIST_VMARGIN + XULTB_LIST_VMARGIN;
-	OPPUNREF(li);
+	li->focused = selected;
+	int ret = li->vtable->paint(li, g, list->leftMargin + XULTB_LIST_HMARGIN
+			, y + XULTB_LIST_VMARGIN
+			, list->super_data.width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN - 1 - list->leftMargin - list->rightMargin
+			, selected) + XULTB_LIST_VMARGIN + XULTB_LIST_VMARGIN;
+	if(list->vtable->get_list_item) {
+		OPPUNREF(li);
+	}
 	return ret;
 }
 
@@ -65,7 +81,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 	void*obj;
 	int posY = list->super_data.panelTop + list->topMargin;
 
-	SYNC_LOG(SYNC_VERB, "Iterating items...\n");
+	GUI_LOG("Iterating items...\n");
 	// sanity check
 	if (items == NULL) {
 		return;
@@ -77,15 +93,15 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 
 	g->set_font(g, list->item_font);
 
-	SYNC_LOG(SYNC_VERB, "Iterating items(%d)\n", list->vpos);
+	if (list->selected_index > OPP_FACTORY_USE_COUNT(items)) {
+		list->selected_index = 0;
+	}
+	GUI_LOG("Iterating items(%d)\n", list->vpos);
 	for (i = list->vpos - 1;;i++) {
 		int break_here = 0;
 		opp_at_ncode(obj, items, i,
 			/* see if selected index is more than the item count */
-			if (list->selected_index > i) {
-				list->selected_index = i;
-			}
-			SYNC_LOG(SYNC_VERB, "Showing item\n");
+			GUI_LOG("Showing item\n");
 			posY += xultb_list_show_item(list, g, obj, posY, i == list->selected_index);
 			if (posY > (list->super_data.menuY - list->bottomMargin)) {
 				if (list->selected_index >= i && list->vpos < list->selected_index) {
@@ -103,6 +119,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 				int y = list->super_data.menuY - list->bottomMargin - vtable_xultb_window.PADDING - 2 * XULTB_LIST_RESOLUTION;
 				g->fill_triangle(g, x + XULTB_LIST_RESOLUTION / 2, y + XULTB_LIST_RESOLUTION, x + XULTB_LIST_RESOLUTION,
 						y, x, y);
+				GUI_LOG("No more place to draw\n");
 				break_here = 1;
 			}
 		) else {
@@ -115,7 +132,7 @@ static void xultb_list_show_items(struct xultb_list*list, struct xultb_graphics*
 }
 
 static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
-	SYNC_LOG(SYNC_VERB, "Drawing list...\n");
+	GUI_LOG("Drawing list...\n");
 	/* Draw the List Items */
 	xultb_list_show_items(list, g);
 	if (list->vpos > 0) {
@@ -149,6 +166,99 @@ static void xultb_list_paint(struct xultb_list*list, struct xultb_graphics*g) {
 }
 
 
+static xultb_bool_t xultb_list_window_handle_event_wrapper(struct xultb_window*win, void*target, int flags, int key_code, int x, int y) {
+	struct xultb_list*list = (struct xultb_list*)win;
+	GUI_INPUT_LOG("Handle menu commands\n");
+	if(vtable_xultb_window.handle_event(win, target, flags, key_code, x, y)) {
+		return XULTB_TRUE;
+	}
+
+	GUI_INPUT_LOG("Handle menu commands2\n");
+	// dispatch selected element events
+	if(list->vtable->handle_item && list->vtable->handle_item(list, target, flags, key_code, x, y)) {
+		return XULTB_TRUE;
+	}
+	GUI_INPUT_LOG("So the target is list item\n");
+	if(flags & XULTB_INPUT_SCREEN_EVENT) {
+		struct opp_factory*items = list->vtable->get_items(list);
+		int i;
+		for(i=0;items && i>=0;i++) {
+			void*obj;
+			opp_at_ncode(obj, items, i,
+				if(obj == target) {
+					GUI_INPUT_LOG("let us make it selected: %d\n", i);
+					list->selected_index = i;
+					xultb_guicore_set_dirty(&list->super_data); // may be we should refresh partial
+					i = -2;
+				}
+			) else {
+				break;
+			}
+		}
+	} else {
+		int consumed = 0;
+		GUI_INPUT_LOG("Try to edit with keycode:%d, selected index:%d\n", key_code, list->selected_index);
+		// if it is keyboard event then perform keyboard tasks
+		void*obj = list->vtable->get_selected(list);
+		if(obj) {
+			struct xultb_list_item*item = list->vtable->get_list_item(list, obj);
+			if(item) {
+				if(item->vtable && item->vtable->do_edit) {
+					consumed = item->vtable->do_edit(item, flags, key_code, x, y);
+				}
+				OPPUNREF(item);
+			}
+			OPPUNREF(obj);
+		}
+		if(consumed) {
+			xultb_guicore_set_dirty(win); // TODO tell it to refresh only a portion ..
+			return XULTB_TRUE;
+		}
+		key_code = x?x:key_code; // handle arrow keys ..
+	}
+	/* else traverse the list items and work for menu */
+	if (key_code == XULTB_INPUT_KEY_UP) {
+		list->selected_index--;
+		if (list->selected_index < 0) {
+			if (list->continuous_scrolling) {
+				list->selected_index = list->vtable->get_count(list) - 1;
+			} else {
+				list->selected_index = 0; /* stay within limits */
+			}
+		}
+		if (list->vpos > list->selected_index) {
+			list->vpos--;
+#if 0
+			mark(list->vpos);
+#endif
+		}
+		/*----------------------------------------------- repaint only the list and menu */
+		xultb_guicore_set_dirty2(win, XULTB_LIST_HMARGIN, win->panelTop
+				, win->width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN, win->menuY);
+	} else if (key_code == XULTB_INPUT_KEY_DOWN) {
+		list->selected_index++;
+		int count = list->vtable->get_count(list);
+		if (count != -1 && list->selected_index >= count) {
+			if (list->continuous_scrolling) {
+				list->selected_index = 0;
+			} else {
+				list->selected_index = count - 1;
+			}
+		}
+		/*----------------------------------------------- repaint only the list and menu */
+		xultb_guicore_set_dirty2(win, XULTB_LIST_HMARGIN
+				, win->panelTop, win->width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN, win->menuY);
+	} else if (key_code == XULTB_INPUT_KEY_ENTER) {
+		if(list->super_data.lis) {
+			list->super_data.lis->perform_action(list->super_data.lis->cb_data, list->default_command/*target*/); // should not it be target !
+			/*----------------------------------------------- repaint only the list and menu */
+			xultb_guicore_set_dirty2(win, XULTB_LIST_HMARGIN
+					, win->panelTop, win->width - XULTB_LIST_HMARGIN - XULTB_LIST_HMARGIN, win->menuY);
+		}
+	}
+	return XULTB_TRUE;
+}
+
 static void xultb_list_window_paint_wrapper(struct xultb_window*win, struct xultb_graphics*g) {
 	struct xultb_list*list = (struct xultb_list*)win;
 	xultb_list_paint(list, g);
@@ -158,26 +268,30 @@ static xultb_str_t* xultb_list_get_hint(struct xultb_list*list) {
 	return NULL;
 }
 
-static void xultb_list_set_action_listener(struct xultb_action_listener*list) {
-	return;
+static void xultb_list_set_action_listener(struct xultb_list*list, struct xultb_action_listener*lis) {
+	if(lis)list->super_data.lis = lis;
 }
 
 static struct opp_factory* xultb_list_get_items(struct xultb_list*list) {
 	return &list->_items;
 }
 
-static struct xultb_list_item* xultb_list_get_list_item(void*data) {
+#if 0
+static struct xultb_list_item* xultb_list_get_list_item(struct xultb_list*list, void*data) {
 	return NULL;
 }
+#endif
 
+OPP_CB(xultb_list);
 struct opp_vtable_xultb_list vtable_xultb_list = {
 		//.get_selected_index = xultb_list_get_selected_index,
 		.get_selected = xultb_list_get_selected,
 		.get_items = xultb_list_get_items,
-		.get_list_item = xultb_list_get_list_item,
+		.get_list_item = NULL,
 		.get_hint = xultb_list_get_hint,
 		.set_action_listener = xultb_list_set_action_listener,
-		.set_selected_index = xultb_list_set_selected_index
+		.set_selected_index = xultb_list_set_selected_index,
+		.oppcb = OPP_CB_FUNC(xultb_list),
 };
 
 static struct opp_vtable_xultb_window vtable_xultb_window_list;
@@ -195,13 +309,13 @@ opp_vtable_define(xultb_list,(
 
 OPP_CB(xultb_list) {
 	struct xultb_list*list = (struct xultb_list*)data;
-	// do a cleanup
-	memset(list, 0, sizeof(struct xultb_list));
 	switch(callback) {
 	case OPPN_ACTION_INITIALIZE:
+		memset(list, 0, sizeof(struct xultb_list));
+		GUI_LOG("Creating list ..\n");
 		{
 			va_list apa;
-			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_INITIALIZE, NULL, apa)) {
+			if(opp_super_cb(xultb_window)(&list->super_data, OPPN_ACTION_INITIALIZE, NULL, apa, 0)) {
 				va_end(apa);
 				return -1;
 			}
@@ -213,18 +327,20 @@ OPP_CB(xultb_list) {
 		list->vpos = 1;
 		list->item_font = xultb_font_create();
 		if(cb_data) {
+			GUI_LOG("Setting title ..\n");
 			xultb_str_t*title = cb_data;
-			if(title)list->super_data.title = *title;
+			if(title)list->super_data.title = title;
 			xultb_str_t*default_command = va_arg(ap, xultb_str_t*);
-			if(default_command)list->default_command = *default_command;
+			if(default_command)list->default_command = OPPREF(default_command);
 		}
-		SYNC_LOG(SYNC_VERB, "Created xultb_list\n");
+		GUI_LOG("Created xultb_list\n");
 		return 0;
 	case OPPN_ACTION_FINALIZE:
+		OPPUNREF(list->default_command);
 		opp_factory_destroy(&list->_items);
 		{
 			va_list ap;
-			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_FINALIZE, NULL, ap)) {
+			if(vtable_xultb_window.oppcb(&list->super_data, OPPN_ACTION_FINALIZE, NULL, ap, 0)) {
 				return -1;
 			}
 		}
@@ -233,14 +349,16 @@ OPP_CB(xultb_list) {
 	return 0;
 }
 
+
 static struct opp_factory xultb_list_factory;
 struct xultb_list*xultb_list_create(xultb_str_t*title, xultb_str_t*default_command) {
-	return opp_alloc4(&xultb_list_factory, 0, 0, NULL);
+	return opp_alloc4(&xultb_list_factory, 0, 0, title, default_command);
 }
 
 int xultb_list_system_init() {
 	vtable_xultb_window_list = vtable_xultb_window;
 	vtable_xultb_window_list.paint = xultb_list_window_paint_wrapper;
+	vtable_xultb_window_list.handle_event = xultb_list_window_handle_event_wrapper;
 	SYNC_ASSERT(OPP_FACTORY_CREATE(
 			&xultb_list_factory
 			, 1,sizeof(struct xultb_list)

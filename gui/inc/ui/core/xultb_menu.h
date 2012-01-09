@@ -23,6 +23,7 @@
 
 #include "core/xultb_decorator.h"
 #include "core/xultb_exttypes.h"
+#include "opp/opp_factory.h"
 #include "ui/core/xultb_graphics.h"
 
 C_CAPSULE_START
@@ -31,11 +32,17 @@ enum {
 	XULTB_MENU_PADDING = 3,
 };
 
-int xultb_menu_get_base_height();
+struct xultb_window;
 void xultb_menu_paint(struct xultb_graphics*g, int width, int height);
-xultb_bool_t xultb_menu_is_active();
+#if 1
+int xultb_menu_get_base_height();
 struct xultb_font*xultb_menu_get_base_font();
+#endif
+xultb_bool_t xultb_menu_is_active();
+int xultb_menu_set(struct opp_factory*left_option, xultb_str_t*right_option);
+int xultb_menu_handle_event(struct xultb_window*win, void*target, int flags, int key_code, int x, int y);
 int xultb_menu_system_init();
+
 
 C_CAPSULE_END
 

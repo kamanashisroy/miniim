@@ -55,6 +55,9 @@ enum {
 	OPPF_EXTENDED = 1<<2,
 	OPPF_SEARCHABLE = 1<<3,
 	OPPF_FAST_INITIALIZE = 1<<4,
+#if 0
+	OPPF_COPY_OBJ_HASH_TO_LIST_ITEM = 1<<5,
+#endif
 };
 
 enum {
@@ -75,6 +78,8 @@ struct opp_pool;
 #ifndef SYNC_HAS_NO_THREAD
 #define OPP_BUFFER_HAS_LOCK
 #endif
+
+typedef int (*opp_callback_t)(void*data, int callback, void*cb_data, va_list ap, int size);
 //#define OPP_HAS_RECYCLING // do not use this
 struct opp_factory {
 	SYNC_UWORD16_T sign;
@@ -92,7 +97,7 @@ struct opp_factory {
 #endif
 //	int (*initialize)(void*data, const void*init_data, unsigned short size);
 //	int (*finalize)(void*data);
-	int (*callback)(void*data, int callback, void*cb_data, va_list ap);
+	opp_callback_t callback;
 	struct opp_pool*pools;
 	opp_lookup_table_t tree;
 };
@@ -104,7 +109,7 @@ struct opp_object_ext_tiny {
 #define OPP_FACTORY_USE_COUNT(q) ({(q)->use_count;})
 
 #define OPP_CB(x) \
-static int opp_##x##_callback(void*data, int callback, void*cb_data, va_list ap)
+static int opp_##x##_callback(void*data, int callback, void*cb_data, va_list ap, int size)
 
 #define OPP_CB_FUNC(x) opp_##x##_callback
 
@@ -116,7 +121,7 @@ int opp_factory_create_full(struct opp_factory*obuff
 		, unsigned char property
 //		, int(*initialize)(void*data, const void*init_data, unsigned short size)
 //		, int(*finalize)(void*data)
-		, int (*callback)(void*data, int callback, void*cb_data, va_list ap)
+		, opp_callback_t callback
 	);
 void opp_factory_gc_donot_use(struct opp_factory*obuff);
 void opp_factory_lock_donot_use(struct opp_factory*obuff);

@@ -20,18 +20,22 @@ C_CAPSULE_START
 
 #define opp_class_declare(name,table) struct name {table struct opp_vtable_##name*vtable;}
 
-#define opp_vtable_declare(name,table) struct name;struct opp_vtable_##name {table int (*oppcb)(void*data, int callback, void*cb_data, va_list ap);}
+#define opp_class_declare_novtable(name,table) struct name {table}
+
+#define opp_vtable_declare(name,table) struct name;struct opp_vtable_##name {int (*oppcb)(void*data, int callback, void*cb_data, va_list ap, int size); table}
 
 #define opp_vtable_define(name,defaultvalue) struct opp_vtable_##name vtable_##name = {defaultvalue};
 
 #define opp_vtable_extern(name) extern struct opp_vtable_##name vtable_##name;
 
-#define opp_vtable_set(var,name) var->vtable = &vtable_##name
+#define opp_vtable_set(var,name) (var)->vtable = &vtable_##name
 
 #define opp_class_define(name,x) struct opp_class_##name c_##name = {.callback = x};
 
 #define opp_class_extend(x) x super_data;
-#define opp_extvt(x) x->super_data.vtable
+#define opp_extvt(x) (x)->super_data.vtable
+
+#define opp_super_cb(supertype) vtable_##supertype.oppcb
 
 C_CAPSULE_END
 

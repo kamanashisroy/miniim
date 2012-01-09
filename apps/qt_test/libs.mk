@@ -1,6 +1,12 @@
 
+
+ifeq ("$(PLATFORM)","win")
+QTLIBS+=-L$(QT_HOME)/lib -lQtCore4 -lQtGui4
+else
 #QTLIBS+=-F$(QT_HOME)/lib -L$(QT_HOME)/lib -framework QtMultimedia -framework QtNetwork -framework QtCore 
 QTLIBS+=-L$(QT_HOME)/lib -lQtMultimedia -lQtNetwork -lQtCore -lQtGui
+endif
+
 LIBS+=$(QTLIBS)
 
 # for shared linking

@@ -5,7 +5,7 @@ XULTB_INCLUDES+=-Iinc
 XULTB_INCLUDES+=-I../core/inc
 XULTB_INCLUDES+=-I../gui/inc
 XULTB_INCLUDES+=-I../ml/inc
-DIRS=src/ui/page src/ui/page/extended
+DIRS=src/ui/page src/ui/page/extended src/io
 
 
 XULTB_SOURCES+=$(wildcard $(addsuffix /*.c,$(DIRS)))
@@ -16,9 +16,9 @@ XULTB_CFLAGS+=-Wall
 #XULTB_BASE=$(basename $(notdir $(XULTB_SOURCES)))
 #XULTB_OBJECTS=$(addprefix obj/, $(addsuffix .o,$(XULTB_BASE)))
 XULTB_OBJECTS=$(addsuffix .o, $(basename $(XULTB_SOURCES)))
-XULTB_TARGET=libxultbmarkup.o
-XULTB_TARGETA=libxultbmarkup.a
-XULTB_TARGETSO=libxultbmarkup.so
+XULTB_TARGET=libxultbweb.o
+XULTB_TARGETA=libxultbweb.a
+XULTB_TARGETSO=libxultbweb.so
 XULTB_TEST_TARGETA=libxultbtest.a
 XULTB_TARGET_XULTB_CFLAGS=
 
@@ -39,7 +39,7 @@ ctags:
 #	$(CC) $(XULTB_CFLAGS) -c $(XULTB_INCLUDES) $< -o $@
 
 $(XULTB_TARGETA): $(XULTB_OBJECTS)
-	ar crv $@ $(XULTB_OBJECTS)
+	ar cr $@ $(XULTB_OBJECTS)
 	nm $@ | wc
 
 $(XULTB_TARGETSO): $(XULTB_OBJECTS)
@@ -55,7 +55,7 @@ test: $(XULTB_OBJECTS) src/test/test.o
 install:
 
 clean:
-	rm -f $(XULTB_OBJECTS) $(XULTB_TARGETA) $(XULTB_TARGETSO)
+	$(REMOVE_FILE) $(XULTB_OBJECTS) $(XULTB_TARGETA) $(XULTB_TARGETSO) $(XULTB_TEST_TARGETA) src/test/test.o
 
 .PHONY: test clean ctags obj_dir install
 
